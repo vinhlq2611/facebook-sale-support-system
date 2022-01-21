@@ -1,5 +1,5 @@
 const AccountRouter = require('./router_account')
 const mergeRouter = [
-  ...AccountRouter
+  ...AccountRouter,
 ]
 module.exports = mergeRouter;

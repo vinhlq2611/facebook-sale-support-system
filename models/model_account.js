@@ -1,7 +1,5 @@
 
 var mongoose = require("../config/dbConnect");
-const { model } = require("../config/dbConnect");
-var Schema = mongoose.Schema; //Gom cac title vao
 var accountSchema = new mongoose.Schema({
     // table gom cac thuoc tinh sau:
     username: String,
