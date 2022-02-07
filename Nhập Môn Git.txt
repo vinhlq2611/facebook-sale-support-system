@@ -1,0 +1,12 @@
+B1: git clone URL => Lấy project về
+B2: npm i => set up môi trường
+B3: git check-out -b "Nhánh" => Tạo nhánh mới 
+B4: Code /....sd.fsdfsd
+B5: git add . => Thêm các sửa đổi 
+B6: git commit -m "Thông báo" => cập nhật git local add .
+B7: git push origin Nhánh => Cập nhật git tổng
+ 
+//Module 
+
+
+Bước làm trước khi code: git pull origin master => cập nhật code mới nhất
