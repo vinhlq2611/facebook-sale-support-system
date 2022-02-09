@@ -11,5 +11,11 @@ module.exports = [
     route: '/account/register',
     middleware: [],
     action: UserController.register
+  }, {
+    method: 'post',
+    route: '/account/logout',
+    middleware: [],
+    action: UserController.logout
   }
+
 ]

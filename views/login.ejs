@@ -14,11 +14,11 @@
 <body>
     <input type="text" name="username" id="username">
     <input type="password" name="password" id="password">
-    <button type="button"> Đăng nhập </button>
+    <button type="button" onclick="login()"> Đăng nhập </button>
     <script>
         async function login() {
-            let username = document.getElementById("username")
-            let password = document.getElementById("password")
+            let username = document.getElementById("username").value
+            let password = document.getElementById("password").value
             let result = await axios({
                 method: 'POST',
                 url: '/account/login',
@@ -27,7 +27,11 @@
                     password,
                 }
             }).then(data => {
-                console.log("Response: ", data)
+                alert(data.data.message);
+                console.log("Response: ", data.data.data)
+                if (data.data.data) {
+                    window.location.href = "/test/home"
+                }
             })
         }
     </script>
