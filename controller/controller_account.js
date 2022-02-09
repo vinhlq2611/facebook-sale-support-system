@@ -17,6 +17,7 @@ const AccountController =
                 return res.json({ data: null, message: "Login fail" })
             }
         } catch (error) {
+            logError("Login Error", error)
             return res.json({ data: error, message: "Login Error" })
 
         }
