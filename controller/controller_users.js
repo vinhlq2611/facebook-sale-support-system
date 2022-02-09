@@ -1,6 +1,6 @@
 const {  UserService } = require('../services')
 const { logError, logWarn } = require('../utils/index')
-const AccountController =
+const UserController =
 {
     async login(req, res) {
         try {
