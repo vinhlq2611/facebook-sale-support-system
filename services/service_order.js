@@ -51,7 +51,7 @@ async function updateMany(condition, newData) {
 }
 
 // Phân trang
-async function 
+
 module.exports = {
     find, create, deleteOne, deleteMany, updateOne, updateMany
 }

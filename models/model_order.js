@@ -1,6 +1,5 @@
 
 var mongoose = require("../config/dbConnect");
-const { model } = require("../config/dbConnect");
 var Schema = mongoose.Schema; //Gom cac title vao
 var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     // table gom cac thuoc tinh sau:
