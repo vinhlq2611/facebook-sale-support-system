@@ -33,9 +33,9 @@ var accountSchema = new mongoose.Schema({
         type: String,
         
     },
-    reply_syntax:{
+    replySyntaxs:{
         type: Array,
-        
+        default: ["cho mình xin địa chỉ","cho mình xin số điện thoại","bạn order gì?","ok"]
     },
 });
 //Model: tuong tac khi thuc hien lenh
