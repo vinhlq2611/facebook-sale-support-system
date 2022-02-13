@@ -31,4 +31,21 @@ module.exports = [
     middleware: [],
     action: UserController.updateProfile,
   },
+  {
+    method: "post",
+    route: "/account/cookie",
+    middleware: [AuthMiddleware.needLogin],
+    action: UserController.addCookie,
+  },
+  {
+    method: "get",
+    route: "/account/cookie",
+    middleware: [AuthMiddleware.needLogin],
+    action: UserController.getCookie,
+  }, {
+    method: "get",
+    route: "/account/group-list",
+    middleware: [AuthMiddleware.needLogin],
+    action: UserController.getFacebookGroup,
+  },
 ];
