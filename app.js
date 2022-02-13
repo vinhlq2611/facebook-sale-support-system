@@ -37,6 +37,10 @@ app.get('/test/home',needLogin, function (req, res) {
 app.get('/test/profile',needLogin, function (req, res) {
     res.render('profile')
 })
+//Test change password
+app.get('/test/changePassword',needLogin, function (req, res) {
+    res.render('changePassword')
+})
 // Test CRUD product
 app.get('/test/product-manage',needLogin, function (req, res) {
     res.render('productManager')

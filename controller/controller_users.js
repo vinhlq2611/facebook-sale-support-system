@@ -7,7 +7,7 @@ const UserController = {
       // Nhận dữ liệu từ request
       let username = req.body.username;
       let password = req.body.password;
-      console.log(req.body);
+      // console.log(req.body);
       let account = await UserService.find({
         username: username,
         password: password,
@@ -46,13 +46,13 @@ const UserController = {
         !phone ||
         !birthday
       ) {
-        console.log("Invalid information", {
-          username,
-          password,
-          rePassword,
-          email,
-          phone,
-        });
+      //  console.log("Invalid information", {
+        //   username,
+        //   password,
+        //   rePassword,
+        //   email,
+        //   phone,
+        // });
         return res.json({ data: null, message: "Invalid information" });
       }
       // CHECK PASSWORD & REPASSWORD
@@ -69,7 +69,7 @@ const UserController = {
       }
       // CHECK DUPLICATE ACCOUNT
       let account = await UserService.find({ username });
-      console.log("Account Found: ", account);
+     // console.log("Account Found: ", account);
       if (account.length != 0) {
         logWarn("Account Is Existed", {
           username,
@@ -121,22 +121,92 @@ const UserController = {
       let phone = req.body.phone;
       let birthdate = req.body.birthdate;
       let replySyntaxs = req.body.replySyntaxs;
-      console.log(username, email, phone, birthdate)
+     // console.log(username, email, phone, birthdate);
       // CHECK EMPTY INPUT  ""
-      if (!username || !email || !phone || !birthdate||!replySyntaxs ) {
-        logWarn("Invalid information", { username, email, phone, birthdate,replySyntaxs });
-        
+      if (!username || !email || !phone || !birthdate || !replySyntaxs) {
+        logWarn("Invalid information", {
+          username,
+          email,
+          phone,
+          birthdate,
+          replySyntaxs,
+        });
+
         return res.json({ data: null, message: "Invalid information" });
       }
-      
+
       let result = await UserService.updateOne(
         { username: username },
-        { username, email, phone, birthdate,replySyntaxs }
+        { username, email, phone, birthdate, replySyntaxs }
       );
       return res.json({ data: result, message: "Update Success" });
     } catch (error) {
       logError("Register Error", error);
       return res.json({ data: error, message: "Update Error" });
+    }
+  },
+  async changePassword(req, res) {
+    try {
+      let username = req.body.username;
+      let oldpassword = req.body.oldpassword;
+      let password = req.body.newpassword;
+      let repass = req.body.repass;
+      // console.log(username, oldpassword, password, repass);
+      // CHECK EMPTY INPUT  ""
+      if (!username || !oldpassword || !password || !repass) {
+        logWarn("Invalid information", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+
+        return res.json({ data: null, message: "Invalid information" });
+      }
+      if(password.length<6){
+        logWarn("Password length must be larger than 6", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+
+        return res.json({ data: null, message: "Password length must be larger than 6" });
+      }
+      if (password == oldpassword) {
+        logWarn("Password must be different from old password", {
+        });
+
+        return res.json({ data: null, message: "Password must be different from old password" });
+      }
+      // CHECK PASSWORD & REPASSWORD
+     if (password != repass) {
+        logWarn("Password not match", {});
+        return res.json({ data: null, message: "Password not match" });
+      }
+      let account = await UserService.find({ username, password: oldpassword });
+      //console.log("Account Found: ", account.length);
+      if (account.length == 0) {
+        logWarn("Old password is incorrect", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+        return res.json({ data: null, message: "Old password is incorrect" });
+      }
+      let result = await UserService.updateOne(
+        { username: username },
+        { username, password }
+      );
+
+      return res.json({
+        data: result,
+        message: "Change password successfully",
+      });
+    } catch (error) {
+      // console.log("Change Error", error);
+      return res.json({ data: error, message: "Change Error" });
     }
   },
 };
