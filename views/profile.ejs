@@ -1,18 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
-        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+      integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
     <title>Document</title>
-</head>
+  </head>
 
-<body>
-
-</body>
-
+  <body>
+    <h1>Xin chaof <span id="username"></span></h1>
+    <input type="text" id="birthday" /><br />
+    <input type="text" id="phone" /><br />
+    <input type="text" id="email" /><br />
+    <p>Cú pháp trả lời nhanh</p>
+    <div id="replySyntaxList"></div>
+    <button type="button" onclick="update()">Cập nhật</button>
+    <script>
+      async function initData() {
+        let result = await axios({
+          method: "POST",
+          url: "/account/profile",
+        });
+        let userInfor = result.data.data;
+        document.getElementById("username").innerHTML = userInfor.username;
+        document.getElementById("birthday").value = userInfor.birthdate;
+        document.getElementById("email").value = userInfor.email;
+        document.getElementById("phone").value = userInfor.phone;
+        document.getElementById("replySyntaxList").innerHTML = "";
+        for (const replySyntax of userInfor.replySyntaxs) {
+          document.getElementById(
+            "replySyntaxList"
+          ).innerHTML += `<input type="text" class="replySyntax" value="${replySyntax}"/><br>`;
+        }
+      }
+      initData();
+      async function update() {
+        let username = document.getElementById("username").innerHTML;
+        let birthdate = document.getElementById("birthday").value;
+        let phone = document.getElementById("phone").value;
+        let email = document.getElementById("email").value;
+        let replyArrDom = document.getElementsByClassName("replySyntax");
+        let replySyntaxs = [];
+        for (var i = 0; i < replyArrDom.length; i++) {
+          replySyntaxs.push(replyArrDom[i].value);
+        }
+        let result = await axios({
+          method: "PUT",
+          url: "/account/profile",
+          data: {
+            username,
+            birthdate,
+            phone,
+            email,
+            replySyntaxs
+          },
+        }).then(async (data) => {
+          alert(data.data.message);
+          console.log("Response: ", data.data.data);
+          await initData();
+        });
+      }
+    </script>
+  </body>
 </html>

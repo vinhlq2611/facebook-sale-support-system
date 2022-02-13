@@ -1,6 +1,5 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const fs = require('fs');
 const { logError } = require('../../utils')
 const getDtsg = async (cookie) => {
     try {
@@ -22,6 +21,7 @@ const getDtsg = async (cookie) => {
         return data;
     } catch (error) {
         logError("Lỗi tại Facebook.getDtsg ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getDtsg ", error)
         return null;
 
     }
@@ -37,7 +37,6 @@ const getToken = async (cookie) => {
         }
         ).then(async (response) => {
             let dom = response.data + "";
-            fs.writeFileSync('facebook_business.html', dom)
             let startIndex = dom.indexOf("EAAG");
             let endIndex = dom.indexOf('"', startIndex);
             return dom.slice(startIndex, endIndex);
@@ -46,6 +45,7 @@ const getToken = async (cookie) => {
         return token
     } catch (error) {
         logError("Lỗi tại Facebook.getToken ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getToken ", error)
         return null
     }
 }
@@ -59,27 +59,31 @@ const getUid = (cookie) => {
         return uid
     } catch (error) {
         logError("Lỗi tại Facebook.getUid ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getUid ", error)
+
         return null
     }
 }
 
 const getUserInfo = async (cookie) => {
-    if (cookie.status === 1) {
-        try {
-            let dtsg = await getDtsg(cookie)
-            let token = await getToken(cookie)
-            let uid = await getUid(cookie)
-            let isSuccess = (dtsg == null || token == null || uid == null) ? false : true
-            return {
-                isSuccess, data: { dtsg, token, uid }
-            }
-        } catch (error) {
-            logError("Lỗi tại Facebook.getUserInfo ", { input: cookie, error })
-            return { isSuccess: false, data: null }
+    console.log("Get User Info Cookie = ", cookie)
+    // if (cookie.status === 1) {
+    try {
+        let dtsg = await getDtsg(cookie)
+        let token = await getToken(cookie)
+        let uid = await getUid(cookie)
+        let isSuccess = (dtsg == null || token == null || uid == null) ? false : true
+        return {
+            isSuccess, data: { dtsg, token, uid }
         }
+    } catch (error) {
+        logError("Lỗi tại Facebook.getUserInfo ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getUserInfo ", error)
+        return { isSuccess: false, data: null }
     }
+    // }
 }
 
 module.exports = {
-    getUserInfo
+    getUserInfo, getUid, getToken, getDtsg
 }
