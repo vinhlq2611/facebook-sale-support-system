@@ -31,4 +31,10 @@ module.exports = [
     middleware: [],
     action: UserController.updateProfile,
   },
+  {
+    method: "put",
+    route: "/account/changePassword",
+    middleware: [],
+    action: UserController.changePassword,
+  },
 ];
