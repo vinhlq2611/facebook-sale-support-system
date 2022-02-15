@@ -47,5 +47,9 @@ module.exports = [
     route: "/account/group-list",
     middleware: [AuthMiddleware.needLogin],
     action: UserController.getFacebookGroup,
+    method: "put",
+    route: "/account/changePassword",
+    middleware: [],
+    action: UserController.changePassword,
   },
 ];
