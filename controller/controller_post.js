@@ -52,6 +52,8 @@ const PostController = {
                 return res.json({ data: null, message: "Not have id post" })
             } else if (!fb_id && !content && !attachment && !status && !order) {
                 return res.json({ data: null, message: "Not have information" })
+
+                
             }
             let result = await PostService.find({ id })
             if (!result) {
