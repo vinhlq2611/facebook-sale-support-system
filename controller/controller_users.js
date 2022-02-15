@@ -1,4 +1,4 @@
-const { UserService } = require("../services");
+const { UserService, FacebookService } = require("../services");
 const { logError, logWarn } = require("../utils/index");
 const jwt = require("jsonwebtoken");
 const UserController = {
@@ -46,7 +46,7 @@ const UserController = {
         !phone ||
         !birthday
       ) {
-      //  console.log("Invalid information", {
+        //  console.log("Invalid information", {
         //   username,
         //   password,
         //   rePassword,
@@ -69,7 +69,7 @@ const UserController = {
       }
       // CHECK DUPLICATE ACCOUNT
       let account = await UserService.find({ username });
-     // console.log("Account Found: ", account);
+      // console.log("Account Found: ", account);
       if (account.length != 0) {
         logWarn("Account Is Existed", {
           username,
@@ -121,7 +121,7 @@ const UserController = {
       let phone = req.body.phone;
       let birthdate = req.body.birthdate;
       let replySyntaxs = req.body.replySyntaxs;
-     // console.log(username, email, phone, birthdate);
+      // console.log(username, email, phone, birthdate);
       // CHECK EMPTY INPUT  ""
       if (!username || !email || !phone || !birthdate || !replySyntaxs) {
         logWarn("Invalid information", {
@@ -145,6 +145,48 @@ const UserController = {
       return res.json({ data: error, message: "Update Error" });
     }
   },
+  async addCookie(req, res) {
+    let fbCookie = req.body.fbCookie;
+    if (fbCookie == undefined || fbCookie == null || fbCookie == "") {
+      return res.json({ data: null, message: "Cookie không được bỏ trống" })
+    }
+    let username = req.body.username;
+    let [user] = await UserService.find({ username });
+    let facebookData = await FacebookService.getUserInfo(fbCookie)
+    if (facebookData.isSuccess == false) {
+      return res.json({ data: null, message: "Cookie không hợp lệ" })
+    }
+    user.facebook = {
+      cookie: {
+        data: fbCookie,
+        status: 1
+      },
+      token: facebookData.data.token,
+      dtsg: facebookData.data.dtsg,
+      uid: facebookData.data.uid,
+    }
+    let result = await UserService.updateOne({ username }, user)
+    return res.json({ data: result, message: "Thêm cookie thành công" })
+  },
+  async getCookie(req, res) {
+    let fbCookie = req.body.fbCookie;
+    let username = req.body.username;
+    let [user] = await UserService.find({ username });
+    return res.json({ data: user.facebook?.cookie, message: "Thêm cookie thành công" })
+  },
+  async getFacebookGroup(req, res, next) {
+    // let fbCookie = req.body.fbCookie;
+    let username = req.body.username;
+    let [user] = await UserService.find({ username });
+    let fbData = user.facebook
+    if (fbData.cookie?.status == 1) {
+      let groupList = await FacebookService.getGroupList(fbData.token)
+      console.log("Facebook Group = ", groupList);
+      return res.json({ data: groupList, message: 'Lấy Group Facebook Thành Công' })
+    } else {
+      return res.json({ data: null, message: 'Cookie Quá Hạn' })
+    }
+  },
   async changePassword(req, res) {
     try {
       let username = req.body.username;
@@ -163,7 +205,7 @@ const UserController = {
 
         return res.json({ data: null, message: "Invalid information" });
       }
-      if(password.length<6){
+      if (password.length < 6) {
         logWarn("Password length must be larger than 6", {
           username,
           oldpassword,
@@ -180,7 +222,7 @@ const UserController = {
         return res.json({ data: null, message: "Password must be different from old password" });
       }
       // CHECK PASSWORD & REPASSWORD
-     if (password != repass) {
+      if (password != repass) {
         logWarn("Password not match", {});
         return res.json({ data: null, message: "Password not match" });
       }

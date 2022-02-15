@@ -1,20 +1,29 @@
 var mongoose = require('../config/DBConnect');
 let date = new Date(Date.now);
 var PostModel = mongoose.model("post", new mongoose.Schema({
-    fb_id : String,
-    content : String,
-    attachment : {
-        type : Array,
-        default : [],
+    username: String,
+    content: String,
+    fb_id: String,
+    attachment: {
+        type: Array,
+        default: [],
     },
-    status : {
-        type : Number,
-        default : 'reated',
+    groupId: String,
+    status: {
+        type: Number,
+        default: 'created',
     },
-    order : Array,
+    order: {
+        type: Array,
+        default: []
+    },
+    products: {
+        type: Array,
+        default: []
+    },
     createAt: {
-        type : Date,
-        default :  date.getFullYear + "-" + date.getMonth + "-" + date.getDate + "-" + date.getHours + ":" + date.getMinutes
+        type: Date,
+        default: Date.now()
     }
 }))
 module.exports = PostModel;
