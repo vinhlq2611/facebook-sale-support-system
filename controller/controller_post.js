@@ -1,4 +1,4 @@
-const { PostService } = require('../services')
+const { PostService, UserService, FacebookService } = require('../services')
 const { logError, logWarn } = require('../utils/index')
 const { uploadFile } = require('../middleware/upload');
 const { Console } = require('winston/lib/winston/transports');
@@ -15,15 +15,25 @@ const PostController = {
             let attachments = req.body.attachments;
             let groupId = req.body.groupId;
             let product = req.body.product;
+            let shipCost = req.body.shipCost ? req.body.shipCost : 3000;
             console.log(req.body)
             // CHECK EMPTY INPUT
             if (!username || !content || !groupId || !product) {
                 return res.json({ data: null, message: "Lack of information" })
             }
             let result = await PostService.create({ username, content, attachment: attachments, groupId })
-            return res.json({ data: result, message: "Create post success" })
+            let [UserData] = await UserService.find({ username });
+            let fbData = await UserData.facebook
+            let UploadData = await FacebookService.uploadPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, groupId)
+
+            if (UploadData.data != null) {
+                return res.json({ data: UploadData.data, message: "Create post success" })
+            }
+            else return res.json({
+                data: null, message: "Tạo Post Thất Bại"
+            })
         } catch (error) {
-            logError("Create Post Error", error)
+            console.log("Create Post Error", error)
             return res.json({ data: null, message: "Create Post Error" })
         }
     },
@@ -53,7 +63,7 @@ const PostController = {
             } else if (!fb_id && !content && !attachment && !status && !order) {
                 return res.json({ data: null, message: "Not have information" })
 
-                
+
             }
             let result = await PostService.find({ id })
             if (!result) {

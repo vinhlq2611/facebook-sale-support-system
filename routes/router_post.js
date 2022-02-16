@@ -1,29 +1,30 @@
 const PostController = require('../controller/controller_post')
+const AuthMiddleware = require("../middleware/auth")
 
 module.exports = [
   {
     method: 'post',
     route: '/post/create',
     controller: PostController,
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: PostController.create
   }, {
     method: 'get',
     route: '/post/getAll',
     controller: PostController,
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: PostController.getPost
   },{
     method: 'put',
     route: '/post/edit',
     controller: PostController,
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: PostController.edit
   },{
     method: 'delete',
     route: '/post/delete',
     controller: PostController,
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: PostController.delete
   }
 ]
