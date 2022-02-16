@@ -14,7 +14,7 @@
 <body>
     <div>
         <input type="text" id="cookie" placeholder="Nhập Cookie Facebook của bạn"><br>
-        <a href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
+        <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
             Lấy cookie facebook tại đây
         </a><br>
         <button type="button" onclick="addCookie()">
@@ -26,7 +26,8 @@
         Nội dung:<br><textarea id="content"></textarea><br>
         Ảnh Đính Kèm: <input type="file" id="attachments" name="images" multiple><br><br>
         Sản phẩm: <select id="products"></select><br>
-        <img src="https://www.googleapis.com/storage/v1/b/facebook-sale-support-system.appspot.com/o/1644736157684--avt_MaiUyen.jpg">
+        <img
+            src="https://www.googleapis.com/storage/v1/b/facebook-sale-support-system.appspot.com/o/1644736157684--avt_MaiUyen.jpg">
         <button type="button" onclick="uploadPost()">Đăng Bài</button>
     </div>
 
@@ -69,19 +70,19 @@
 
         async function getGroupList() {
             console.log("Trigger Get Group List")
-            // await axios({
-            //     method: 'GET',
-            //     url: '/account/group-list'
-            // }).then(data => {
-            //     console.log(data.data.data)
-            //     document.getElementById('groupList').innerHTML = ''
-            //     data.data.data.map(group => {
-            //         document.getElementById('groupList').innerHTML += `<option value="${group.groupId}">${group.name}</option>`
-            //     })
-            //     dumpProduct()
-            // }).catch(error => {
-            //     console.log("Lấy danh sách group thất bại", error)
-            // })
+            await axios({
+                method: 'GET',
+                url: '/account/group-list'
+            }).then(data => {
+                console.log(data.data.data)
+                document.getElementById('groupList').innerHTML = ''
+                data.data.data.map(group => {
+                    document.getElementById('groupList').innerHTML += `<option value="${group.groupId}">${group.name}</option>`
+                })
+                dumpProduct()
+            }).catch(error => {
+                console.log("Lấy danh sách group thất bại", error)
+            })
         }
         function dumpProduct() {
             let products = [{ name: "Cơm rang", price: 30000, id: 1 }, { name: "Cơm rang", price: 30000, id: 2 }, { name: "Cơm rang", price: 30000, id: 3 }, { name: "Cơm rang", price: 30000, id: 4 }
@@ -93,7 +94,7 @@
 
         }
 
-        function uploadPost() {
+        async function uploadPost() {
             let groupId = document.getElementById('groupList').value;
             let content = document.getElementById('content').value;
             let attachments = document.getElementById('attachments').value;
@@ -102,6 +103,17 @@
             console.log(content)
             console.log(product)
             let attachmentList = uploadAttachments();
+            let result = await axios({
+                method: 'POST',
+                url: '/post/create',
+                data: {
+                    content,
+                    groupId,
+                    product,
+                    attachments: attachmentList,
+                }
+            })
+            alert(result.data.message)
 
         }
 
@@ -124,7 +136,7 @@
             return result
         }
 
-        initCookie()
+        // initCookie()
     </script>
 </body>
 

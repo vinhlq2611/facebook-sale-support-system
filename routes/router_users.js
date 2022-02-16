@@ -16,7 +16,7 @@ module.exports = [
   {
     method: "post",
     route: "/account/logout",
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: UserController.logout,
   },
   {
@@ -28,7 +28,7 @@ module.exports = [
   {
     method: "put",
     route: "/account/profile",
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: UserController.updateProfile,
   },
   {
@@ -47,9 +47,10 @@ module.exports = [
     route: "/account/group-list",
     middleware: [AuthMiddleware.needLogin],
     action: UserController.getFacebookGroup,
+  }, {
     method: "put",
     route: "/account/changePassword",
-    middleware: [],
+    middleware: [AuthMiddleware.needLogin],
     action: UserController.changePassword,
-  },
+  }
 ];
