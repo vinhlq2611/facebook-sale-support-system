@@ -10,17 +10,17 @@ module.exports = [
     action: PostController.create
   }, {
     method: 'get',
-    route: '/post/getAll',
+    route: '/post/get-post',
     controller: PostController,
     middleware: [AuthMiddleware.needLogin],
     action: PostController.getPost
-  },{
+  }, {
     method: 'put',
     route: '/post/edit',
     controller: PostController,
     middleware: [AuthMiddleware.needLogin],
     action: PostController.edit
-  },{
+  }, {
     method: 'delete',
     route: '/post/delete',
     controller: PostController,

@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')))
 // SET UP GIAO DIỆN MOCKUP ĐỂ TEST
 app.set("view engine", "ejs");
 app.set("views", "./views");
@@ -24,7 +25,7 @@ const fileStorageEngine = multer.diskStorage({
         cb(null, "./images"); //important this is a direct path fron our current file to storage location
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + "--" + file.originalname);
+        cb(null, Date.now() + file.originalname);
     },
 });
 
@@ -56,12 +57,17 @@ app.post("/uploadfile", upload.array("images"), async (req, res) => {
     }
 });
 app.get('/uploadfile/:id', async (req, res) => {
-    var filename = req.params.id;
-    let result = await AttachmentModel.findOne({ '_id': filename });
-    let file = fs.readFileSync(result.name)
-    // console.log("File Data: ", result.image.buffer)
-    res.contentType(result.contentType);
-    res.send(file)
+    try {
+        var filename = req.params.id;
+        let result = await AttachmentModel.findOne({ '_id': filename });
+        let file = fs.readFileSync(result.name)
+        // console.log("File Data: ", result.image.buffer)
+        res.contentType(result.contentType);
+        res.send(file)
+    } catch (error) {
+        console.log("Lấy ảnh thát bại, ", error.message)
+        res.send(null)
+    }
 })
 // SET UP ROUTER
 Routers.forEach(function (router) {
@@ -87,7 +93,7 @@ app.get('/test/profile', needLogin, function (req, res) {
     res.render('profile')
 })
 //Test change password
-app.get('/test/changePassword',needLogin, function (req, res) {
+app.get('/test/changePassword', needLogin, function (req, res) {
     res.render('changePassword')
 })
 // Test CRUD product
@@ -97,5 +103,9 @@ app.get('/test/product-manage', needLogin, function (req, res) {
 // Test Đăng bài
 app.get('/test/upload-post', needLogin, function (req, res) {
     res.render('uploadPost')
+})
+// Test Quản lý bài đăng
+app.get('/test/sell-control/:postId', needLogin, function (req, res) {
+    res.render('sellControl')
 })
 module.exports = app;
