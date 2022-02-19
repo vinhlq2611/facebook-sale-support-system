@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Đăng Bài</title>
+</head>
+
+<body>
+    <div>
+        <input type="text" id="cookie" placeholder="Nhập Cookie Facebook của bạn"><br>
+        <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
+            Lấy cookie facebook tại đây
+        </a><br>
+        <button type="button" onclick="addCookie()">
+            Submit
+        </button>
+    </div>
+    <div id="upload-form">
+        Group Được chọn: <input type="text" id="groupList"></input><br>
+        Nội dung:<br><textarea id="content"></textarea><br>
+        Ảnh Đính Kèm: <div id="attachments"></div>
+        List Sản phẩm:<div id="products"></div>
+        Cấu hình:
+        <div id="Sell-config">
+            Tự động comment sau:<span id="autoComment"></span><br>
+            Tự động Tạo đơn:<span id="autoCreateOrder"></span><br>
+            Tự động Reply:<span id="autoReply"></span><br>
+            Tự động quét comment sau:<span id="scanDuration"></span><br>
+        </div>
+        <!-- <button type="button" onclick="uploadPost()">Đăng Bài</button> -->
+    </div>
+    <div id="commentList">
+
+    </div>
+    <script>
+        var IntervalList = []
+        var selectedPost = null
+        async function addCookie() {
+            let cookie = document.getElementById('cookie').value;
+            axios({
+                method: 'POST',
+                url: '/account/cookie',
+                data: { fbCookie: cookie }
+            }).then(data => {
+                if (data.data.data) {
+                    document.getElementById('upload-form').style.display = 'block';
+                    getGroupList()
+                } else {
+                    alert(data.data.message)
+                }
+            })
+        }
+
+        async function initPost() {
+            let postId = window.location.href.split('/')
+            postId = postId[postId.length - 1]
+            console.log("Post Found: ", postId)
+            axios({
+                method: 'get',
+                url: '/post/get-post?_id=' + postId,
+                data: { _id: postId }
+            }).then(async data => {
+                if (!data.data.data) {
+                    alert(data.data.message)
+                    return
+                }
+                let postData = data.data.data[0]
+                selectedPost = postData
+                console.log("Init Post Data: ", postData);
+                document.getElementById('groupList').value = postData.group.name
+                document.getElementById('content').value = postData.content
+                //  RENDER ẢNH 
+                handleAttachment(postData.attachment)
+                // RENDER CÁC SẢN PHẨM (Hiện đang fix cứng)
+                handleProduct(postData.products)
+                // Cập nhật config bán hàng
+                document.getElementById('autoComment').innerHTML = postData.config.autoComment
+                document.getElementById('autoReply').innerHTML = postData.config.autoReply
+                document.getElementById('autoCreateOrder').innerHTML = postData.config.autoCreateOrder
+                document.getElementById('scanDuration').innerHTML = postData.config.scanDuration
+                await scanComment()
+                autoScanComment(postData.config.scanDuration)
+            }).catch(error => {
+                console.error("Init Cookie Fail: ", error)
+
+            })
+        }
+
+        function autoScanComment(delay) {
+            let scanJob = setInterval(() => {
+                console.log("Chuẩn bị quét comment")
+                scanComment()
+            }, delay * 1000)
+            IntervalList.push(scanJob)
+        }
+
+        function scanComment() {
+            axios({
+                url: '/comment/scan-comment',
+                method: 'POST',
+                data: {
+                    postId: selectedPost._id
+                }
+            }).then(() => {
+                let commentList = axios({
+                    url: `/comment/get-comment?post_id=${selectedPost._id}`,
+                    method: 'GET',
+                }).then(data => {
+                    renderComment(data)
+                })
+            })
+        }
+
+
+        function renderComment(data) {
+            if (data.data.data != null) {
+                document.getElementById('commentList').innerHTML = ""
+                let commentList = data.data.data
+                for (const comment of commentList) {
+                    document.getElementById('commentList').innerHTML += `
+                             <div class="${comment.parentId ? "comment-2" : "comment"}">
+                                <a href="https://facebook.com/${comment.author.fb_id}" target="_blank">${comment.author.name}</a><br>
+                                <a  href="https://facebook.com/${comment.fb_id}" target="_blank"> Chi tiết comment</a>
+                                <p>${comment.content}</p>
+                            </div>
+                            `
+                }
+            }
+        }
+
+        function handleAttachment(attachments) {
+            document.getElementById('attachments').innerHTML = "";
+
+            if (attachments.length > 0) {
+                for (const attachment of attachments) {
+                    document.getElementById('attachments').innerHTML +=
+                        `<img src="http://localhost:3000/${attachment}" /> `
+                }
+            } else {
+                document.getElementById('attachments').innerHTML += `
+                                < p > Không có ảnh đính kèm</ >
+                                `
+            }
+        }
+
+        function handleProduct(products) {
+            document.getElementById('products').innerHTML = "";
+            if (products.length > 0) {
+                for (const attachment of products) {
+                    document.getElementById('products').innerHTML +=
+                        `<p> ${attachment}</p> `
+                }
+            } else {
+                document.getElementById('products').innerHTML += `
+                                < p > Không có ảnh đính kèm</ >
+                                `
+            }
+        }
+
+        function dumpProduct() {
+            let products = [{ name: "Cơm rang", price: 30000, id: 1 }, { name: "Cơm rang", price: 30000, id: 2 }, { name: "Cơm rang", price: 30000, id: 3 }, { name: "Cơm rang", price: 30000, id: 4 }
+            ]
+            document.getElementById('products').innerHTML = ''
+            products.map(product => {
+                document.getElementById('products').innerHTML += `< option value = "${product.id}" > ${product.name} - ${product.price}</ >`
+            })
+
+        }
+
+        async function uploadPost() {
+            let groupId = document.getElementById('groupList').value;
+            let content = document.getElementById('content').value;
+            let attachments = document.getElementById('attachments').value;
+            let product = document.getElementById('products').value
+            console.log(groupId)
+            console.log(content)
+            console.log(product)
+            let attachmentList = uploadAttachments();
+            let result = await axios({
+                method: 'POST',
+                url: '/post/create',
+                data: {
+                    content,
+                    groupId,
+                    product,
+                    attachments: attachmentList,
+                }
+            })
+            alert(result.data.message)
+            if (result.data.data) {
+                window.location.href = '/test/sell-control'
+            }
+        }
+        initPost()
+    </script>
+    <style>
+        .comment {
+            padding: 0px 10px;
+            background-color: pink;
+            margin-bottom: 10px
+        }
+
+        .comment .p {
+            margin: 0;
+        }
+
+        .comment-2 {
+            padding: 0px 20px;
+            background-color: lightpink;
+            margin-bottom: 5px
+        }
+
+        .comment-2 .p {
+            margin: 0;
+        }
+    </style>
+</body>
+
+</html>

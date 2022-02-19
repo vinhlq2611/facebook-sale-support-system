@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Login test</title>
+</head>
+
+<body>
+    <input type="text" name="username" id="username">
+    <input type="password" name="password" id="password">
+    <button type="button" onclick="login()"> Đăng nhập </button>
+    <script>
+        async function login() {
+            let username = document.getElementById("username").value
+            let password = document.getElementById("password").value
+            let result = await axios({
+                method: 'POST',
+                url: '/account/login',
+                data: {
+                    username,
+                    password,
+                }
+            }).then(data => {
+                alert(data.data.message);
+                console.log("Response: ", data.data.data)
+                if (data.data.data) {
+                    window.location.href = "/test/home"
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

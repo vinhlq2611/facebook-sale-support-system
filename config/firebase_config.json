@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "facebook-sale-support-system",
+  "private_key_id": "3a2dbad0ae66877074b9de420c365700d2036542",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFZlDF8xbE6bH5\n99FBwS2CLuTIAWRoXZ9KZXhSXwDfrjpE0VTYRZBgCIeqTjmgoS7zCPvWFXS2c1N2\nXgqGhoLcHfpjOziA5pJb9dI+QgeQ0sBt1nWKyA7bmolXkOvKwp9kJ2t5mXTn3tfj\nAEnERD8wQoHGwkFTRyCT6wtDeod2Q7Am3TUZJVvprBYaVC+pDZ8W3myHP8+4ilm8\nvDeJMQhDrFllUn9n8DTsH32sv3olXQFzrCKm7jE7EUXWbbU7Vvk4BySR/J2uBDDU\nwrJHPpk6uZ3DJTrJpSCuOuxqYMZW/TWfsK4QfqOeqO2sQrxU0X1O4392Hk5alSFe\n59LnxH57AgMBAAECggEAKVM6Jba2VZL3B3WyASoH9PEMRDLGanLvHgwQHG53KFy5\nJh8MvBoUF4axoB2wQsh7o7WFw1PKk0eheW5GldMjIiHEgXGsao/apBXaZd485zy3\nvEbhZKRtN9wqVIKqWlBUPgtinJpbtw8X8xXkW4pOEDRcJtgUBPMnBtB2EzJbmY5D\n42Gx6EwrlNRiAKsAjaavGUQXfIk+4Hy9ix9JtBhg8f/qvTzUrINveXA5kbnsGK+1\ngoK0BEy33aJuZnKzkCuC9vJSlqKU1mF2JkvFUSiDvXw1hm/qKNPYx/NOlg40NKGN\nfKRtGgMcxFS02P3ZM/xZG21EDHBfSFQADC/tvKLGAQKBgQDq7czNxzvkNxKfRdJX\ncb6KR53bfm3yb1hI1gs1ZvnUlANuBj/Xkss+QuzT74eVBn+27vvaJn55+4UgZSU8\nXY8FeX1Yu3tBqI9dTojpdiFjc2HRHPXL+6D3HgyEbjpoqfgrdPvEXvPdEL25qrNJ\nijM6XdTfU8q4yBRIisFpszmqoQKBgQDXGs6gJ7RBMe2sxaLPi8+D3kThoRAL+bdA\nq6OiFtUJZedgJ41SIDnJfXeR9/dNHSbEIgQzeRu/agv/EDx+L7+I0f5/ZKoLsgun\npKQluIZa1dK+HtgZG/kWFky8TDgWRXej8yRiyBP6gthffKiiX+9etdOsV67eZ019\nntxWKaLPmwKBgQCXG8ICEkaZsjrOK7DyAf2XIB2PUzERIUFeCB9JiCTl8RaLrIVf\n+dG1CIMghw9kcbuwROPGG8B6YaftgGGFBIC7+rr/Wggb4XnlgGBcGlm7iDnAsaoA\nPKf6i19txyDWtY0lFqfiVVjyNpRyWjPb94Kf5j7ILzNTy44QYv+pJ1jOQQKBgQDD\nLAefOWdMYEkPIqP/PRQkymAleUZeF04214W5ZI4X4OZ3UGvhwGuubrE3OI6i4Xhz\nLYoySgjrPQV1gP3iYOCg/Ci23leMFRiOG8z0jOEbOjflWYcqAT+Y0tL9Zwrc6lsL\n32l8V54JBv/cY/d+nR1MCh7tmQGJuqGNAb9aTpzzUQKBgBNZCFluBrxjss0kb/KM\n9kYqO8oczaJszm6qEyKcnQQTJ8xMqgm0seXfFmDwBjUg3UxvZM1FU5r6pz6jXAz4\nUzQqEvUxomBoh5hCyJbHkfxvIown7aVOZdM61/NUMSzb5ZxerlK0WWp9zyPQU4HD\nWIK1pa+BYBwi0ZjLzCLtF7cX\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-asg7u@facebook-sale-support-system.iam.gserviceaccount.com",
+  "client_id": "110560025882375985538",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-asg7u%40facebook-sale-support-system.iam.gserviceaccount.com"
+}

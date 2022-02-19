@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Trang quản lý sản phẩm</h1>
+
+    <div>
+        <input type="text" placeholder="title" id="title"><br>
+        <input type="number" placeholder="price" id="price"><br>
+        <button onclick="createProd()">Thêm sản phẩm</button>
+    </div>
+    <div id="list-product">
+
+    </div>
+    <div>
+        <input type="text" placeholder="title" id="utitle"><br>
+        <input type="number" placeholder="price" id="uprice"><br>
+        <textarea placeholder="keyword" id="ukeyword"></textarea>
+        <div id="keywordList"></div>
+        <button onclick="updatePrd(id_update)">Update sản phẩm</button>
+    </div>
+    <script>
+        let id_update = '';
+        async function createProd() {
+            let title = document.getElementById("title").value
+            let price = document.getElementById("price").value
+            let result = await axios({
+                method: 'POST',
+                url: '/product/create',
+                data: {
+                    title,
+                    price
+                }
+            })//
+            // if (result.data.data == null)
+            alert(result.data.message)
+
+        }
+
+        async function getProd() {
+            let result = await axios({
+                method: 'GET',
+                url: '/product/get'
+            })
+            let data = result.data.data
+            for (const prd of data) {
+                document.getElementById('list-product').innerHTML +=
+                    `${prd.title} - ${prd.price} - [${prd.keyword} ] - <button onclick=" triggerUpdatePrd('${prd._id}')">update</button>- <button onclick=" deletePrd('${prd._id}')">delete</button><br>`
+            }
+            alert(result.data.message)
+        }
+
+        async function triggerUpdatePrd(id) {
+            console.log("Select ID: ", id);
+            let result = await axios({
+                method: 'GET',
+                url: '/product/get?id=' + id,
+
+            })
+            let data = result.data.data[0].title;
+            console.log(data);
+            id_update = id;
+            document.getElementById("utitle").value = result.data.data[0].title;
+            document.getElementById("uprice").value = result.data.data[0].price;
+            document.getElementById("ukeyword").value = result.data.data[0].keyword;
+        }
+
+        async function updatePrd(_id){
+            let title = document.getElementById("utitle").value;
+            let price = document.getElementById("uprice").value;
+            let keyword = document.getElementById("ukeyword").value;
+            console.log(_id)
+            let result = await axios({
+                method: 'PUT',
+                url: '/product/edit',
+                data: {
+                    _id,
+                    title,
+                    price,
+                    keyword
+                }
+            })//
+            id_update = '';
+            // if (result.data.data == null)
+            alert(result.data.message)
+            document.getElementById('list-product').innerHTML = ''
+            getProd()
+        }
+
+        async function deletePrd(_id){
+            let result = await axios({
+                method: 'DELETE',
+                url: '/product/delete',
+                data: {
+                    _id
+                }
+            })//
+            alert(result.data.message)
+            document.getElementById('list-product').innerHTML = ''
+            getProd()
+        }
+
+
+        getProd()
+    </script>
+</body>
+
+</html>

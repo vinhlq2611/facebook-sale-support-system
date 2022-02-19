@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Đăng ký</h1>
+    <input type="text" placeholder="Username" id="username"><br>
+    <input type="pasword" placeholder="Password" id="password"><br>
+    <input type="password" placeholder="Re enter Password" id="rePassword"><br>
+    <input type="text" placeholder="Email" id="email"><br>
+    <input type="text" placeholder="Phone" id="phone"><br>
+    <input type="text" placeholder="Birth Date: dd/mm/yyyy" id="birthday"><br>
+    <button type="'button" onclick="register()"> Đăng ký</button><br>
+    <a href="/test/login">Đã có tài khoản? Đăng nhập ngay!</a>
+    <script>
+        async function register() {
+            let username = document.getElementById("username").value
+            let password = document.getElementById("password").value
+            let rePassword = document.getElementById("rePassword").value
+            let email = document.getElementById("email").value
+            let phone = document.getElementById("phone").value
+            let birthday = document.getElementById("birthday").value
+            let result = await axios({
+                method: 'POST',
+                url: '/account/register',
+                data: {
+                    username,
+                    password,
+                    rePassword,
+                    email,
+                    phone,
+                    birthday
+                }
+            })
+
+            alert(result.data.message)
+            if (result.data.data != null) {
+                window.location.href = '/test/login'
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

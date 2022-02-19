@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick=" logout()">Log out</button><br>
+    <a href="/test/profile"> Trang Profile</a><br>
+    <a href="/test/upload-post"> Trang Đăng bài</a><br>
+    <a href="/test/product-manage"> Trang Quản lý sản phẩm</a><br>
+    <div id="notice">
+        <b style="color:orange">Sử dụng axios để call API từ server</b><br>
+        <b style="color:red">Gặp vấn đề xử lý >30p không có tiến triển, PM vinh ngay</b><br>
+        <b style="color:yellow">Nhớ push code lên local mỗi khi end code</b><br>
+        <b style="color:yellow">Nhớ pull code về develop rồi merge vào nhánh của mình</b><br>
+        <b style="color:red">Check kỹ trước khi tạo pull request</b><br>
+    </div>
+
+    <script>
+        async function logout() {
+            await axios({
+                method: 'POST',
+                url: '/account/logout'
+            }).then(() => {
+                window.location.href = '/test/login'
+            })
+        }
+    </script>
+    <style>
+        #notice {
+            background-color: black;
+            padding: 5px
+        }
+        #notice b {
+            font-size: 25px;
+        }
+    </style>
+</body>
+
+</html>
