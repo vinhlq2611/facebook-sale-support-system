@@ -67,9 +67,11 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         } catch (error) {
             console.log("Error: ", error);
         }
-        console.log("Final Response:", response.data.data);
+        let commentData = getPostOrder(response.data.data)
+        console.log("Final Response:", commentData);
+        return commentData
     } catch (error) {
-        logError("Lỗi tại Facebook.scanComment ", { input: { groupId, postId, uid, fbDtsg, cookie }, error })
+        console.log("Lỗi tại Facebook.scanComment ", error)
         if (
             error.message !=
             "TypeError: Cannot read properties of undefined (reading 'feedback')"
@@ -79,4 +81,61 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         return [];
     }
 };
+
+
+
+function convertData(rawComment) {
+    try {
+        let node = rawComment.node
+        // console.log("Node: ", node)
+        let id = node.legacy_fbid;
+        let author = {
+            id: node.author.id,
+            name: node.author.name,
+            gender: node.author.gender,
+            url: node.author.url
+        }
+        let level = node.feedback.display_comments?.comment_order
+        let rawChilds = node.feedback.display_comments?.edges
+        let childComments = []
+        let content = node.body.text
+        if (rawChilds) {
+            for (let rawChild of rawChilds) {
+                let childComment = convertData(rawChild)
+                console.log(`Child Comment of "${content}":\n`, childComment)
+                childComments.push(childComment)
+            }
+        }
+        let total_child = node.feedback.comment_count?.total_count
+        // console.log('Node author:', author);
+        // console.log('Node child count:', rawChilds ? rawChilds.length : -1);
+        // console.log('Node total child:', total_child);
+        // console.log('Node content:', content);
+        return {
+            fb_id: id,
+            author,
+            level,
+            childs: childComments,
+            content,
+            total_child
+
+        }
+    } catch (error) {
+        console.error("Get comment Fail: ", error)
+        return {
+        }
+
+    }
+}
+
+function getPostOrder(postData) {
+    let rawComments = postData.feedback.display_comments.edges;
+    let orderList = []
+    for (let rawComment of rawComments) {
+        // console.log("Raw comment: ",rawComment)
+        let comment = convertData(rawComment)
+        orderList.push(comment)
+    }
+    return orderList
+}
 module.exports = { scanPostComment }

@@ -31,14 +31,16 @@
             Tự động comment sau:<span id="autoComment"></span><br>
             Tự động Tạo đơn:<span id="autoCreateOrder"></span><br>
             Tự động Reply:<span id="autoReply"></span><br>
-            Tự động comment sau:<span id="scanDuration"></span><br>
+            Tự động quét comment sau:<span id="scanDuration"></span><br>
         </div>
-        <button type="button" onclick="uploadPost()">Đăng Bài</button>
+        <!-- <button type="button" onclick="uploadPost()">Đăng Bài</button> -->
     </div>
+    <div id="commentList">
 
+    </div>
     <script>
         var IntervalList = []
-
+        var selectedPost = null
         async function addCookie() {
             let cookie = document.getElementById('cookie').value;
             axios({
@@ -69,6 +71,7 @@
                     return
                 }
                 let postData = data.data.data[0]
+                selectedPost = postData
                 console.log("Init Post Data: ", postData);
                 document.getElementById('groupList').value = postData.group.name
                 document.getElementById('content').value = postData.content
@@ -81,13 +84,55 @@
                 document.getElementById('autoReply').innerHTML = postData.config.autoReply
                 document.getElementById('autoCreateOrder').innerHTML = postData.config.autoCreateOrder
                 document.getElementById('scanDuration').innerHTML = postData.config.scanDuration
+                await scanComment()
+                autoScanComment(postData.config.scanDuration)
             }).catch(error => {
                 console.error("Init Cookie Fail: ", error)
 
             })
         }
 
+        function autoScanComment(delay) {
+            let scanJob = setInterval(() => {
+                console.log("Chuẩn bị quét comment")
+                scanComment()
+            }, delay * 1000)
+            IntervalList.push(scanJob)
+        }
 
+        function scanComment() {
+            axios({
+                url: '/comment/scan-comment',
+                method: 'POST',
+                data: {
+                    postId: selectedPost._id
+                }
+            }).then(() => {
+                let commentList = axios({
+                    url: `/comment/get-comment?post_id=${selectedPost._id}`,
+                    method: 'GET',
+                }).then(data => {
+                    renderComment(data)
+                })
+            })
+        }
+
+
+        function renderComment(data) {
+            if (data.data.data != null) {
+                document.getElementById('commentList').innerHTML = ""
+                let commentList = data.data.data
+                for (const comment of commentList) {
+                    document.getElementById('commentList').innerHTML += `
+                             <div class="${comment.parentId ? "comment-2" : "comment"}">
+                                <a href="https://facebook.com/${comment.author.fb_id}" target="_blank">${comment.author.name}</a><br>
+                                <a  href="https://facebook.com/${comment.fb_id}" target="_blank"> Chi tiết comment</a>
+                                <p>${comment.content}</p>
+                            </div>
+                            `
+                }
+            }
+        }
 
         function handleAttachment(attachments) {
             document.getElementById('attachments').innerHTML = "";
@@ -154,6 +199,27 @@
         }
         initPost()
     </script>
+    <style>
+        .comment {
+            padding: 0px 10px;
+            background-color: pink;
+            margin-bottom: 10px
+        }
+
+        .comment .p {
+            margin: 0;
+        }
+
+        .comment-2 {
+            padding: 0px 20px;
+            background-color: lightpink;
+            margin-bottom: 5px
+        }
+
+        .comment-2 .p {
+            margin: 0;
+        }
+    </style>
 </body>
 
 </html>
