@@ -18,7 +18,7 @@ const UserController = {
           { username: user.username, password: user.password, type: user.type },
           process.env.SECRET_KEY
         );
-        res.cookie("token", token, { maxAge: 900000, httpOnly: true });
+        res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
         return res.json({ data: account[0], message: "Login success" });
       } else {
         logWarn("Login fail", { username: username, password: password });
@@ -181,7 +181,7 @@ const UserController = {
     let fbData = user.facebook
     if (fbData.cookie?.status == 1) {
       let groupList = await FacebookService.getGroupList(fbData.token)
-      console.log("Facebook Group = ", groupList);
+      // console.log("Facebook Group = ", groupList);
       return res.json({ data: groupList, message: 'Lấy Group Facebook Thành Công' })
     } else {
       return res.json({ data: null, message: 'Cookie Quá Hạn' })

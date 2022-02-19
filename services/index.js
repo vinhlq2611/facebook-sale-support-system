@@ -4,6 +4,7 @@ const FacebookService = require("./facebook");
 const PostService = require("./service_post");
 const UserService = require("./service_users");
 const ProductService = require("./service_product");
+const CommentService = require("./service_comment");
 
 module.exports = {
   AccountService,
@@ -11,5 +12,6 @@ module.exports = {
   FacebookService,
   PostService,
   UserService,
-  ProductService
+  ProductService,
+  CommentService
 };

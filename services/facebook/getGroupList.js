@@ -10,7 +10,6 @@ const getGroupList = async (token) => {
         responseData.data.data.map(group => {
             groupList.push({ name: group.name, groupId: group.id })
         })
-        console.log("GET GROUP LIST RESPONSE: ", groupList)
         return groupList
     } catch (error) {
         logError("Lỗi tại Facebook.listGroup ", { input: { token }, error })
