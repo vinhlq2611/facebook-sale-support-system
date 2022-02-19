@@ -21,13 +21,13 @@ const PostController = {
             if (!username || !content || !groupId || !product) {
                 return res.json({ data: null, message: "Lack of information" })
             }
-            let createdPost = await PostService.create({ username, content, attachment: attachments, groupId })
+            let createdPost = await PostService.create({ username, content, attachment: attachments, groupId, products: product })
             let [UserData] = await UserService.find({ username });
             let fbData = await UserData.facebook
             let UploadData = await FacebookService.uploadPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, groupId)
-
             if (UploadData.data != null) {
-                await PostService.updateOne({ _id: createdPost.id }, { fb_id: UploadData.postId, fb_url: UploadData.url })
+                console.log("Facebook Post Upload Response: ", { UploadData })
+                await PostService.updateOne({ _id: createdPost.id }, { fb_id: UploadData.data.postId, fb_url: UploadData.data.url })
                 return res.json({ data: UploadData.data, message: "Create post success" })
             }
             else return res.json({
