@@ -22,6 +22,7 @@
         </button>
     </div>
     <div id="upload-form">
+        <a id="facebook-link" href="#" target="_blank">Chi tiết bài đăng</a><br>
         Group Được chọn: <input type="text" id="groupList"></input><br>
         Nội dung:<br><textarea id="content"></textarea><br>
         Ảnh Đính Kèm: <div id="attachments"></div>
@@ -73,6 +74,7 @@
                 let postData = data.data.data[0]
                 selectedPost = postData
                 console.log("Init Post Data: ", postData);
+                document.getElementById('facebook-link').href = postData.fb_url
                 document.getElementById('groupList').value = postData.group.name
                 document.getElementById('content').value = postData.content
                 //  RENDER ẢNH 
@@ -125,12 +127,28 @@
                 for (const comment of commentList) {
                     document.getElementById('commentList').innerHTML += `
                              <div class="${comment.parentId ? "comment-2" : "comment"}">
+                                <p> Địa chỉ: ${comment.data.address ? comment.data.address : 'Không xác định được'}</p>
+                                <p> SĐT: ${comment.data.phone ? comment.data.phone : 'Không xác định được'}</p>
+                                <p>Sản Phẩm: ${renderCommentProduct(comment.data.products)}</p>
                                 <a href="https://facebook.com/${comment.author.fb_id}" target="_blank">${comment.author.name}</a><br>
                                 <a  href="https://facebook.com/${comment.fb_id}" target="_blank"> Chi tiết comment</a>
                                 <p>${comment.content}</p>
                             </div>
                             `
                 }
+            }
+        }
+
+        function renderCommentProduct(products) {
+            if (!products) return "Không xác định được"
+            else {
+                let result = ""
+                for (let product of products) {
+                    result += `
+                    <span class="chip"> ${product.evidence} => ${product.product.title} * ${product.quantity} </span>
+                    `
+                }
+                return result
             }
         }
 
@@ -152,9 +170,9 @@
         function handleProduct(products) {
             document.getElementById('products').innerHTML = "";
             if (products.length > 0) {
-                for (const attachment of products) {
+                for (const prd of products) {
                     document.getElementById('products').innerHTML +=
-                        `<p> ${attachment}</p> `
+                        `${prd.title} - ${prd.price} - [${prd.keyword} ]<br>`
                 }
             } else {
                 document.getElementById('products').innerHTML += `
@@ -218,6 +236,14 @@
 
         .comment-2 .p {
             margin: 0;
+        }
+
+        .chip {
+            color: white;
+            font-weight: 600;
+            background-color: red;
+            padding: 5px;
+            margin: 0px 5px
         }
     </style>
 </body>
