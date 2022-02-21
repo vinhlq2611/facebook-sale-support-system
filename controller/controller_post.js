@@ -1,4 +1,4 @@
-const { PostService, UserService, FacebookService } = require('../services')
+const { PostService, UserService, FacebookService, ProductService } = require('../services')
 const { logError, logWarn } = require('../utils/index')
 const { uploadFile } = require('../middleware/upload');
 const { Console } = require('winston/lib/winston/transports');
@@ -14,15 +14,14 @@ const PostController = {
             let content = req.body.content;
             let attachments = req.body.attachments;
             let group = req.body.group;
-
-            let product = req.body.product;
+            let products = req.body.products;
             let shipCost = req.body.shipCost ? req.body.shipCost : 3000;
             console.log(req.body)
             // CHECK EMPTY INPUT
-            if (!username || !content || !group.groupId || !product) {
-                return res.json({ data: null, message: "Lack of information" })
+            if (!username || !content || !group.groupId || !products) {
+                return res.json({ data: null, message: "Chưa đủ thông tin" })
             }
-
+            let product = await ProductService.find({ _id: { $in: products } })
             let [UserData] = await UserService.find({ username });
             let fbData = await UserData.facebook
             console.log("User Facebook Data: ", fbData)
@@ -67,7 +66,7 @@ const PostController = {
                     post.attachment[j] = imageData.name.split(splitOn).join("/");
                 }
             }
-            console.log('Post Found Data: ', selectedPostList)
+            // console.log('Post Found Data: ', selectedPostList)
 
             return res.json({ data: selectedPostList, message: "Tìm bài viết thành công" })
         } catch (error) {

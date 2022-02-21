@@ -68,7 +68,7 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
             console.log("Error: ", error);
         }
         let commentData = getPostOrder(response.data.data)
-        console.log("Final Response:", commentData);
+        // console.log("Final Response:", commentData);
         return commentData
     } catch (error) {
         console.log("Lỗi tại Facebook.scanComment ", error)

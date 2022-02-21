@@ -25,7 +25,7 @@
         Chọn Group: <select id="groupList"></select><br>
         Nội dung:<br><textarea id="content"></textarea><br>
         Ảnh Đính Kèm: <input type="file" id="attachments" name="images" multiple><br><br>
-        Sản phẩm: <select id="products"></select><br>
+        Sản phẩm: <div id="products"></div><br>
         <img
             src="https://www.googleapis.com/storage/v1/b/facebook-sale-support-system.appspot.com/o/1644736157684--avt_MaiUyen.jpg">
         <button type="button" onclick="uploadPost()">Đăng Bài</button>
@@ -81,18 +81,25 @@
                     document.getElementById('groupList').innerHTML += `<option value="${group.groupId}">${group.name}</option>`
                     groupList.push(group)
                 })
-                dumpProduct()
+                initProduct()
             }).catch(error => {
                 console.log("Lấy danh sách group thất bại", error)
             })
         }
-        function dumpProduct() {
-            let products = [{ name: "Cơm rang", price: 30000, id: 1 }, { name: "Cơm rang", price: 30000, id: 2 }, { name: "Cơm rang", price: 30000, id: 3 }, { name: "Cơm rang", price: 30000, id: 4 }
-            ]
-            document.getElementById('products').innerHTML = ''
-            products.map(product => {
-                document.getElementById('products').innerHTML += `<option value="${product.id}">${product.name} - ${product.price}</option>`
+        async function initProduct() {
+            let result = await axios({
+                method: 'GET',
+                url: '/product/get'
             })
+            let data = result.data.data
+            document.getElementById('products').innerHTML = ''
+            for (const prd of data) {
+                document.getElementById('products').innerHTML +=
+                    `<input class="item-product" type="checkbox" value="${prd._id}" /> Thêm ${prd.title} với giá ${prd.price}đ <br>`
+            }
+            if (data.length == 0) {
+                document.getElementById('products').innerHTML += `<p> Không tìm thấy sản phẩm nào </p>`
+            }
 
         }
 
@@ -102,10 +109,13 @@
             console.log(selectedGroup)
             let content = document.getElementById('content').value;
             let attachments = document.getElementById('attachments').value;
-            let product = document.getElementById('products').value
-            console.log(groupId)
-            console.log(content)
-            console.log(product)
+            let productList = document.getElementsByClassName('item-product')
+            let products = []
+            for (let dom of productList) {
+                if (dom.checked) {
+                    products.push(dom.value)
+                }
+            }
             let attachmentList = await uploadAttachments();
             let result = await axios({
                 method: 'POST',
@@ -113,7 +123,7 @@
                 data: {
                     content,
                     group: selectedGroup,
-                    product,
+                    products,
                     attachments: attachmentList,
                 }
             })
