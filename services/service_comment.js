@@ -130,39 +130,57 @@ function analyzeComment(comment, products) {
 //Xác định địa chỉ 
 function getAddress(content, endOfProducts, startOfPhone, endOfPhone) {
     //Case1: sản phẩm - địa chỉ - sđt
-    let isAddress = false;
-    let addressKey = ['trọ', 'nhà', 'phòng', 'cửa hàng', 'nhà hàng', 'sảnh', 'quán']
-    let addressStr = content.substring(endOfProducts, startOfPhone)
-    for (const key of addressKey) {
-        if (addressStr.indexOf(key) > -1) {
-            isAddress = true;
+    try {
+        let isAddress = false;
+        let addressKey = ['trọ', 'nhà', 'phòng', 'cửa hàng', 'nhà hàng', 'sảnh', 'quán', 'công ty']
+        let addressStr = content.substring(endOfProducts, startOfPhone)
+        for (const key of addressKey) {
+            if (addressStr.indexOf(key) > -1) {
+                isAddress = true;
+            }
         }
-    }
-    // Case2: sản phẩm - sđt - địa chỉ
-    if (!isAddress)
-        addressStr = content.substring(endOfPhone, content.length - 1)
-    for (const key of addressKey) {
-        if (addressStr.indexOf(key) > -1) {
-            isAddress = true;
+        // Case2: sản phẩm - sđt - địa chỉ
+        if (!isAddress)
+            addressStr = content.substring(endOfPhone, content.length)
+        for (const key of addressKey) {
+            if (addressStr.indexOf(key) > -1) {
+                isAddress = true;
+            }
         }
-    }
-    return {
-        isAddress,
-        addressStr
+        return {
+            isAddress,
+            addressStr
+        }
+    } catch (error) {
+        console.log("Không thể xác định địa chỉ của: ", content, error)
+        return {
+            isAddress: null,
+            addressStr: null
+        }
     }
 }
 
 function getPhoneNumber(content) {
-    let phoneRegex = /(84|0[1-9])+([0-9]{8})\b/g
-    let startOfPhone = -1, endOfPhone = -1;
-    let phoneNumber = null
-    if (content.indexOf(phoneRegex) > -1) {
-        phoneNumber = content.match(phoneRegex)
-        startOfPhone = content.indexOf(phoneRegex);
-        endOfPhone = startOfPhone + 9;
-    }
-    return {
-        phoneNumber, startOfPhone, endOfPhone
+    try {
+        let phoneRegex = /(84|0|[1-9])+([0-9]{8})\b/g
+        let startOfPhone = -1, endOfPhone = -1;
+        let phoneNumber = null
+        let havePhone = content.match(phoneRegex)
+        if (havePhone.length > 0) {
+            console.log("Số điện thoại:", havePhone)
+            phoneNumber = havePhone[0]
+            startOfPhone = content.indexOf(phoneNumber);
+            endOfPhone = startOfPhone + 9;
+
+        }
+        return {
+            phoneNumber, startOfPhone, endOfPhone
+        }
+    } catch (error) {
+        console.log("Không thể lấy số điện thoại của:", comment, error)
+        return {
+            phoneNumber: null, startOfPhone: -1, endOfPhone: -1
+        }
     }
 }
 
@@ -201,7 +219,7 @@ function getProduct(content, products) {
             }
         }
     } catch (error) {
-        console.log("Phân tích sản phẩm thất bại:", error)
+        console.log("Phân tích sản phẩm thất bại:", error, comment)
     }
     return {
         selectedProduct, endOfProducts
