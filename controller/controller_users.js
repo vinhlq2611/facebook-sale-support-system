@@ -47,17 +47,17 @@ const UserController = {
         !rePassword ||
         !email ||
         !phone ||
-        !birthday||!fullname||!type
+        !birthday||!type
       ) {
-         console.log("Invalid information", {
-          username,
-          password,
-          rePassword,
-          email,
-          phone,
-          type,
-          fullname,
-        });
+        //  console.log("Invalid information", {
+        //   username,
+        //   password,
+        //   rePassword,
+        //   email,
+        //   phone,
+        //   type,
+        //   fullname,
+        // });
         return res.json({ data: null, message: "Invalid information" });
       }else if (password.length<6) {
         logWarn("Password must be at least 6 characters", {
@@ -182,7 +182,7 @@ const UserController = {
       );
       return res.json({ data: result, message: "Update Success" });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       logError("Register Error", error);
       return res.json({ data: error, message: "Update Error" });
     }
