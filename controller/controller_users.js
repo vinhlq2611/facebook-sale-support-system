@@ -1,5 +1,5 @@
 const { UserService, FacebookService } = require("../services");
-const { logError, logWarn } = require("../utils/index");
+const { logError, logWarn,isVietnamesePhoneNumber } = require("../utils/index");
 const jwt = require("jsonwebtoken");
 const UserController = {
   async login(req, res) {
@@ -31,39 +31,67 @@ const UserController = {
   },
   async register(req, res) {
     try {
+      let fullname = req.body.fullname
       let username = req.body.username;
       let password = req.body.password;
       let rePassword = req.body.rePassword;
       let email = req.body.email;
       let phone = req.body.phone;
       let birthday = req.body.birthday;
+      let type = req.body.type;
       // CHECK EMPTY INPUT  ""
       if (
+        !fullname||
         !username ||
         !password ||
         !rePassword ||
         !email ||
         !phone ||
-        !birthday
+        !birthday||!fullname||!type
       ) {
-        //  console.log("Invalid information", {
-        //   username,
-        //   password,
-        //   rePassword,
-        //   email,
-        //   phone,
-        // });
-        return res.json({ data: null, message: "Invalid information" });
-      }
-      // CHECK PASSWORD & REPASSWORD
-      else if (password != rePassword) {
-        logWarn("Password not match", {
+         console.log("Invalid information", {
           username,
           password,
           rePassword,
           email,
           phone,
-          birthdate: birthday,
+          type,
+          fullname,
+        });
+        return res.json({ data: null, message: "Invalid information" });
+      }else if (password.length<6) {
+        logWarn("Password must be at least 6 characters", {
+          fullname,
+          username,
+          password,
+          rePassword,
+          email,
+          phone,
+          birthdate: birthday,type
+        });
+        return res.json({ data: null, message: "Password must be at least 6 characters" });
+      }else if (!isVietnamesePhoneNumber(phone)) {
+        logWarn("Phone number must be valid in Vietnam", {
+          fullname,
+          username,
+          password,
+          rePassword,
+          email,
+          phone,
+          birthdate: birthday,type
+        });
+        return res.json({ data: null, message: "Phone number must be valid in Vietnam" });
+      }
+      // CHECK PASSWORD & REPASSWORD
+      else if (password != rePassword) {
+        logWarn("Password not match", {
+          fullname,
+          username,
+          password,
+          rePassword,
+          email,
+          phone,
+          birthdate: birthday,type
         });
         return res.json({ data: null, message: "Password not match" });
       }
@@ -72,22 +100,24 @@ const UserController = {
       // console.log("Account Found: ", account);
       if (account.length != 0) {
         logWarn("Account Is Existed", {
+          fullname,
           username,
           password,
           rePassword,
           email,
           phone,
-          birthdate: birthday,
+          birthdate: birthday,type
         });
         return res.json({ data: null, message: "Account Is Existed" });
       }
       //
       let result = await UserService.create({
+        fullname,
         username,
         password,
         email,
         phone,
-        birthdate: birthday,
+        birthdate: birthday,type
       });
       return res.json({ data: result, message: "Register Success" });
     } catch (error) {
@@ -117,30 +147,42 @@ const UserController = {
   async updateProfile(req, res) {
     try {
       let username = req.body.username;
+      let fullname = req.body.fullname;
       let email = req.body.email;
       let phone = req.body.phone;
       let birthdate = req.body.birthdate;
       let replySyntaxs = req.body.replySyntaxs;
-      // console.log(username, email, phone, birthdate);
+      console.log(username, email, phone, birthdate,fullname);
       // CHECK EMPTY INPUT  ""
-      if (!username || !email || !phone || !birthdate || !replySyntaxs) {
+      if (!username || !email || !phone || !birthdate || !replySyntaxs||!fullname) {
         logWarn("Invalid information", {
           username,
           email,
           phone,
           birthdate,
           replySyntaxs,
+          fullname
         });
 
         return res.json({ data: null, message: "Invalid information" });
+      }else if (!isVietnamesePhoneNumber(phone)) {
+        logWarn("Phone number must be valid in Vietnam", {
+          fullname,
+          username,
+          email,
+          phone,
+          birthdate
+        });
+        return res.json({ data: null, message: "Phone number must be valid in Vietnam" });
       }
 
       let result = await UserService.updateOne(
         { username: username },
-        { username, email, phone, birthdate, replySyntaxs }
+        { username, email, phone, birthdate, replySyntaxs,fullname }
       );
       return res.json({ data: result, message: "Update Success" });
     } catch (error) {
+      console.error(error);
       logError("Register Error", error);
       return res.json({ data: error, message: "Update Error" });
     }
