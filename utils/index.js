@@ -24,6 +24,9 @@ const parseData = async (dataObject) => {
     }
     return data;
 };
+function isVietnamesePhoneNumber(number) {
+    return /(84|0[3|5|7|8|9])+([0-9]{8})\b/g.test(number);
+  }
 function btoa(data) {
     return Buffer.from(data).toString('base64')
 };
@@ -68,5 +71,5 @@ function genKeyWord(productName){
 }
 
 module.exports = {
-    logError, logWarn, parseData, btoa, atob, genKeyWord
+    logError, logWarn, parseData, btoa, atob, genKeyWord,isVietnamesePhoneNumber
 }
