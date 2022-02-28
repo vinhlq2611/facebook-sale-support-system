@@ -3,5 +3,6 @@ const PostRouter = require("./router_post");
 const UserRouter = require("./router_users");
 const ProductRouter = require("./router_product");
 const CommentRouter = require("./router_comment");
-const mergeRouter = [...UserRouter, ...PostRouter, ...ProductRouter, ...CommentRouter];
+const OrdertRouter =  require("./router_order")
+const mergeRouter = [...UserRouter, ...PostRouter, ...ProductRouter, ...CommentRouter, ...OrdertRouter];
 module.exports = mergeRouter;

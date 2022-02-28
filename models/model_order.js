@@ -3,7 +3,7 @@ var mongoose = require("../config/dbConnect");
 var Schema = mongoose.Schema; //Gom cac title vao
 var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     // table gom cac thuoc tinh sau:
-    rawComment: String,
+    comment_id: String,
     shopkeeper:String,
     status: {
         type: String,
@@ -12,7 +12,12 @@ var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     product: {
         type: Array
     },
-    shipper: String,
+    shipper: {
+        type: Array,
+        default: {
+            name : 'Un-assign'
+        }
+    },
     customerName: String,
     address: String,
     phone: String,
@@ -24,7 +29,8 @@ var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     updateAt: {
         type: Number,
         default: Date.now()
-    }
+    },
+    postId: String
 });
 //Model: tuong tac khi thuc hien lenh
 var OrderModel = mongoose.model("order", orderSchema); //Ten cua table = AccountModel

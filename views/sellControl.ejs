@@ -39,9 +39,13 @@
     <div id="commentList">
 
     </div>
+    <div id="orderList">
+
+    </div>
     <script>
         var IntervalList = []
         var selectedPost = null
+        let listOrder = null
         async function addCookie() {
             let cookie = document.getElementById('cookie').value;
             axios({
@@ -74,6 +78,7 @@
                 let postData = data.data.data[0]
                 selectedPost = postData
                 console.log("Init Post Data: ", postData);
+                // this.postIdOverall = postData._id
                 document.getElementById('facebook-link').href = postData.fb_url
                 document.getElementById('groupList').value = postData.group.name
                 document.getElementById('content').value = postData.content
@@ -92,6 +97,49 @@
                 console.error("Init Cookie Fail: ", error)
 
             })
+        }
+        async function createOrder(data) {
+            let orderData = {}
+            for (let i = 0; i < listOrder.length; i++) {
+                if (listOrder[i].fb_id == data) {
+                    orderData.comment_id = listOrder[i].fb_id,
+                        orderData.product = listOrder[i].data.products,
+                        orderData.customerName = listOrder[i].author.name,
+                        orderData.address = listOrder[i].data.address,
+                        orderData.phone = listOrder[i].data.phone,
+                        orderData.customerId = listOrder[i].author.id,
+                        orderData.postId = listOrder[i].post_id
+                }
+            }
+            console.log(orderData);
+            let result = await axios({
+                method: 'POST',
+                url: '/order/create',
+                data: orderData
+            })
+            if (result.data.data == null)
+                alert(result.data.message)
+        }
+
+        async function getAllOrder() {
+            let postId = window.location.href.split('/')[window.location.href.split('/').length-1]
+            let result = await axios({
+                method: 'GET',
+                url: '/order/get-order?id=' + postId,
+            })
+            let data = result.data.data
+            console.log(data);
+            for (const order of data) {
+                document.getElementById('orderList').innerHTML +=
+                    ` address ${order.address} - comment_id ${order.comment_id} - customerId ${order.customerId} - customerName ${order.customerName} - phone ${order.phone} - postId ${order.postId} - status ${order.status} - <button onclick="">update</button>- <button onclick="">change status</button><br>
+                    <div id="${order.comment_id}"></div>`
+                for (const product of order.product) {
+                    let id = order.comment_id
+                    document.getElementById(id).innerHTML +=
+                        ` title ${product.product.title} - price ${product.product.price} - keyword [${product.product.keyword}]`
+                }
+            }
+            alert(result.data.message)
         }
 
         function autoScanComment(delay) {
@@ -115,6 +163,7 @@
                     method: 'GET',
                 }).then(data => {
                     renderComment(data)
+                    listOrder = data.data.data;
                 })
             })
         }
@@ -124,20 +173,22 @@
             if (data.data.data != null) {
                 document.getElementById('commentList').innerHTML = ""
                 let commentList = data.data.data
-                for (const comment of commentList) {
+                for (let i = 0; i < commentList.length; i++) {
                     document.getElementById('commentList').innerHTML += `
-                             <div class="${comment.parentId ? "comment-2" : "comment"}">
-                                <p> Địa chỉ: ${comment.data.address ? comment.data.address : 'Không xác định được'}</p>
-                                <p> SĐT: ${comment.data.phone ? comment.data.phone : 'Không xác định được'}</p>
-                                <p>Sản Phẩm: ${renderCommentProduct(comment.data.products)}</p>
-                                <a href="https://facebook.com/${comment.author.fb_id}" target="_blank">${comment.author.name}</a><br>
-                                <a  href="https://facebook.com/${comment.fb_id}" target="_blank"> Chi tiết comment</a>
-                                <p>${comment.content}</p>
+                             <div class="${commentList[i].parentId ? "comment-2" : "comment"} ${commentList[i].fb_id}">
+                                <p> Địa chỉ: ${commentList[i].data.address ? commentList[i].data.address : 'Không xác định được'}</p>
+                                <p> SĐT: ${commentList[i].data.phone ? commentList[i].data.phone : 'Không xác định được'}</p>
+                                <p>Sản Phẩm: ${renderCommentProduct(commentList[i].data.products)}</p>
+                                <a href="https://facebook.com/${commentList[i].author.fb_id}" target="_blank">${commentList[i].author.name}</a><br>
+                                <a  href="https://facebook.com/${commentList[i].fb_id}" target="_blank"> Chi tiết comment</a>
+                                <p>${commentList[i].content}</p>
+                                <button onclick="createOrder(${commentList[i].fb_id})">Create Order</button>
                             </div>
                             `
                 }
             }
         }
+
 
         function renderCommentProduct(products) {
             if (!products) return "Không xác định được"
@@ -151,6 +202,7 @@
                 return result
             }
         }
+
 
         function handleAttachment(attachments) {
             document.getElementById('attachments').innerHTML = "";
@@ -215,7 +267,9 @@
                 window.location.href = '/test/sell-control'
             }
         }
+
         initPost()
+        getAllOrder()
     </script>
     <style>
         .comment {
