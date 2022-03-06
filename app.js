@@ -8,6 +8,7 @@ var multer = require('multer');
 var Routers = require('./routes/index');
 var AttachmentModel = require('./models/model_attachment')
 const { uploadImage } = require('./middleware/upload')
+var cors = require('cors')
 var app = express();
 const { needGuest, needLogin } = require('./middleware/auth')
 app.use(logger('dev'));
@@ -16,6 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')))
+app.use(cors())
 // SET UP GIAO DIỆN MOCKUP ĐỂ TEST
 app.set("view engine", "ejs");
 app.set("views", "./views");
