@@ -10,7 +10,7 @@ async function needLogin(req, res, next) {
       password: decodeData.password,
     });
     req.body.username = decodeData.username;
-    req.body.role = decodeData.role;
+    req.body.type = decodeData.type;
     if (isValid.length == 1) {
       next();
     } else res.redirect("/test/login");

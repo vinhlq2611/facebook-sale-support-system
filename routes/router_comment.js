@@ -8,6 +8,12 @@ module.exports = [
         action: CommentController.scanComment
     },
     {
+        method: 'post',
+        route: '/comment/reply-comment',
+        middleware: [AuthMiddleware.needLogin],
+        action: CommentController.replyComment
+    },
+    {
         method: 'get',
         route: '/comment/get-comment',
         middleware: [AuthMiddleware.needLogin],

@@ -1,5 +1,5 @@
 const { UserService, FacebookService } = require("../services");
-const { logError, logWarn,isVietnamesePhoneNumber } = require("../utils/index");
+const { logError, logWarn, isVietnamesePhoneNumber } = require("../utils/index");
 const jwt = require("jsonwebtoken");
 const UserController = {
   async login(req, res) {
@@ -41,13 +41,13 @@ const UserController = {
       let type = req.body.type;
       // CHECK EMPTY INPUT  ""
       if (
-        !fullname||
+        !fullname ||
         !username ||
         !password ||
         !rePassword ||
         !email ||
         !phone ||
-        !birthday||!type
+        !birthday || !type
       ) {
         //  console.log("Invalid information", {
         //   username,
@@ -59,7 +59,7 @@ const UserController = {
         //   fullname,
         // });
         return res.json({ data: null, message: "Invalid information" });
-      }else if (password.length<6) {
+      } else if (password.length < 6) {
         logWarn("Password must be at least 6 characters", {
           fullname,
           username,
@@ -67,10 +67,10 @@ const UserController = {
           rePassword,
           email,
           phone,
-          birthdate: birthday,type
+          birthdate: birthday, type
         });
         return res.json({ data: null, message: "Password must be at least 6 characters" });
-      }else if (!isVietnamesePhoneNumber(phone)) {
+      } else if (!isVietnamesePhoneNumber(phone)) {
         logWarn("Phone number must be valid in Vietnam", {
           fullname,
           username,
@@ -78,7 +78,7 @@ const UserController = {
           rePassword,
           email,
           phone,
-          birthdate: birthday,type
+          birthdate: birthday, type
         });
         return res.json({ data: null, message: "Phone number must be valid in Vietnam" });
       }
@@ -91,7 +91,7 @@ const UserController = {
           rePassword,
           email,
           phone,
-          birthdate: birthday,type
+          birthdate: birthday, type
         });
         return res.json({ data: null, message: "Password not match" });
       }
@@ -106,7 +106,7 @@ const UserController = {
           rePassword,
           email,
           phone,
-          birthdate: birthday,type
+          birthdate: birthday, type
         });
         return res.json({ data: null, message: "Account Is Existed" });
       }
@@ -117,7 +117,7 @@ const UserController = {
         password,
         email,
         phone,
-        birthdate: birthday,type
+        birthdate: birthday, type
       });
       return res.json({ data: result, message: "Register Success" });
     } catch (error) {
@@ -152,9 +152,9 @@ const UserController = {
       let phone = req.body.phone;
       let birthdate = req.body.birthdate;
       let replySyntaxs = req.body.replySyntaxs;
-      console.log(username, email, phone, birthdate,fullname);
+      console.log(username, email, phone, birthdate, fullname);
       // CHECK EMPTY INPUT  ""
-      if (!username || !email || !phone || !birthdate || !replySyntaxs||!fullname) {
+      if (!username || !email || !phone || !birthdate || !replySyntaxs || !fullname) {
         logWarn("Invalid information", {
           username,
           email,
@@ -165,7 +165,7 @@ const UserController = {
         });
 
         return res.json({ data: null, message: "Invalid information" });
-      }else if (!isVietnamesePhoneNumber(phone)) {
+      } else if (!isVietnamesePhoneNumber(phone)) {
         logWarn("Phone number must be valid in Vietnam", {
           fullname,
           username,
@@ -178,7 +178,7 @@ const UserController = {
 
       let result = await UserService.updateOne(
         { username: username },
-        { username, email, phone, birthdate, replySyntaxs,fullname }
+        { username, email, phone, birthdate, replySyntaxs, fullname }
       );
       return res.json({ data: result, message: "Update Success" });
     } catch (error) {
@@ -189,12 +189,16 @@ const UserController = {
   },
   async addCookie(req, res) {
     let fbCookie = req.body.fbCookie;
+    let fbToken = req.body.fbToken;
     if (fbCookie == undefined || fbCookie == null || fbCookie == "") {
       return res.json({ data: null, message: "Cookie không được bỏ trống" })
     }
+    if (fbToken == undefined || fbToken == null || fbToken == "") {
+      return res.json({ data: null, message: "Token không được bỏ trống" })
+    }
     let username = req.body.username;
     let [user] = await UserService.find({ username });
-    let facebookData = await FacebookService.getUserInfo(fbCookie)
+    let facebookData = await FacebookService.getUserInfo(fbCookie, fbToken)
     if (facebookData.isSuccess == false) {
       return res.json({ data: null, message: "Cookie không hợp lệ" })
     }
