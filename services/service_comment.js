@@ -99,9 +99,15 @@ function analyzeComment(comment, products) {
         phone: null,
         address: null,
         products: null,
+        isCancelled: false,
     }
     try {
         let content = comment.content.toLowerCase();
+        // Xác định xem có phải hủy đơn không
+        if (content.indexOf(' hủy') > -1) {
+            data.isCancelled = true
+            return data
+        }
         // Xác định sản phẩm
         let productData = getProduct(content, products)
         console.log("Xác định sản phẩm: ", productData.selectedProduct.length)
@@ -133,9 +139,10 @@ function getAddress(content, endOfProducts, startOfPhone, endOfPhone) {
     try {
         let isAddress = false;
         let addressKey = ['trọ', 'nhà', 'phòng', 'cửa hàng', 'nhà hàng', 'sảnh', 'quán', 'công ty']
+        let domRegex = /([a-h])+([0-9]{3})+[r|l]\b/g
         let addressStr = content.substring(endOfProducts, startOfPhone)
         for (const key of addressKey) {
-            if (addressStr.indexOf(key) > -1) {
+            if (addressStr.indexOf(key) > -1 || addressStr.match(domRegex)) {
                 isAddress = true;
             }
         }
@@ -143,7 +150,7 @@ function getAddress(content, endOfProducts, startOfPhone, endOfPhone) {
         if (!isAddress)
             addressStr = content.substring(endOfPhone, content.length)
         for (const key of addressKey) {
-            if (addressStr.indexOf(key) > -1) {
+            if (addressStr.indexOf(key) > -1 || addressStr.match(domRegex)) {
                 isAddress = true;
             }
         }
@@ -177,7 +184,7 @@ function getPhoneNumber(content) {
             phoneNumber, startOfPhone, endOfPhone
         }
     } catch (error) {
-        console.log("Không thể lấy số điện thoại của:", comment, error)
+        console.log("Không thể lấy số điện thoại của:", content, error)
         return {
             phoneNumber: null, startOfPhone: -1, endOfPhone: -1
         }

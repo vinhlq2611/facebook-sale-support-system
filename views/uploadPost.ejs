@@ -17,6 +17,11 @@
         <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
             Lấy cookie facebook tại đây
         </a><br>
+        <input type="text" id="token" placeholder="Nhập Token Facebook của bạn"><br>
+        <a target="_blank"
+            href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
+            Lấy token facebook tại đây
+        </a><br>
         <button type="button" onclick="addCookie()">
             Submit
         </button>
@@ -35,10 +40,11 @@
         var groupList = [];
         async function addCookie() {
             let cookie = document.getElementById('cookie').value;
+            let token = document.getElementById('token').value;
             axios({
                 method: 'POST',
                 url: '/account/cookie',
-                data: { fbCookie: cookie }
+                data: { fbCookie: cookie, fbToken: token }
             }).then(data => {
                 if (data.data.data) {
                     document.getElementById('upload-form').style.display = 'block';
