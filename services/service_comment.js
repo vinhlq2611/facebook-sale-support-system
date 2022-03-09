@@ -86,7 +86,7 @@ async function addComment(postId, comment, parentId, products) {
         return
     } else {
         doc.data = analyzeComment(comment, products)
-        console.log("Dữ liệu cuối:", doc.data)
+        // console.log("Dữ liệu cuối:", doc.data)
         await CommentModel.create(doc)
         return
     }
@@ -110,7 +110,7 @@ function analyzeComment(comment, products) {
         }
         // Xác định sản phẩm
         let productData = getProduct(content, products)
-        console.log("Xác định sản phẩm: ", productData.selectedProduct.length)
+        // console.log("Xác định sản phẩm: ", productData.selectedProduct.length)
         //Xác định sđt
         let phoneData = getPhoneNumber(content)
         // Xác định địa chỉ
@@ -119,7 +119,7 @@ function analyzeComment(comment, products) {
         if (productData.selectedProduct.length > 0) {
 
             data.products = productData.selectedProduct
-            console.log("Thêm sản phẩm: ", data.products)
+            // console.log("Thêm sản phẩm: ", data.products)
         }
         if (phoneData.phoneNumber != null) {
             data.phone = phoneData.phoneNumber
@@ -128,7 +128,7 @@ function analyzeComment(comment, products) {
             data.address = addressData.addressStr
         }
     } catch (error) {
-        console.log("Phân tích comment thất bại, ", error)
+        // console.log("Phân tích comment thất bại, ", error)
     }
     return data
 }
@@ -159,7 +159,7 @@ function getAddress(content, endOfProducts, startOfPhone, endOfPhone) {
             addressStr
         }
     } catch (error) {
-        console.log("Không thể xác định địa chỉ của: ", content, error)
+        // console.log("Không thể xác định địa chỉ của: ", content, error)
         return {
             isAddress: null,
             addressStr: null
@@ -174,7 +174,7 @@ function getPhoneNumber(content) {
         let phoneNumber = null
         let havePhone = content.match(phoneRegex)
         if (havePhone.length > 0) {
-            console.log("Số điện thoại:", havePhone)
+            // console.log("Số điện thoại:", havePhone)
             phoneNumber = havePhone[0]
             startOfPhone = content.indexOf(phoneNumber);
             endOfPhone = startOfPhone + 9;
@@ -184,7 +184,7 @@ function getPhoneNumber(content) {
             phoneNumber, startOfPhone, endOfPhone
         }
     } catch (error) {
-        console.log("Không thể lấy số điện thoại của:", content, error)
+        // console.log("Không thể lấy số điện thoại của:", content, error)
         return {
             phoneNumber: null, startOfPhone: -1, endOfPhone: -1
         }

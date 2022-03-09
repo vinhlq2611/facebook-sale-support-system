@@ -72,12 +72,12 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         return commentData
     } catch (error) {
         console.log("Lỗi tại Facebook.scanComment ", error)
-        if (
-            error.message !=
-            "TypeError: Cannot read properties of undefined (reading 'feedback')"
-        ) {
-            console.error("Response Data: ", response.data.data);
-        }
+        // if (
+        //     error.message !=
+        //     "TypeError: Cannot read properties of undefined (reading 'feedback')"
+        // ) {
+        //     console.error("Response Data: ", response.data.data);
+        // }
         return [];
     }
 };
@@ -102,7 +102,7 @@ function convertData(rawComment) {
         if (rawChilds) {
             for (let rawChild of rawChilds) {
                 let childComment = convertData(rawChild)
-                console.log(`Child Comment of "${content}":\n`, childComment)
+                // console.log(`Child Comment of "${content}":\n`, childComment)
                 childComments.push(childComment)
             }
         }
