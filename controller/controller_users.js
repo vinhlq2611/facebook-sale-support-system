@@ -19,7 +19,7 @@ const UserController = {
           process.env.SECRET_KEY
         );
         res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
-        return res.json({ data: account[0], message: "Login success" });
+        return res.json({ data: { ...account[0], token }, message: "Login success" });
       } else {
         logWarn("Login fail", { username: username, password: password });
         return res.json({ data: null, message: "Account not found" });
