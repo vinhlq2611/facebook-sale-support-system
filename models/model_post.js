@@ -12,7 +12,7 @@ var PostModel = mongoose.model("post", new mongoose.Schema({
     group: Object,
     status: {
         type: Number,
-        default: 0,
+        default: 1,
     },
     order: {
         type: Array,

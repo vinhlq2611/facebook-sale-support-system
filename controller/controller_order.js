@@ -19,6 +19,10 @@ const OrderController = {
             if (!shopkeeper) {
                 return res.json({ data: null, message: "No user authen" })
             }
+            let isExist = await OrderService.find({ comment_id: comment_id })
+            if (isExist.length > 0) {
+                return res.json({ data: null, message: "Order Đã tồn tại" })
+            }
             let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId })
             return res.json({ data: result, message: "Create Order success" })
         } catch (error) {
@@ -31,7 +35,7 @@ const OrderController = {
             let condition = {};
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
-            }else{
+            } else {
                 return res.json({ data: null, message: "No user authen" })
             }
             if (req.query.id) {

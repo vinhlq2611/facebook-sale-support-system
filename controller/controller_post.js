@@ -53,7 +53,7 @@ const PostController = {
     async getPost(req, res) {
         try {
             let condition = req.query;
-            let selectedPostList = await PostService.find(condition)
+            let selectedPostList = await PostService.find({ ...condition, username: req.body.username })
             if (selectedPostList.length == 0) {
                 return res.json({ data: null, message: "Không  tìm thấy bài viết nào" })
             }

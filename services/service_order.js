@@ -1,4 +1,5 @@
-const { OrderModel } = require('../models')// {key}=> Ông chỉ lấy đúng cái key ra thôi => tôi lấy thuộc tính OrderModel của obj Models
+const { OrderModel, PostModel } = require('../models')
+// {key}=> Ông chỉ lấy đúng cái key ra thôi => tôi lấy thuộc tính OrderModel của obj Models
 // const  OrderModel = require('../models')// key=> Ông lấy cả cái object ra => Tôi lấy obj Models 
 const { logError } = require('../utils')
 
@@ -12,7 +13,12 @@ async function find(condition) {//
 
 async function create(data) {
     try {
-        return OrderModel.create(data)
+        let order = await OrderModel.create(data)
+        let post = await PostModel.findOne({ _id: data.postId })
+        // console.log("Post Found:",post)
+        post.order.push(order.id)
+        await PostModel.updateOne({ _id: data.postId }, { order: post.order })
+        return order
     } catch (error) {
         logError("Lỗi tại OrderService.create ", { input: data, error })
     }
