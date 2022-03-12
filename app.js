@@ -114,4 +114,7 @@ app.get('/test/sell-control/:postId', needLogin, function (req, res) {
 app.get('/test/post-manage', needLogin, function (req, res) {
     res.render('postManage')
 })
+app.get('/test/cookie-manage', needLogin, function (req, res) {
+    res.render('cookiesManage')
+})
 module.exports = app;
