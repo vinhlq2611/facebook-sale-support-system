@@ -114,4 +114,8 @@ app.get('/test/sell-control/:postId', needLogin, function (req, res) {
 app.get('/test/post-manage', needLogin, function (req, res) {
     res.render('postManage')
 })
+// Test Quản lý bài đăng
+app.get('/test/order-manage', needLogin, function (req, res) {
+    res.render('orderManage')
+})
 module.exports = app;
