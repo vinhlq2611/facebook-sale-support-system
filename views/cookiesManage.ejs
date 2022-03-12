@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+      integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <title>Document</title>
+  </head>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+    .pagination a {
+      color: black;
+      float: left;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    /* Style the active/current link */
+    .pagination a.active {
+      background-color: dodgerblue;
+      color: white;
+    }
+
+    /* Add a grey background color on mouse-over */
+    .pagination a:hover:not(.active) {
+      background-color: #ddd;
+    }
+  </style>
+  <body>
+    <input type="text" id="keyword" placeholder="Search.." required/>
+    <button type="'button" onclick="initData()">Tim kiem</button><br />
+    <table>
+      <thead>
+        <tr>
+          <th class="cookie">Cookie</th>
+        <th class="uid">FB UID</th>
+        <th class="dtsg">DTSG</th>
+        <th class="token">Token</th>
+        <th class="status">Trang thai</th>
+        <th class="action">Hanh dong</th>
+      </tr>
+      </thead>
+      <tbody id="data"></tbody>
+    </table>
+    <div class="pagination">
+      <a href="#">&laquo;</a>
+      <a href="#">1</a>
+      <a class="active" href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <a href="#">5</a>
+      <a href="#">6</a>
+      <a href="#">&raquo;</a>
+    </div>
+    <br />
+    <br />
+    <fieldset>
+      <legend>Sua cookie</legend>
+      <label>Cookie</label>
+      <input type="text" id="updateCookie" />
+      <input type="hidden" id="updateUid" /><br />
+      <button type="'button" onclick="updateCookie()">Cap nhat</button><br />
+    </fieldset>
+    <fieldset>
+      <legend>Them cookie</legend>
+      <label>Cookie</label>
+      <input type="text" id="addCookie" /><br />
+      <button type="'button" onclick="addCookie()">Them</button><br />
+    </fieldset>
+
+    <script>
+      let key=document.getElementById("keyword").value
+      
+     
+      async function initData() {
+        let keyword = document.getElementById("keyword").value;
+        let result = await axios({
+          method: "post",
+          url: "/cookie/getAll?keyword="+keyword,
+        });
+        let cookieList = result.data.data;
+        document.getElementById("data").innerHTML = '' 
+        for (const cookie of cookieList) {
+          console.log("Render Cookie:", cookie);
+          var raw_status=cookie.status
+          cookie.status= raw_status ==1?"Hoat dong":"Ngung hoat dong"
+          document.getElementById("data").innerHTML += `
+          <tr>
+            <td class="cookie">${cookie.data}</td>
+            <td class="uid">${cookie.uid}</td>
+            <td class="dtsg">${cookie.dtsg}</td>
+            <td class="token">${cookie.token}</td>
+            <td class="status">${cookie.status}</td>
+            <td class="action"><a id="delete" href="javascript:deleteCookie(${cookie.uid})">Delete</a>
+                                <a id="delete" href="javascript:getOneCookie(${cookie.uid})">Detail</a></td>
+        </tr>`;
+        
+        }
+      }
+      initData()
+      async function addCookie() {
+        let cookie = document.getElementById("addCookie").value;
+        let result = await axios({
+          method: "post",
+          url: "/cookie/create",
+          data: {
+            cookie,
+          },
+        });
+
+        alert(result.data.message);
+        if (result.data.data != null) {
+          window.location.href = "/test/cookie-manage";
+        }
+      }
+      async function updateCookie() {
+        let cookie = document.getElementById("updateCookie").value;
+        let uid = document.getElementById("updateUid").value;
+        let result = await axios({
+          method: "put",
+          url: "/cookie/update",
+          data: {
+            cookie,
+            uid,
+          },
+        });
+
+        alert(result.data.message);
+        if (result.data.data != null) {
+          window.location.href = "/test/cookie-manage";
+        }
+      }
+      async function deleteCookie(uid) {
+        
+        let result = await axios({
+          method: "post",
+          url: "/cookie/delete",
+          data: {
+            uid:uid
+          },
+        });
+
+        alert(result.data.message);
+        if (result.data.data != null) {
+          window.location.href = "/test/cookie-manage";
+        }
+      }
+      async function getOneCookie(uid) {
+        console.log(uid);
+        let result = await axios({
+          method: "post",
+          url: "/cookie/getOne",
+          data:{
+            uid: uid,
+          }
+        });
+        let cookie = result.data.data;
+          document.getElementById("updateCookie").value =cookie.data
+          document.getElementById("updateUid").value =cookie.uid
+      }
+    </script>
+    <style>
+      .cookie {
+        max-width: 200px;
+        overflow: hidden;
+      }
+    </style>
+  </body>
+</html>
