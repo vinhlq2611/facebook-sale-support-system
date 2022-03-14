@@ -11,9 +11,11 @@ const UserController = {
       let account = await UserService.find({
         username: username,
         password: password,
+        isActive: true
       });
       if (account.length == 1) {
         let user = account[0];
+        console.log("token data",{ username: user.username, password: user.password, type: user.type})
         let token = jwt.sign(
           { username: user.username, password: user.password, type: user.type },
           process.env.SECRET_KEY
@@ -286,6 +288,174 @@ const UserController = {
       let result = await UserService.updateOne(
         { username: username },
         { username, password }
+      );
+
+      return res.json({
+        data: result,
+        message: "Change password successfully",
+      });
+    } catch (error) {
+      // console.log("Change Error", error);
+      return res.json({ data: error, message: "Change Error" });
+    }
+  },
+  async getAllUser(req, res) {
+    try {
+      let condition = {};
+      // if (req.body.username) {
+      //     condition.username = req.body.username
+      // }
+      if (req.query.id) {
+        condition._id = req.query.id
+      }
+      let result = await UserService.find(condition)
+      if (result.length == 0) {
+        return res.json({ data: null, message: "User not existed !" })
+      }
+      return res.json({ data: result, message: "Get User Success" })
+    } catch (error) {
+      logError("Get Product Error", error)
+      return res.json({ data: error, message: "Get User Error" })
+    }
+  },
+  async changeStatusUser(req, res) {
+    try {
+      let condition = {};
+      if (req.query.id) {
+        condition._id = req.query.id
+      }
+      let result = await UserService.find(condition)
+      if (result.length == 0) {
+        return res.json({ data: null, message: "User not existed !" })
+      }
+      if(result[0].isActive==true){
+        let isActive = false
+        UserService.updateOne(condition,{isActive})
+      }else{
+        let isActive = true
+        UserService.updateOne(condition,{isActive})
+      }
+      return res.json({ data: result, message: "Change User Status Success" })
+    } catch (error) {
+      logError("Get Product Error", error)
+      return res.json({ data: error, message: "Change User Status Success" })
+    }
+  },
+  async findListUserByUserName(req, res) {
+    try {
+      let condition = {};
+      if (req.query.fullname) {
+        condition.fullname = {$regex:req.query.fullname} 
+      }
+      console.log(req.query.fullname)
+      let result = await UserService.find(condition)
+      if (result.length == 0) {
+        return res.json({ data: null, message: "User not existed !" })
+      }
+      return res.json({ data: result, message: "Find User Success" })
+    } catch (error) {
+      logError("Get Product Error", error)
+      return res.json({ data: error, message: "Find User Success" })
+    }
+  }, 
+  async adminUpdateProfile(req, res) {
+    try {
+      let _id = req.body._id
+      let username = req.body.username;
+      let fullname = req.body.fullname;
+      let email = req.body.email;
+      let phone = req.body.phone;
+      let birthdate = req.body.birthdate;
+      let replySyntaxs = req.body.replySyntaxs;
+      console.log(username, email, phone, birthdate, fullname);
+      // CHECK EMPTY INPUT  ""
+      if (!username || !email || !phone || !birthdate || !replySyntaxs || !fullname) {
+        logWarn("Invalid information", {
+          username,
+          email,
+          phone,
+          birthdate,
+          replySyntaxs,
+          fullname
+        });
+
+        return res.json({ data: null, message: "Invalid information" });
+      } else if (!isVietnamesePhoneNumber(phone)) {
+        logWarn("Phone number must be valid in Vietnam", {
+          fullname,
+          username,
+          email,
+          phone,
+          birthdate
+        });
+        return res.json({ data: null, message: "Phone number must be valid in Vietnam" });
+      }
+
+      let result = await UserService.updateOne(
+        { _id },
+        { email, phone, birthdate, replySyntaxs, fullname }
+      );
+      return res.json({ data: result, message: "Update Success" });
+    } catch (error) {
+      // console.error(error);
+      logError("Register Error", error);
+      return res.json({ data: error, message: "Update Error" });
+    }
+  }, 
+  async adminChangePassword(req, res) {
+    try {
+      let _id = req.body._id;
+      let username = req.body.username;
+      let oldpassword = req.body.oldpassword;
+      let password = req.body.newpassword;
+      let repass = req.body.repass;
+      console.log(username, oldpassword, password, repass);
+      // CHECK EMPTY INPUT  ""
+      if (!username || !oldpassword || !password || !repass) {
+        logWarn("Invalid information", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+
+        return res.json({ data: null, message: "Invalid information" });
+      }
+      if (password.length < 6) {
+        logWarn("Password length must be larger than 6", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+
+        return res.json({ data: null, message: "Password length must be larger than 6" });
+      }
+      if (password == oldpassword) {
+        logWarn("Password must be different from old password", {
+        });
+
+        return res.json({ data: null, message: "Password must be different from old password" });
+      }
+      // CHECK PASSWORD & REPASSWORD
+      if (password != repass) {
+        logWarn("Password not match", {});
+        return res.json({ data: null, message: "Password not match" });
+      }
+      let account = await UserService.find({ _id, password: oldpassword });
+      //console.log("Account Found: ", account.length);
+      if (account.length == 0) {
+        logWarn("Old password is incorrect", {
+          username,
+          oldpassword,
+          password,
+          repass,
+        });
+        return res.json({ data: null, message: "Old password is incorrect" });
+      }
+      let result = await UserService.updateOne(
+        { _id },
+        {  password }
       );
 
       return res.json({

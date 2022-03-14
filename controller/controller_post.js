@@ -1,4 +1,4 @@
-const { PostService, UserService, FacebookService, ProductService } = require('../services')
+const { PostService, UserService, FacebookService, ProductService, OrderService } = require('../services')
 const { logError, logWarn } = require('../utils/index')
 const { uploadFile } = require('../middleware/upload');
 const { Console } = require('winston/lib/winston/transports');
@@ -117,6 +117,24 @@ const PostController = {
         } catch (error) {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
+        }
+    },
+    async getPostNum(req, res) {
+        try {
+            let _id = req.query.id;
+            let user = await UserService.find({_id});
+            if (!user) {
+                return res.json({ data: null, message: "Not have id post" })
+            }
+            let username = user[0].username
+            let result = await PostService.find({ username })
+            if (!result) {
+                return res.json({ data: null, message: "Post not existed !" })
+            }
+            return res.json({ data: result.length, message: "Get Number Post Success" })
+        } catch (error) {
+            logError("Delete Post Error", error)
+            return res.json({ data: error, message: "Get Number Post Error" })
         }
     }
 }

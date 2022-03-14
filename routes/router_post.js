@@ -26,5 +26,11 @@ module.exports = [
     controller: PostController,
     middleware: [AuthMiddleware.needLogin],
     action: PostController.delete
+  }, {
+    method: 'get',
+    route: '/post/count',
+    controller: PostController,
+    middleware: [AuthMiddleware.needLogin],
+    action: PostController.getPostNum
   }
 ]

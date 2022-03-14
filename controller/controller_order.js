@@ -1,4 +1,4 @@
-const { OrderService } = require('../services')
+const { OrderService, UserService } = require('../services')
 const { logError, logWarn, genKeyWord } = require('../utils/index')
 
 
@@ -31,7 +31,7 @@ const OrderController = {
             let condition = {};
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
-            }else{
+            } else {
                 return res.json({ data: null, message: "No user authen" })
             }
             if (req.query.id) {
@@ -124,6 +124,33 @@ const OrderController = {
         } catch (error) {
             logError("Edit Post Error", error)
             return res.json({ data: error, message: "Update Error" })
+        }
+    },
+    async getTotalEarn(req, res) {
+        try {
+            let _id = req.query.id;
+            let user = await UserService.find({ _id });
+
+            if (!user) {
+                return res.json({ data: null, message: "Not have id user" })
+            }
+            let shopkeeper = user[0].username
+            let result = await OrderService.find({ shopkeeper })
+            if (!result) {
+                return res.json({ data: null, message: "Post not existed !" })
+            }
+            let totalMoney = 0;
+            if (result.length != 0) {
+                for (let i = 0; i < result.length; i++) {
+                    for (let j = 0; j < result[i].product.length; j++) {
+                        totalMoney += parseInt(result[i].product[j].quantity) * result[i].product[j].product.price
+                    }
+                }
+            }
+            return res.json({ data: totalMoney, message: "Get Total Earn Success" })
+        } catch (error) {
+            logError("Delete Post Error", error)
+            return res.json({ data: error, message: "Get Total Earn Error" })
         }
     }
 }

@@ -25,5 +25,11 @@ module.exports = [
     controller: ProductController,
     middleware: [AuthMiddleware.needLogin],
     action: ProductController.delete
+  },{
+    method: 'get',
+    route: '/product/count',
+    controller: ProductController,
+    middleware: [AuthMiddleware.needLogin],
+    action: ProductController.getProductNum
   }
 ]
