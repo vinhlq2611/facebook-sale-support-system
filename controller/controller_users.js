@@ -20,6 +20,7 @@ const UserController = {
           { username: user.username, password: user.password, type: user.type },
           process.env.SECRET_KEY
         );
+        account[0].token = token
         res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
         return res.json({ data: account[0], message: "Login success" });
       } else {

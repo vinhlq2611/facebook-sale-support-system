@@ -14,6 +14,12 @@ module.exports = [
         action: CommentController.replyComment
     },
     {
+        method: 'post',
+        route: '/comment/create-comment',
+        middleware: [AuthMiddleware.needLogin],
+        action: CommentController.createComment
+    },
+    {
         method: 'get',
         route: '/comment/get-comment',
         middleware: [AuthMiddleware.needLogin],
