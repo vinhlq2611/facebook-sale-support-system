@@ -1,4 +1,4 @@
-const { ProductService } = require('../services')
+const { ProductService, UserService } = require('../services')
 const { logError, logWarn, genKeyWord } = require('../utils/index')
 
 
@@ -85,6 +85,24 @@ const ProductController = {
         } catch (error) {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
+        }
+    },
+    async getProductNum(req, res) {
+        try {
+            let _id = req.query.id;
+            let user = await UserService.find({_id});
+            if (!user) {
+                return res.json({ data: null, message: "Not have id user" })
+            }
+            let username = user[0].username
+            let result = await ProductService.find({ username })
+            if (!result) {
+                return res.json({ data: null, message: "Product not existed !" })
+            }
+            return res.json({ data: result.length, message: "Get Number Product Success" })
+        } catch (error) {
+            logError("Delete Post Error", error)
+            return res.json({ data: error, message: "Get Number Product Error" })
         }
     }
 }

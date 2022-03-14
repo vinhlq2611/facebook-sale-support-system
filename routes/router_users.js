@@ -52,5 +52,30 @@ module.exports = [
     route: "/account/changePassword",
     middleware: [AuthMiddleware.needLogin],
     action: UserController.changePassword,
-  }
+  }, {
+    method: "get",
+    route: "/account/user",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.getAllUser,
+  }, {
+    method: "put",
+    route: "/account/changeStatus",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.changeStatusUser,
+  }, {
+    method: "get",
+    route: "/account/findUser",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.findListUserByUserName,
+  }, {
+    method: "put",
+    route: "/account/admin-update-profile",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.adminUpdateProfile,
+  }, {
+    method: "put",
+    route: "/account/admin-change-password",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.adminChangePassword,
+  },
 ];

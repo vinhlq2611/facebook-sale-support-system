@@ -32,5 +32,11 @@ module.exports = [
     controller: OrderController,
     middleware: [AuthMiddleware.needLogin],
     action: OrderController.delete
+  }, {
+    method: 'get',
+    route: '/order/totalEarn',
+    controller: OrderController,
+    middleware: [AuthMiddleware.needLogin],
+    action: OrderController.getTotalEarn
   }
 ]
