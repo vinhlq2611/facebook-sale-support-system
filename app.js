@@ -110,6 +110,10 @@ app.get('/test/upload-post', needLogin, function (req, res) {
 app.get('/test/sell-control/:postId', needLogin, function (req, res) {
     res.render('sellControl')
 })
+// Test Quản lý user
+app.get('/test/manage-user', needLogin, function (req, res) {
+    res.render('manageUser')
+})
 // Test Quản lý bài đăng
 app.get('/test/post-manage', needLogin, function (req, res) {
     res.render('postManage')
