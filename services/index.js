@@ -6,6 +6,7 @@ const UserService = require("./service_users");
 const ProductService = require("./service_product");
 const CommentService = require("./service_comment");
 const CookieService = require("./service_cookie");
+const CustomerService = require("./service_customer")
 
 module.exports = {
   AccountService,
@@ -15,5 +16,6 @@ module.exports = {
   UserService,
   ProductService,
   CommentService,
-  CookieService
+  CookieService,
+  CustomerService
 };

@@ -117,4 +117,7 @@ app.get('/test/post-manage', needLogin, function (req, res) {
 app.get('/test/cookie-manage', needLogin, function (req, res) {
     res.render('cookiesManage')
 })
+app.get('/test/customer-manage', needLogin, function (req, res) {
+    res.render('customerManage')
+})
 module.exports = app;
