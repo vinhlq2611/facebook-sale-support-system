@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Trang quản lý user</h1>
+    <div style="margin-bottom : 20px"><input type="text" placeholder="Nhập tên user" id="findUser"><button onclick="findUser()">Tìm kiếm</button></div>
+    <!-- <div>
+        <input type="text" placeholder="title" id="title"><br>
+        <input type="number" placeholder="price" id="price"><br>
+        <button onclick="createProd()">Thêm user</button>
+    </div> -->
+    <div id="list-user">
+
+    </div>
+</br>
+    <div>
+        <br>
+        <label>userName</label>&nbsp;&nbsp;<input type="text" placeholder="UserName" id="userName" disabled><br>
+        <label>password</label>&nbsp;&nbsp;<input type="text" placeholder="Password" id="password"disabled><br>
+        <label>fullName</label>&nbsp;&nbsp;<input type="text" placeholder="FullName" id="fullName"><br>
+        <label>SDT</label>&nbsp;&nbsp;<input type="text" placeholder="SDT" id="SDT"><br>
+        <label>email</label>&nbsp;&nbsp;<input type="text" placeholder="Email" id="email"><br>
+        <label>birthDate</label>&nbsp;&nbsp;<input type="text" placeholder="Ngay sinh" id="birthDate"><br>
+        <label>createAt</label>&nbsp;&nbsp;<input type="text" placeholder="Tham gia" id="createAt"disabled><br>
+        <label>Total Product</label>&nbsp;&nbsp;<input type="text" placeholder="Tong so san pham" id="totalProduct"disabled><br>
+        <label>Total Post</label>&nbsp;&nbsp;<input type="text" placeholder="Tong so bai dang" id="totalPost" disabled><br>
+        <label>Total Earn</label>&nbsp;&nbsp;<input type="text" placeholder="Tong thu nhap" id="totalEarn" disabled><br>
+        <button onclick="updateUser(id_update)">Update user</button>
+        <br>
+        <label>new password</label>&nbsp;&nbsp;<input type="text" placeholder="New Password" id="password1"><br>
+        <label>re input new password</label>&nbsp;&nbsp;<input type="text" placeholder="Re-input Password" id="password2"><br>
+        <button onclick="updatePassword(id_update)">Update password</button>
+    </div>
+    <script>
+        let id_update = '';
+        let replySyntaxs = '';
+
+        async function getUser() {
+            let result = await axios({
+                method: 'GET',
+                url: '/account/user'
+            })
+            let data = result.data.data
+            console.log(result);
+            for (const user of data) {
+                document.getElementById('list-user').innerHTML +=
+                    `${user.fullname} - ${user.phone} - ${user.type} - <button onclick=" changeStatusUser('${user._id}')">${user.isActive}</button> - <button onclick="triggerUser('${user._id}')">Xem chi tiet</button><br/>`
+            }
+            alert(result.data.message)
+        }
+
+        async function findUser() {
+            let fullname =  document.getElementById("findUser").value;
+            let result = await axios({
+                method: 'GET',
+                url: '/account/findUser?fullname=' + fullname,
+            })
+            let data = result.data.data
+            console.log(result);
+            for (const user of data) {
+                document.getElementById('list-user').innerHTML +=
+                    `${user.fullname} - ${user.phone} - ${user.type} - <button onclick=" changeStatusUser('${user._id}')">${user.isActive}</button> - <button onclick="triggerUser('${user._id}')">Xem chi tiet</button><br/>`
+            }
+            alert(result.data.message)
+        }
+
+        async function changeStatusUser(id) {
+            console.log("Select ID: ", id);
+            let result = await axios({
+                method: 'PUT',
+                url: '/account/changeStatus?id=' + id,
+
+            })
+            document.getElementById('list-user').innerHTML =""
+            getUser()
+        }
+
+        async function triggerUser(id) {
+            console.log("Select ID: ", id);
+            let result = await axios({
+                method: 'GET',
+                url: '/account/user?id=' + id,
+
+            })
+            let data = result.data.data[0].title;
+            let result2 = await axios({
+                method: 'GET',
+                url: '/product/count?id=' + id,
+            })
+            let result3 = await axios({
+                method: 'GET',
+                url: '/post/count?id=' + id,
+            })
+            let result4 = await axios({
+                method: 'GET',
+                url: '/order/totalEarn?id=' + id,
+            })
+            console.log(result4)
+            id_update = id;
+            replySyntaxs = result.data.data[0].replySyntaxs
+            document.getElementById("userName").value = result.data.data[0].username;
+            document.getElementById("password").value = result.data.data[0].password;
+            document.getElementById("fullName").value = result.data.data[0].fullname;
+            document.getElementById("SDT").value = result.data.data[0].phone;
+            document.getElementById("email").value = result.data.data[0].email;
+            document.getElementById("birthDate").value = result.data.data[0].birthdate;
+            document.getElementById("createAt").value = result.data.data[0].createAt;
+            document.getElementById("createAt").value = result.data.data[0].createAt;
+            document.getElementById("totalProduct").value = result2.data.data;
+            document.getElementById("totalPost").value = result3.data.data;
+            document.getElementById("totalEarn").value = result4.data.data;
+            
+        }
+
+        async function updateUser(_id){
+            let username =document.getElementById("userName").value
+            let fullname =document.getElementById("fullName").value
+            let phone =document.getElementById("SDT").value
+            let email =document.getElementById("email").value
+            let birthdate =document.getElementById("birthDate").value
+
+            console.log(_id)
+            console.log(replySyntaxs)
+            console.log(username)
+            let result = await axios({
+                method: 'PUT',
+                url: '/account/admin-update-profile',
+                data: {
+                    _id,
+                    username,
+                    fullname,
+                    phone,
+                    email,
+                    birthdate,
+                    replySyntaxs
+                }
+            })//
+            id_update = '';
+            // if (result.data.data == null)
+            alert(result.data.message)
+            document.getElementById('list-user').innerHTML = ''
+            getUser()
+        }
+
+        async function updatePassword(_id){
+            let username = document.getElementById("userName").value;
+            let oldpassword = document.getElementById("password").value;
+            let newpassword =document.getElementById("password1").value
+            let repass =document.getElementById("password2").value
+            console.log(username,oldpassword,password,repass)
+
+            let result = await axios({
+                method: 'PUT',
+                url: '/account/admin-change-password',
+                data: {
+                    _id,
+                    username,
+                    oldpassword,
+                    newpassword,
+                    repass
+                }
+            })//
+            id_update = '';
+            // if (result.data.data == null)
+            alert(result.data.message)
+            document.getElementById('list-user').innerHTML = ''
+            getUser()
+        }
+
+        getUser()
+    </script>
+</body>
+
+</html>

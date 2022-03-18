@@ -8,6 +8,10 @@ var accountSchema = new mongoose.Schema({
     address: String,
     email:String,
     type: Number,
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     createAt: {
         type: Number,
         default: Date.now()
