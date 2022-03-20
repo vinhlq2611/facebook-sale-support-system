@@ -22,10 +22,10 @@ module.exports = [
     action: OrderController.edit
   }, {
     method: 'put',
-    route: '/order/deactive',
+    route: '/order/changeStatus',
     controller: OrderController,
     middleware: [AuthMiddleware.needLogin],
-    action: OrderController.edit
+    action: OrderController.changeStatus
   }, {
     method: 'delete',
     route: '/order/delete',
