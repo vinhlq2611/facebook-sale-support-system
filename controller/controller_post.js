@@ -119,6 +119,34 @@ const PostController = {
             return res.json({ data: error, message: "Delete Error" })
         }
     },
+    async disable(req, res) {
+        try {
+            let postId = req.body.postId;
+            console.log("PostID: ", postId)
+            if (!postId) {
+                return res.json({ data: null, message: "Không tìm thấy bài viết" })
+            }
+            let user = await UserService.find({ username: req.body.username })
+            if (user.length > 0) {
+                if (user[0].facebook.cookie && user[0].facebook.cookie.status != 1)
+                    return res.json({ data: null, message: "Vui lòng cập nhật lại cookie" })
+                else if (user[0].facebook.cookie) {
+                    let fbData = user[0].facebook
+                    let result = await FacebookService.disableComment(postId, fbData.uid, fbData.dtsg, fbData.cookie.data)
+                    if (result) {
+                        await PostService.updateOne({ fb_id: postId }, { status: -1 })
+                        return res.json({ data: null, message: "Cập nhật bài viết thành công" })
+                    } else {
+                        return res.json({ data: null, message: "Cập nhật bài viết thất bại" })
+                    }
+                }
+            }
+            return res.json({ data: null, message: "Cập nhật thất bại" })
+        } catch (error) {
+            console.log("Delete Post Error", error)
+            return res.json({ data: error, message: "Delete Error" })
+        }
+    },
     async getPostNum(req, res) {
         try {
             let _id = req.query.id;
