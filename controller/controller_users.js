@@ -13,9 +13,10 @@ const UserController = {
         password: password,
         isActive: true
       });
+      console.log(account);
       if (account.length == 1) {
         let user = account[0];
-        console.log("token data",{ username: user.username, password: user.password, type: user.type})
+        // console.log("token data",{ username: user.username, password: user.password, type: user.type})
         let token = jwt.sign(
           { username: user.username, password: user.password, type: user.type },
           process.env.SECRET_KEY
@@ -329,12 +330,12 @@ const UserController = {
       if (result.length == 0) {
         return res.json({ data: null, message: "User not existed !" })
       }
-      if(result[0].isActive==true){
+      if (result[0].isActive == true) {
         let isActive = false
-        UserService.updateOne(condition,{isActive})
-      }else{
+        UserService.updateOne(condition, { isActive })
+      } else {
         let isActive = true
-        UserService.updateOne(condition,{isActive})
+        UserService.updateOne(condition, { isActive })
       }
       return res.json({ data: result, message: "Change User Status Success" })
     } catch (error) {
@@ -346,7 +347,7 @@ const UserController = {
     try {
       let condition = {};
       if (req.query.fullname) {
-        condition.fullname = {$regex:req.query.fullname} 
+        condition.fullname = { $regex: req.query.fullname }
       }
       console.log(req.query.fullname)
       let result = await UserService.find(condition)
@@ -358,7 +359,7 @@ const UserController = {
       logError("Get Product Error", error)
       return res.json({ data: error, message: "Find User Success" })
     }
-  }, 
+  },
   async adminUpdateProfile(req, res) {
     try {
       let _id = req.body._id
@@ -402,7 +403,7 @@ const UserController = {
       logError("Register Error", error);
       return res.json({ data: error, message: "Update Error" });
     }
-  }, 
+  },
   async adminChangePassword(req, res) {
     try {
       let _id = req.body._id;
@@ -456,7 +457,7 @@ const UserController = {
       }
       let result = await UserService.updateOne(
         { _id },
-        {  password }
+        { password }
       );
 
       return res.json({

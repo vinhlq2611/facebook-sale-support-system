@@ -4,7 +4,7 @@ const { logError } = require('../utils')
 
 async function find(condition) {//
     try {
-        return UserModel.find(condition)
+        return UserModel.find(condition).lean()
     } catch (error) {
         logError("Lỗi tại OrderService.Find ", { input: condition, error })
         return null
