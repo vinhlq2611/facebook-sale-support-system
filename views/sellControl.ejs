@@ -30,6 +30,7 @@
         <a id="facebook-link" href="#" target="_blank">Chi tiết bài đăng</a><br>
         Group Được chọn: <input type="text" id="groupList"></input><br>
         Nội dung:<br><textarea id="content"></textarea><br>
+        <button type="button" onclick="endSellCamp()"> Kết Thúc Buổi Bán Hàng</button><br>
         Ảnh Đính Kèm: <div id="attachments"></div>
         List Sản phẩm:<div id="products"></div>
         Cấu hình:
@@ -293,6 +294,14 @@
             })
         }
 
+        async function endSellCamp() {
+            console.log("Selected Post: ", selectedPost)
+            let { data } = await axios({
+                method: 'POST',
+                url: '/post/disable',
+                data: { postId: selectedPost.fb_id }
+            })
+        }
         initPost().then(() => { })
         getAllOrder()
         getMyData() 

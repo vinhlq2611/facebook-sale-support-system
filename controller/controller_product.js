@@ -90,7 +90,7 @@ const ProductController = {
     async getProductNum(req, res) {
         try {
             let _id = req.query.id;
-            let user = await UserService.find({_id});
+            let user = await UserService.find({ _id });
             if (!user) {
                 return res.json({ data: null, message: "Not have id user" })
             }

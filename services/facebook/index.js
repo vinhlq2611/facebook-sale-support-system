@@ -5,6 +5,7 @@ const { scanPostComment } = require('./scanPostComment')
 const { uploadPost } = require('./uploadPost')
 const { createReplyComment } = require('./createReplyComment')
 const { createComment } = require('./createComment')
+const { disableComment } = require('./disableComment')
 module.exports = {
-    getGroupPost, getGroupList, getUserInfo, scanPostComment, uploadPost, createReplyComment, createComment
+    getGroupPost, getGroupList, getUserInfo, scanPostComment, uploadPost, createReplyComment, createComment, disableComment
 }
