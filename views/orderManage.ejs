@@ -8,97 +8,112 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
         integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <title>Đăng Bài</title>
 </head>
 
 <body>
-    <h1>Quản Lý Đơn Hàng</h1>
-    <label for="filterOrderStatus"> Lọc theo trạng thái đơn hàng</label>
-    <select id="filterOrderStatus">
-        <option value="">
-            Tất Cả
-        </option>
-        <option value="0">
-            Mới Tạo
-        </option>
-        <option value="1">
-            Sẵn Sàng Ship
-        </option>
-        <option value="2">
-            Đang Ship
-        </option>
-        <option value="3">
-            Hoàn Thành
-        </option>
-        <option value="-1">
-            Hủy
-        </option>
-    </select><br>
 
+    <div id="orderList">
 
-    <div>
-        <h3>Các đơn hàng mới</h3>
-        <div id="orderCards">
-
-        </div>
     </div>
     <div>
-        <h3>Các đơn hàng cũ</h3>
-        <div id="orderTable">
-
-        </div>
+        <br>
+        <label>Người đặt</label>&nbsp;&nbsp;<input type="text" placeholder="customerName" id="customerName"><br>
+        <div id="productList"></div>
+        <label>Số</label>&nbsp;&nbsp;<input type="text" placeholder="phone" id="phone"><br>
+        <label>Địa chỉ</label>&nbsp;&nbsp;<input type="text" placeholder="address" id="address"><br>
+        <label>Ngày tạo</label>&nbsp;&nbsp;<input type="text" placeholder="createAt" id="createAt"><br>
+        <label>Ngày sửa</label>&nbsp;&nbsp;<input type="text" placeholder="updateAt" id="updateAt"><br>
+        <label>Status</label>&nbsp;&nbsp;<input type="text" placeholder="status" id="status"><br>
+        <label>Shipper</label>&nbsp;&nbsp;<input type="text" placeholder="shipper" id="shipper"><br>
+        <!-- <button onclick="updateUser(id_update)">Update user</button> -->
     </div>
-
     <script>
         var IntervalList = []
-        var allOrder = []
-        let newOrder = []
-        var oldOrder = []
+        var selectedPost = null
+        let listOrder = null
+        var UserData = null
+
+        async function createOrder(data) {
+            let orderData = {}
+            for (let i = 0; i < listOrder.length; i++) {
+                if (listOrder[i].fb_id == data) {
+                    orderData.comment_id = listOrder[i].fb_id,
+                        orderData.product = listOrder[i].data.products,
+                        orderData.customerName = listOrder[i].author.name,
+                        orderData.address = listOrder[i].data.address,
+                        orderData.phone = listOrder[i].data.phone,
+                        orderData.customerId = listOrder[i].author.id,
+                        orderData.postId = listOrder[i].post_id
+                }
+            }
+            console.log(orderData);
+            let result = await axios({
+                method: 'POST',
+                url: '/order/create',
+                data: orderData
+            })
+            if (result.data.data == null)
+                alert(result.data.message)
+        }
+
         async function getAllOrder() {
-            let { data } =
-                await axios({
-                    method: 'get',
-                    url: '/order/get-order',
-
-                })
-            allOrder = data.data;
+            let result = await axios({
+                method: 'GET',
+                url: '/order/get-order',
+            })
+            let data = result.data.data
+            console.log("Order Data", data);
+            for (const order of data) {
+                let listOrderToString = "";
+                for (const product of order.product) {
+                    listOrderToString += product.product.title
+                }
+                document.getElementById('orderList').innerHTML +=
+                    ` Người đặt ${order.customerName} - Món hàng ${listOrderToString} - Số ${order.phone} - Địa chỉ ${order.address} - Ngày tạo ${order.createAt} - Status ${order.status} - Shipper ${order.shipper[order.shipper.length - 1].name} - <button onclick="triggerOrder('${order._id}')">Xem chi tiết</button>- <button onclick="changeStatusOrder('${order._id}')">change status</button><br>
+                    <div id="${order.comment_id}"></div>`
+            }
+            alert(result.data.message)
+        }
+        async function changeStatusOrder(id) {
+            let result = await axios({
+                method: 'PUT',
+                url: '/order/changeStatus?id=' + id,
+            })
+            console.log(result)
+            document.getElementById('orderList').innerHTML = ""
+            getAllOrder()
         }
 
+        async function triggerOrder(id) {
+            document.getElementById('productList').innerHTML = ""
+            let result = await axios({
+                method: 'GET',
+                url: '/order/get-order?id=' + id,
+
+            })
+            let data = result.data.data[0];
+            console.log(data)
+
+            let createAt = new Date(data.createAt)
+            let updateAt = new Date(data.updateAt)
+            let createAtConvert = createAt.getDate()+ "/" + createAt.getMonth() + "/" + createAt.getFullYear()
+            let updateAtConvert = updateAt.getDate()+ "/" + updateAt.getMonth() + "/" + updateAt.getFullYear()
+
+            document.getElementById("customerName").value = data.customerName;
+            document.getElementById("phone").value = data.phone;
+            document.getElementById("address").value = data.address;
+            document.getElementById("createAt").value = createAtConvert;
+            document.getElementById("updateAt").value = updateAtConvert;
+            document.getElementById("status").value = data.status;
+            document.getElementById("shipper").value = data.shipper[data.shipper.length - 1].name;
+            for (const product of data.product) {
+                    document.getElementById('productList').innerHTML +=
+                        ` title ${product.product.title} - price ${product.product.price} - keyword [${product.product.keyword}]`
+                }
+        }
+
+        getAllOrder()
     </script>
-    <style>
-        .comment {
-            padding: 0px 10px;
-            background-color: pink;
-            margin-bottom: 10px
-        }
-
-        .comment .p {
-            margin: 0;
-        }
-
-        .comment-2 {
-            padding: 0px 20px;
-            background-color: lightpink;
-            margin-bottom: 5px
-        }
-
-        .comment-2 .p {
-            margin: 0;
-        }
-
-        .cancel {
-            background-color: red;
-            color: white
-        }
-
-        .chip {
-            color: white;
-            font-weight: 600;
-            background-color: red;
-            padding: 5px;
-            margin: 0px 5px
-        }
-    </style>
 </body>
 
 </html>
