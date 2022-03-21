@@ -60,7 +60,7 @@ const OrderController = {
                 return res.json({ data: null, message: "No user authen" })
             }
             if (req.query.id) {
-                condition.postId = req.query.id
+                condition._id = req.query.id
             }
             let result = await OrderService.find(condition)
             console.log('Condition: ', req.body)
@@ -125,24 +125,33 @@ const OrderController = {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
         }
-    }, async edit(req, res) {
+    }, 
+    async changeStatus(req, res) {
         try {
-            let _id = req.body._id;
-            let status = req.body.status;
+            let _id = req.query.id;
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
                 return res.json({ data: null, message: "No user authen" })
             }
             if (!_id) {
                 return res.json({ data: null, message: "Not have id Product" })
-            } else if (!title && !price && !keywords) {
-                return res.json({ data: null, message: "Not have information" })
-            }
-            let result = await OrderService.find({ _id })
+            } 
+            let result = await OrderService.find({_id})
+            
             if (!result) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Order not existed !" })
             } else {
-                let updateAt = Date.now()
+                let updateAt = Date.now();            
+                let status = result[0].status
+                console.log('status begin',status)
+                if (status === 'created') {
+                    status = 'cancel'
+                } else if (status === 'cancel') {
+                    status = 'done'
+                } else {
+                    status = 'created'
+                }
+                console.log('status end',status)
                 result = await OrderService.updateOne({ _id }, { status, updateAt })
             }
             return res.json({ data: result, message: "Update  Success" })
