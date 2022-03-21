@@ -6,6 +6,7 @@ const PostModel = require('./model_post');
 const ProductModel = require('./model_product');
 const CommentModel = require('./model_comment');
 const CookieModel = require('./model_cookie');
+const CustomerModel = require('./model_customer')
 
 module.exports = {
     AccountModel,
@@ -15,7 +16,8 @@ module.exports = {
     ProductModel,
     AttachmentModel,
     CommentModel,
-    CookieModel
+    CookieModel,
+    CustomerModel,
 }
 
 

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+      integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <title>Document</title>
+  </head>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+    .pagination a {
+      color: black;
+      float: left;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    /* Style the active/current link */
+    .pagination a.active {
+      background-color: dodgerblue;
+      color: white;
+    }
+
+    /* Add a grey background color on mouse-over */
+    .pagination a:hover:not(.active) {
+      background-color: #ddd;
+    }
+    .form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+  </style>
+  <body>
+    <input type="text" id="keyword" placeholder="Search.." required/>
+    <button type="'button" onclick="initData()">Tim kiem</button><br />
+    <table>
+      <thead>
+        <tr>
+          <th class="name">Ten</th>
+        <th class="uid">FB UID</th>
+        <th class="phone">SDT</th>
+        <th class="address">Dia chi</th>
+        <th class="orders">So don</th>
+        <th class="total">Tong tien</th>
+        <th class="detail">Chi tiet</th>
+      </tr>
+      </thead>
+      <tbody id="customers"></tbody>
+    </table>
+    <div class="pagination">
+      <a href="#">&laquo;</a>
+      <a href="#">1</a>
+      <a class="active" href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <a href="#">5</a>
+      <a href="#">6</a>
+      <a href="#">&raquo;</a>
+    </div>
+    </br>
+    <table>
+        <thead>
+          <tr>
+            <th class="stt">STT</th>
+          <th class="total">Gia tri</th>
+          <th class="phone">Phone</th>
+          <th class="address">Dia chi</th>
+          <th class="time">Thoi gian</th>
+          <th class="detail">Xem Order</th>
+        </tr>
+        </thead>
+        <tbody id="orders"></tbody>
+    </table>
+    <div class="form-popup" id="myForm">
+       <label for="psw"><b>Customer name</b></label>
+       <label for="psw" id="customerName"></label></br>
+        <label for="psw"><b>Shipper</b></label>
+        <label for="psw" id="shippers"></label></br>
+        <label for="product"><b>Product</b></label>
+        <label for="psw" id="product"></label></br>
+        <label for="product"><b>Status</b></label>
+        <label for="psw" id="status"></label></br>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>     
+    </div>
+
+    <script>
+     
+      async function initData() {
+        let keyword = document.getElementById("keyword").value;
+        let result = await axios({
+          method: "post",
+          url: "/customer/get-customer?keyword="+keyword,
+        });
+        let customerList = result.data.data;
+        document.getElementById("customers").innerHTML = '' 
+        console.log(customerList)
+        for (const customer of customerList) {
+          let phones=[]
+          let names=[]
+          let addresses=[]
+          let shopkeepers=[]
+          for (const name of customer.fullname){
+              names.push(name)
+          }
+          let string_names=names.toString();
+          for (const phone of customer.phone){
+              phones.push(phone)
+          }
+          let string_phone=phones.toString();
+          for (const address of customer.address){
+              addresses.push(address)
+          }
+          let string_address=addresses.toString();
+          console.log(customer.order_detail);
+          for (const shopkeeper of customer.order_detail){
+              shopkeepers.push(shopkeeper.shopkeeper)
+          }
+          let string_shopkeeper=shopkeepers.toString();
+          document.getElementById("customers").innerHTML += `
+          <tr>
+            
+          <td class="name">${string_names}</td>
+        <td class="uid">${customer.facebook_id}</td>
+        <td class="phone">${string_phone}</td>
+        <td class="address">${string_address}</td>
+        <td class="orders">${customer.numberOfOrders}</td>
+        <td class="total">${customer.totalSpends}</td>
+        <td class="detail"><a id="delete" href="javascript:getOrder(${customer.facebook_id},1)">Chi tiet</a></td>
+      </tr>`;
+        
+        }
+      }
+      initData()
+      async function getOrder(data,orderType) {
+        console.log(orderType)
+        let result = await axios({
+          method: "post",
+          url: "/customer/get-order",
+          data:{
+            data:data,
+            orderType:orderType,
+          }
+        });
+        let orderList = result.data.data;
+        let i=0;
+        console.log(orderList);
+        if (orderType == 1){
+          document.getElementById("orders").innerHTML = '' 
+        for (const order of orderList) {
+          i++;
+          document.getElementById("orders").innerHTML += `
+          <tr>
+            
+        <td class="stt">${i}</td>
+        <td class="total">${order.total}</td>
+        <td class="phone">${order.phone}</td>
+        <td class="address">${order.address}</td>
+        <td class="time">${order.createAt}</td>
+        <td class="detail"><a href="javascript:getOrder('${order._id}',2)">Chi tiet</a></td>
+      </tr>`;
+        }
+      }else if (orderType==2){
+        console.log("form");
+        document.getElementById("myForm").style.display="block";
+        for (const order of orderList) {
+          let shippers=[];
+          let products=[];
+          for (const shipper of order.shipper){
+            shippers.push(shipper.name)
+          }
+          for (const product of order.product){
+            products.push(product.product.title+"*"+product.quantity+"*"+product.product.price)
+          }
+          document.getElementById("customerName").innerHTML = order.customerName;
+          document.getElementById("product").innerHTML = products.toString();
+          document.getElementById("shippers").innerHTML =shippers.toString();
+          document.getElementById("status").innerHTML = order.status;
+        }
+      }
+    }
+    async function closeForm(){
+      document.getElementById("myForm").style.display="none";
+    }
+    </script>
+    <style>
+      .cookie {
+        max-width: 200px;
+        overflow: hidden;
+      }
+    </style>
+  </body>
+</html>
