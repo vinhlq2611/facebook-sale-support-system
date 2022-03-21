@@ -57,7 +57,7 @@ async function updateMany(condition, newData) {
 }
 async function aggregate(condition){
     try {
-        return customer.aggregate(condition);
+        return CustomerModel.aggregate(condition);
     } catch (error) {
         logError("Lỗi tại CustomerService.updateMany ", { input: condition, error })
         return null

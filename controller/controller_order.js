@@ -29,17 +29,17 @@ const OrderController = {
             let order=result._id;
             let customer_exist=await CustomerService.find({ facebook_id:customerId});
             if( customer_exist.length > 0 ){
-                let address_exist = await CustomerService.find({address:{address},facebook_id:customerId});
-                let name_exist = await CustomerService.find({fullname:{customerName},facebook_id:customerId})
-                let phone_exist = await CustomerService.find({phone:{phone},facebook_id:customerId},)
+                let address_exist = await CustomerService.find({address:address,facebook_id:customerId});
+                let name_exist = await CustomerService.find({fullname:customerName,facebook_id:customerId})
+                let phone_exist = await CustomerService.find({phone:phone,facebook_id:customerId},)
                 if ( phone_exist.length == 0 ){
-                    let phone_update=await CustomerService.update({facebook_id:customerId},{ $push: { phone: phone } })
+                    let phone_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { phone: phone } })
                 }
                 if ( name_exist.length == 0 ){
-                    let name_update=await CustomerService.update({facebook_id:customerId},{ $push: { name: customerName } })
+                    let name_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { name: customerName } })
                 }
                 if ( address_exist.length == 0 ){
-                    let address_update=await CustomerService.update({facebook_id:customerId},{ $push: { address: address  } })
+                    let address_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { address: address  } })
                 }
             }else{
                 let customer = await CustomerService.create({fullname:customerName,phone,address,order,facebook_id:customerId});
