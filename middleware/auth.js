@@ -4,9 +4,9 @@ const { UserModel } = require("../models/");
 async function needLogin(req, res, next) {
   try {
     let token = req.headers.authorization;
-    console.log(req.headers)
+    // console.log(req.headers)
     let decodeData = jwt.verify(token, process.env.SECRET_KEY);
-    console.log("Xác minh danh tính:", decodeData);
+    // console.log("Xác minh danh tính:", decodeData);
     let isValid = await UserModel.find({
       username: decodeData.username,
       password: decodeData.password,

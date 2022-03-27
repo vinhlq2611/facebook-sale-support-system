@@ -5,7 +5,7 @@ const getGroupList = async (token) => {
     try {
 
         let groupList = []
-        let api = `https://graph.facebook.com/me/groups?access_token=${token}`
+        let api = `https://graph.facebook.com/me/groups?limit=500&access_token=${token}`
         let responseData = await axios.get(api)
         responseData.data.data.map(group => {
             groupList.push({ name: group.name, groupId: group.id })
