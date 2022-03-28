@@ -15,7 +15,7 @@ module.exports = [
     middleware: [AuthMiddleware.needLogin],
     action: OrderController.getOrder
   }, {
-    method: 'put',
+    method: 'post',
     route: '/order/edit',
     controller: OrderController,
     middleware: [AuthMiddleware.needLogin],

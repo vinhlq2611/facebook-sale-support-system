@@ -20,7 +20,7 @@ module.exports = [
     middleware: [AuthMiddleware.needLogin],
     action: ProductController.edit
   },{
-    method: 'delete',
+    method: 'post',
     route: '/product/delete',
     controller: ProductController,
     middleware: [AuthMiddleware.needLogin],
