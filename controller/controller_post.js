@@ -22,6 +22,11 @@ const PostController = {
                 return res.json({ data: null, message: "Chưa đủ thông tin" })
             }
             let product = await ProductService.find({ _id: { $in: products } })
+            let activePost = await PostService.find({ status: 1 });
+            if (activePost.lenght > 3) {
+                return res.json({ data: null, message: "Đã Đạt Số Lượng Chiến Dịch Tối Đa, Không Thể Tạo THêm!" })
+            }
+
             let [UserData] = await UserService.find({ username });
             let fbData = await UserData.facebook
             console.log("User Facebook Data: ", fbData)
@@ -150,7 +155,7 @@ const PostController = {
     async getPostNum(req, res) {
         try {
             let _id = req.query.id;
-            let user = await UserService.find({_id});
+            let user = await UserService.find({ _id });
             if (!user) {
                 return res.json({ data: null, message: "Not have id post" })
             }
