@@ -1,6 +1,5 @@
-const { CommentModel } = require('../models');
 const { CommentService, PostService, UserService, FacebookService } = require('../services')
-const { logError, logWarn } = require('../utils/index')
+const constrain = require('../constraint')
 const CommentController =
 {
     // Quét Comment bài viết trên facebook
@@ -23,17 +22,70 @@ const CommentController =
                 return res.json({ message: "Không tìm thấy bài viết trên facebook, vui lòng kiểm tra lại", data: null })
             }
             let scanData = await FacebookService.scanPostComment(selectedPost.group.groupId, selectedPost.fb_id, userFB.uid, userFB.dtsg, userFB.cookie.data)
-            await handleScanComment(selectedPost.id, scanData)
-            return res.json({ message: "Tìm comment thành công" });
+            if (scanData.length == 0) {
+                return res.json({ data: null, message: "Cookie Hết Hạn, Vui lòng cập nhật" });
+
+            }
+            await CommentService.handleScanComment(selectedPost.id, scanData, selectedPost.products)
+            // console.log("Scan Comment Response: ", scanData)
+            return res.json({ data: true, message: "Tìm comment thành công" });
         } catch (error) {
             console.log("Tìm comment thất bại", error)
-            return res.json({ data: error, message: "Tìm comment Thất bại" })
+            return res.json({ data: null, message: "Tìm comment Thất bại" })
 
         }
     },
+    // Reply comment trên facebook
+    async replyComment(req, res) {
+        try {
+            let content = req.body.content
+            let postId = req.body.postId
+            let commentId = req.body.commentId
+            let [user] = await UserService.find({ username: req.body.username })
+
+            let fb = user.facebook
+            if (fb.cookie.status != constrain.CookieStatus.LIVE) {
+                return res.json({ data: null, message: "Cập nhật lại cookie và token nha " })
+
+            }
+            let result = await FacebookService.createReplyComment(content, postId, commentId, fb.uid, fb.dtsg, fb.cookie.data)
+            if (result == null) {
+                await UserService.updateOne({ username: req.body.username }, { "facebook.cookie.status": constrain.CookieStatus.DIE })
+                return res.json({ data: null, message: "Phản hồi comment thất bại" })
+            }
+            return res.json({ data: { commentId: result }, message: "Phản hồi thành công" })
+        } catch (error) {
+            console.log("Tạo replyComment thất bại: ", error)
+            return res.json({ data: null, message: "Phản hồi không thành công, vui lòng cập nhật cookie" })
+        }
+
+    },
+    //  Comment lên bài viết facebook
+    async createComment(req, res) {
+        let content = req.body.content
+        let postId = req.body.postId
+        let user = await UserService.find({ username: req.body.username });
+        if (user.length == 0) {
+            return res.json({ data: null, message: "Không tìm thấy tài khoản" })
+        } else {
+            let fb = user[0].facebook
+            if (fb.cookie.status != constrain.CookieStatus.LIVE) {
+                return res.json({ data: null, message: "Cookie hết hạn, vui lòng cập nhật" })
+            }
+            let result = await FacebookService.createComment(content, postId, fb.uid, fb.dtsg, fb.cookie.data)
+            if (result == null) {
+                return res.json({ data: null, message: "Cookie hết hạn, vui lòng cập nhật" })
+            } else {
+                return res.json({ data: result, message: "Chấm thành công" })
+
+            }
+        }
+
+    },
+    // Lấy Comment Đã lưu trong DB
     async getComment(req, res) {
         let condition = req.query
-        let result = await find(condition);
+        let result = await CommentService.find(condition);
         if (result.length == 0) {
             return res.json({ data: null, message: "Không tìm thấy comment nào" })
         }
@@ -41,51 +93,6 @@ const CommentController =
     }
 
 }
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CÁCH FUNCTION HỖ TRỢ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
-async function handleScanComment(postId, facebookCommentList) {
-    let threadList = []
-    for (let fbComment of facebookCommentList) {
-        threadList.push(addComment(postId, fbComment, null))
-        if (fbComment.childs.length > 0) {
-            for (const child of fbComment.childs) {
-                threadList.push(addComment(postId, child, fbComment.fb_id))
-            }
-        }
-        if (threadList.length > 20) {
-            await Promise.all(threadList);
-            threadList = []
-        }
-    }
-    await Promise.all(threadList);
-    threadList = []
-}
-async function addComment(postId, comment, parentId) {
-    let doc = {
-        fb_id: comment.fb_id,
-        post_id: postId,
-        author: comment.author,
-        content: comment.content,
-        parentId: parentId,
-        type: 0
-    }
-    let isExist = await CommentModel.find({ fb_id: doc.fb_id })
-    if (isExist.length > 0) {
-        if (isExist[0].content != doc.content) {
-            await CommentModel.updateOne({ fb_id: doc.fb_id }, { content: doc.content, type: 0 })
-        }
-        return
-    } else {
-        await CommentModel.create(doc)
-        return
-    }
-}
-async function find(condition) {
-    return CommentModel.find(condition)
-}
+
 
 module.exports = CommentController

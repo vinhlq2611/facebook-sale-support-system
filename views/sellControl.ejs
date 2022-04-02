@@ -17,13 +17,20 @@
         <a target="_blank" href="https://chrome.google.com/webstore/detail/get-cookie/naciaagbkifhpnoodlkhbejjldaiffcm">
             Lấy cookie facebook tại đây
         </a><br>
+        <input type="text" id="token" placeholder="Nhập Token Facebook của bạn"><br>
+        <a target="_blank"
+            href="https://chrome.google.com/webstore/detail/get-facebook-access-token/coaoigakadjdinfmepjlhfiichelcjpn">
+            Lấy token facebook tại đây
+        </a><br>
         <button type="button" onclick="addCookie()">
             Submit
         </button>
     </div>
     <div id="upload-form">
+        <a id="facebook-link" href="#" target="_blank">Chi tiết bài đăng</a><br>
         Group Được chọn: <input type="text" id="groupList"></input><br>
         Nội dung:<br><textarea id="content"></textarea><br>
+        <button type="button" onclick="endSellCamp()"> Kết Thúc Buổi Bán Hàng</button><br>
         Ảnh Đính Kèm: <div id="attachments"></div>
         List Sản phẩm:<div id="products"></div>
         Cấu hình:
@@ -35,18 +42,29 @@
         </div>
         <!-- <button type="button" onclick="uploadPost()">Đăng Bài</button> -->
     </div>
+    <div id="replySyntaxList">
+        <p>Cú Pháp Phản Hồi Nhanh</p>
+
+
+    </div>
     <div id="commentList">
+
+    </div>
+    <div id="orderList">
 
     </div>
     <script>
         var IntervalList = []
         var selectedPost = null
+        let listOrder = null
+        var UserData = null
         async function addCookie() {
             let cookie = document.getElementById('cookie').value;
+            let token = document.getElementById('token').value;
             axios({
                 method: 'POST',
                 url: '/account/cookie',
-                data: { fbCookie: cookie }
+                data: { fbCookie: cookie, fbToken: token }
             }).then(data => {
                 if (data.data.data) {
                     document.getElementById('upload-form').style.display = 'block';
@@ -73,6 +91,8 @@
                 let postData = data.data.data[0]
                 selectedPost = postData
                 console.log("Init Post Data: ", postData);
+                // this.postIdOverall = postData._id
+                document.getElementById('facebook-link').href = postData.fb_url
                 document.getElementById('groupList').value = postData.group.name
                 document.getElementById('content').value = postData.content
                 //  RENDER ẢNH 
@@ -85,11 +105,56 @@
                 document.getElementById('autoCreateOrder').innerHTML = postData.config.autoCreateOrder
                 document.getElementById('scanDuration').innerHTML = postData.config.scanDuration
                 await scanComment()
+                await commentDot()
                 autoScanComment(postData.config.scanDuration)
             }).catch(error => {
                 console.error("Init Cookie Fail: ", error)
 
             })
+        }
+
+        async function createOrder(data) {
+            let orderData = {}
+            for (let i = 0; i < listOrder.length; i++) {
+                if (listOrder[i].fb_id == data) {
+                    orderData.comment_id = listOrder[i].fb_id,
+                        orderData.product = listOrder[i].data.products,
+                        orderData.customerName = listOrder[i].author.name,
+                        orderData.address = listOrder[i].data.address,
+                        orderData.phone = listOrder[i].data.phone,
+                        orderData.customerId = listOrder[i].author.id,
+                        orderData.postId = listOrder[i].post_id
+                }
+            }
+            console.log(orderData);
+            let result = await axios({
+                method: 'POST',
+                url: '/order/create',
+                data: orderData
+            })
+            if (result.data.data == null)
+                alert(result.data.message)
+        }
+
+        async function getAllOrder() {
+            let postId = window.location.href.split('/')[window.location.href.split('/').length - 1]
+            let result = await axios({
+                method: 'GET',
+                url: '/order/get-order?id=' + postId,
+            })
+            let data = result.data.data
+            console.log("Order Data", data);
+            for (const order of data) {
+                document.getElementById('orderList').innerHTML +=
+                    ` address ${order.address} - comment_id ${order.comment_id} - customerId ${order.customerId} - customerName ${order.customerName} - phone ${order.phone} - postId ${order.postId} - status ${order.status} - <button onclick="">update</button>- <button onclick="">change status</button><br>
+                    <div id="${order.comment_id}"></div>`
+                for (const product of order.product) {
+                    let id = order.comment_id
+                    document.getElementById(id).innerHTML +=
+                        ` title ${product.product.title} - price ${product.product.price} - keyword [${product.product.keyword}]`
+                }
+            }
+            alert(result.data.message)
         }
 
         function autoScanComment(delay) {
@@ -113,26 +178,46 @@
                     method: 'GET',
                 }).then(data => {
                     renderComment(data)
+                    listOrder = data.data.data;
                 })
             })
         }
-
 
         function renderComment(data) {
             if (data.data.data != null) {
                 document.getElementById('commentList').innerHTML = ""
                 let commentList = data.data.data
-                for (const comment of commentList) {
+                for (let i = 0; i < commentList.length; i++) {
                     document.getElementById('commentList').innerHTML += `
-                             <div class="${comment.parentId ? "comment-2" : "comment"}">
-                                <a href="https://facebook.com/${comment.author.fb_id}" target="_blank">${comment.author.name}</a><br>
-                                <a  href="https://facebook.com/${comment.fb_id}" target="_blank"> Chi tiết comment</a>
-                                <p>${comment.content}</p>
+                             <div class="${commentList[i].parentId ? "comment-2" : "comment"} ${commentList[i].data.isCancelled && "cancel"}">
+                                <p> Địa chỉ: ${commentList[i].data.address ? commentList[i].data.address : 'Không xác định được'}</p>
+                                <p> SĐT: ${commentList[i].data.phone ? commentList[i].data.phone : 'Không xác định được'}</p>
+                                <p>Sản Phẩm: ${renderCommentProduct(commentList[i].data.products)}</p>
+                                <a href="https://facebook.com/${commentList[i].author.fb_id}" target="_blank">${commentList[i].author.name}</a><br>
+                                <a  href="https://facebook.com/${commentList[i].fb_id}" target="_blank"> Chi tiết comment</a>
+                                <p>${commentList[i].content}</p>
+                                <button onclick="createOrder('${commentList[i].fb_id}')">Create Order</button>
+                                <button onclick="replyComment('${selectedPost.fb_id}','${commentList[i].fb_id}')">Reply Comment</button>
                             </div>
                             `
                 }
             }
         }
+
+
+        function renderCommentProduct(products) {
+            if (!products) return "Không xác định được"
+            else {
+                let result = ""
+                for (let product of products) {
+                    result += `
+                    <span class="chip"> ${product.evidence} => ${product.product.title} * ${product.quantity} </span>
+                    `
+                }
+                return result
+            }
+        }
+
 
         function handleAttachment(attachments) {
             document.getElementById('attachments').innerHTML = "";
@@ -152,9 +237,9 @@
         function handleProduct(products) {
             document.getElementById('products').innerHTML = "";
             if (products.length > 0) {
-                for (const attachment of products) {
+                for (const prd of products) {
                     document.getElementById('products').innerHTML +=
-                        `<p> ${attachment}</p> `
+                        `${prd.title} - ${prd.price} - [${prd.keyword} ]<br>`
                 }
             } else {
                 document.getElementById('products').innerHTML += `
@@ -163,41 +248,63 @@
             }
         }
 
-        function dumpProduct() {
-            let products = [{ name: "Cơm rang", price: 30000, id: 1 }, { name: "Cơm rang", price: 30000, id: 2 }, { name: "Cơm rang", price: 30000, id: 3 }, { name: "Cơm rang", price: 30000, id: 4 }
-            ]
-            document.getElementById('products').innerHTML = ''
-            products.map(product => {
-                document.getElementById('products').innerHTML += `< option value = "${product.id}" > ${product.name} - ${product.price}</ >`
-            })
-
-        }
-
-        async function uploadPost() {
-            let groupId = document.getElementById('groupList').value;
-            let content = document.getElementById('content').value;
-            let attachments = document.getElementById('attachments').value;
-            let product = document.getElementById('products').value
-            console.log(groupId)
-            console.log(content)
-            console.log(product)
-            let attachmentList = uploadAttachments();
+        async function getMyData() {
             let result = await axios({
                 method: 'POST',
-                url: '/post/create',
-                data: {
-                    content,
-                    groupId,
-                    product,
-                    attachments: attachmentList,
-                }
+                url: '/account/profile',
             })
-            alert(result.data.message)
-            if (result.data.data) {
-                window.location.href = '/test/sell-control'
+            let data = result.data.data
+            UserData = data;
+            for (const syntax of UserData.replySyntaxs) {
+                document.getElementById('replySyntaxList').innerHTML +=
+                    `<input type="radio"  name="selectedSyntax" value="${syntax}" /> ${syntax} <br>`
+            }
+
+        }
+
+        async function replyComment(postId, commentId) {
+            try {
+                console.log("Input: ", postId, commentId)
+                let content = document.querySelector('input[name="selectedSyntax"]:checked').value
+                let result = await axios({
+                    method: 'POST',
+                    url: '/comment/reply-comment',
+                    data: {
+                        content: content,
+                        postId: postId,
+                        commentId: commentId
+                    }
+                }).then(result => {
+                    alert(result.data.message)
+                })
+            } catch (error) {
+                alert("Xin mời chọn mẫu câu")
             }
         }
-        initPost()
+
+        async function commentDot() {
+            let contents = ['chấmmm', 'order điiii', 'upppp', 'lênnnn', 'mại zô']
+            let result = await axios({
+                method: 'POST',
+                url: '/comment/create-comment',
+                data: {
+                    postId: selectedPost.fb_id,
+                    content: contents[Math.floor(Math.random() * (contents.length - 1))]
+                }
+            })
+        }
+
+        async function endSellCamp() {
+            console.log("Selected Post: ", selectedPost)
+            let { data } = await axios({
+                method: 'POST',
+                url: '/post/disable',
+                data: { postId: selectedPost.fb_id }
+            })
+        }
+        initPost().then(() => { })
+        getAllOrder()
+        getMyData() 
     </script>
     <style>
         .comment {
@@ -218,6 +325,19 @@
 
         .comment-2 .p {
             margin: 0;
+        }
+
+        .cancel {
+            background-color: red;
+            color: white
+        }
+
+        .chip {
+            color: white;
+            font-weight: 600;
+            background-color: red;
+            padding: 5px;
+            margin: 0px 5px
         }
     </style>
 </body>

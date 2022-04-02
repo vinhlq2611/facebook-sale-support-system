@@ -1,41 +1,47 @@
 const axios = require('axios');
 const fs = require('fs');
 const { logError, parseData, btoa, atob } = require('../../utils')
-const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
-    let feedback_id = btoa("feedback:" + `${groupId}_${postId}`);
+const createReplyComment = async (content, postId, commentId, uid, fbDtsg, cookie) => {
+    const randomPrefix = () => Math.floor(Math.random() * 8999 + 1000) + ''
+    const feedback_id = btoa(`feedback:${postId}_${commentId}`)
     const dataObject = {
         av: uid,
         __user: uid,
         __a: 1,
         fb_dtsg: fbDtsg,
         fb_api_caller_class: "RelayModern",
-        fb_api_req_friendly_name: "CometUFICommentsProviderPaginationQuery",
+        fb_api_req_friendly_name: "CometUFICreateCommentMutation",
         variables: {
-            after: null,
-            before: null,
-            displayCommentsFeedbackContext: null,
-            displayCommentsContextEnableComment: null,
-            displayCommentsContextIsAdPreview: null,
-            displayCommentsContextIsAggregatedShare: null,
-            displayCommentsContextIsStorySet: null,
-            feedLocation: "GROUP_PERMALINK",
-            feedbackID: feedback_id,
-            feedbackSource: 2,
-            first: null,
-            focusCommentID: null,
-            includeHighlightedComments: false,
-            includeNestedComments: true,
-            initialViewOption: null,
-            isInitialFetch: false,
-            isPaginating: false,
-            last: null,
-            scale: 1.5,
-            topLevelViewOption: "RECENT_ACTIVITY",
-            useDefaultActor: false,
-            viewOption: "RECENT_ACTIVITY",
-            UFI2CommentsProvider_commentsKey: "CometGroupPermalinkRootFeedQuery",
+            "displayCommentsFeedbackContext": null,
+            "displayCommentsContextEnableComment": null,
+            "displayCommentsContextIsAdPreview": null,
+            "displayCommentsContextIsAggregatedShare": null,
+            "displayCommentsContextIsStorySet": null,
+            "feedLocation": "GROUP",
+            "feedbackSource": 0,
+            "focusCommentID": null,
+            "includeNestedComments": false,
+            "input": {
+                "attachments": null,
+                "feedback_id": feedback_id,
+                "formatting_style": null,
+                "message": {
+                    "ranges": [],
+                    "text": content
+                },
+                "attribution_id_v2": "CometGroupDiscussionRoot.react,comet.group,tap_search_bar,1646549095333,570102,2361831622",
+                "is_tracking_encrypted": true,
+                "feedback_source": "PROFILE",
+                "idempotence_token": `client:df8a9d4b-${randomPrefix()}-485c-89d2-${randomPrefix()}a84d88e0`,
+                "session_id": `30880aad-f281-46a6-${randomPrefix()}-8e6c0e7${randomPrefix()}`,
+                "actor_id": uid,
+                "client_mutation_id": "7"
+            },
+            "scale": 1.5,
+            "useDefaultActor": false,
+            "UFI2CommentsProvider_commentsKey": "CometGroupDiscussionRootSuccessQuery"
         },
-        doc_id: "4254858264583055",
+        doc_id: "5272800449420561",
         server_timestamps: true,
     };
     const data = await parseData(dataObject);
@@ -67,18 +73,17 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         } catch (error) {
             console.log("Error: ", error);
         }
-        let commentData = getPostOrder(response.data.data)
-        // console.log("Final Response:", commentData);
-        return commentData
+        let replyCommentID = atob(response.data.data?.comment_create?.feedback?.id)
+        return replyCommentID
     } catch (error) {
-        console.log("Lỗi tại Facebook.scanComment ", error)
-        // if (
-        //     error.message !=
-        //     "TypeError: Cannot read properties of undefined (reading 'feedback')"
-        // ) {
-        //     console.error("Response Data: ", response.data.data);
-        // }
-        return [];
+        console.log("Lỗi tại Facebook.replyComment ", error)
+        if (
+            error.message !=
+            "TypeError: Cannot read properties of undefined (reading 'feedback')"
+        ) {
+            console.error("Response Data: ", response.data.data);
+        }
+        return null;
     }
 };
 
@@ -107,10 +112,7 @@ function convertData(rawComment) {
             }
         }
         let total_child = node.feedback.comment_count?.total_count
-        // console.log('Node author:', author);
-        // console.log('Node child count:', rawChilds ? rawChilds.length : -1);
-        // console.log('Node total child:', total_child);
-        // console.log('Node content:', content);
+
         return {
             fb_id: id,
             author,
@@ -128,14 +130,4 @@ function convertData(rawComment) {
     }
 }
 
-function getPostOrder(postData) {
-    let rawComments = postData.feedback.display_comments.edges;
-    let orderList = []
-    for (let rawComment of rawComments) {
-        // console.log("Raw comment: ",rawComment)
-        let comment = convertData(rawComment)
-        orderList.push(comment)
-    }
-    return orderList
-}
-module.exports = { scanPostComment }
+module.exports = { createReplyComment }

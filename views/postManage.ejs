@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+        integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Trang quản lý bài đăng</h1>
+
+    <div>
+      
+        <a class="link-button" href="/test/upload-post">Thêm Bài Đăng</a>
+    </div>
+    <div id="list-product">
+
+    </div>
+
+    <script>
+        let id_update = '';
+        async function createProd() {
+            let title = document.getElementById("title").value
+            let price = document.getElementById("price").value
+            let result = await axios({
+                method: 'POST',
+                url: '/product/create',
+                data: {
+                    title,
+                    price
+                }
+            })//
+            // if (result.data.data == null)
+            alert(result.data.message)
+
+        }
+
+        async function getPost() {
+            let result = await axios({
+                method: 'GET',
+                url: '/post/get-post'
+            })
+            let data = result.data.data
+            for (const post of data) {
+                console.log(post)
+                document.getElementById('list-product').innerHTML += `
+                <div class="post-item">
+                <a href="${post.fb_url}">Xem Ngay</a>
+                <p><i>${post.createAt}</i></p>
+                <p>Group: ${post.group.name}</i></p>
+                <p>File Đính Kèm: <B>${post.attachment.length}</B></p>
+                <textarea class="post-content" rows="4" cols="50">${post.content}</textarea>
+                <p>Sản phẩm: ${post.products.length}</p>
+                <p>Số đơn hàng: ${post.order.length}</p>
+                <p>Trạng Thái: ${post.status == 1 ? "Đang hoạt động" : "Đã kết thúc"}</p>
+                <a class="link-button" href="/test/sell-control/${post._id}"> Chi tiết</a>
+                </div>
+                `
+
+            }
+            alert(result.data.message)
+        }
+
+        async function triggerUpdatePrd(id) {
+            console.log("Select ID: ", id);
+            let result = await axios({
+                method: 'GET',
+                url: '/product/get?id=' + id,
+
+            })
+            let data = result.data.data[0].title;
+            console.log(data);
+            id_update = id;
+            document.getElementById("utitle").value = result.data.data[0].title;
+            document.getElementById("uprice").value = result.data.data[0].price;
+            document.getElementById("ukeyword").value = result.data.data[0].keyword;
+        }
+
+        async function updatePrd(_id) {
+            let title = document.getElementById("utitle").value;
+            let price = document.getElementById("uprice").value;
+            let keyword = document.getElementById("ukeyword").value;
+            console.log(_id)
+            let result = await axios({
+                method: 'PUT',
+                url: '/product/edit',
+                data: {
+                    _id,
+                    title,
+                    price,
+                    keyword
+                }
+            })//
+            id_update = '';
+            // if (result.data.data == null)
+            alert(result.data.message)
+            document.getElementById('list-product').innerHTML = ''
+            getPost()
+        }
+
+        async function deletePrd(_id) {
+            let result = await axios({
+                method: 'DELETE',
+                url: '/product/delete',
+                data: {
+                    _id
+                }
+            })//
+            alert(result.data.message)
+            document.getElementById('list-product').innerHTML = ''
+            getPost()
+        }
+
+
+        getPost()
+    </script>
+    <style>
+        .post-item {
+            margin-bottom: 20px;
+            margin-top: 10px;
+            display: inline-block;
+            background-color: lavender;
+            padding: 5px
+        }
+
+        .link-button {
+            padding: 5px 10px;
+            color: white;
+            background-color:dodgerblue;
+            border-radius: 10px;
+            text-decoration:none ;
+        }
+    </style>
+</body>
+
+</html>

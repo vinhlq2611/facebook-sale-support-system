@@ -27,28 +27,29 @@ const getDtsg = async (cookie) => {
     }
 };
 
-const getToken = async (cookie) => {
-    try {
-        let token = await axios(
-            "https://business.facebook.com/business_locations", {
-            headers: {
-                Cookie: cookie
-            }
-        }
-        ).then(async (response) => {
-            let dom = response.data + "";
-            let startIndex = dom.indexOf("EAAG");
-            let endIndex = dom.indexOf('"', startIndex);
-            return dom.slice(startIndex, endIndex);
-        });
-        console.log("Token: ", token);
-        return token
-    } catch (error) {
-        logError("Lỗi tại Facebook.getToken ", { input: cookie, error })
-        console.error("Lỗi tại Facebook.getToken ", error)
-        return null
-    }
-}
+// const getToken = async (cookie) => {
+//     try {
+//         let token = await axios(
+//             "https://business.facebook.com/business_locations", {
+//             headers: {
+//                 Cookie: cookie
+//             }
+//         }
+//         ).then(async (response) => {
+//             let dom = response.data + "";
+//             console.log("dom length: ", response.data);
+//             let startIndex = dom.indexOf("EAAG");
+//             let endIndex = dom.indexOf('"', startIndex);
+//             return dom.slice(startIndex, endIndex);
+//         });
+//         console.log("Token: ", token);
+//         return token
+//     } catch (error) {
+//         logError("Lỗi tại Facebook.getToken ", { input: cookie, error })
+//         console.error("Lỗi tại Facebook.getToken ", error)
+//         return null
+//     }
+// }
 
 const getUid = (cookie) => {
     try {
@@ -65,12 +66,12 @@ const getUid = (cookie) => {
     }
 }
 
-const getUserInfo = async (cookie) => {
+const getUserInfo = async (cookie, token) => {
     console.log("Get User Info Cookie = ", cookie)
     // if (cookie.status === 1) {
     try {
         let dtsg = await getDtsg(cookie)
-        let token = await getToken(cookie)
+        // let token = await getToken(cookie)
         let uid = await getUid(cookie)
         let isSuccess = (dtsg == null || token == null || uid == null) ? false : true
         return {
@@ -85,5 +86,5 @@ const getUserInfo = async (cookie) => {
 }
 
 module.exports = {
-    getUserInfo, getUid, getToken, getDtsg
+    getUserInfo, getUid, getDtsg
 }

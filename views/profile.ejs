@@ -15,6 +15,7 @@
 
   <body>
     <h1>Xin chaof <span id="username"></span></h1>
+    <input type="text" id="fullname"><br>
     <input type="text" id="birthday" /><br />
     <input type="text" id="phone" /><br />
     <input type="text" id="email" /><br />
@@ -29,6 +30,7 @@
         });
         let userInfor = result.data.data;
         document.getElementById("username").innerHTML = userInfor.username;
+        document.getElementById("fullname").value = userInfor.fullname;
         document.getElementById("birthday").value = userInfor.birthdate;
         document.getElementById("email").value = userInfor.email;
         document.getElementById("phone").value = userInfor.phone;
@@ -42,6 +44,7 @@
       initData();
       async function update() {
         let username = document.getElementById("username").innerHTML;
+        let fullname = document.getElementById("fullname").value;
         let birthdate = document.getElementById("birthday").value;
         let phone = document.getElementById("phone").value;
         let email = document.getElementById("email").value;
@@ -55,6 +58,7 @@
           url: "/account/profile",
           data: {
             username,
+            fullname,
             birthdate,
             phone,
             email,

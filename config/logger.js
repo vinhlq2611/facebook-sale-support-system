@@ -8,14 +8,14 @@ const logger = createLogger({
     transports: [
         new transports.MongoDB({
             level: 'error',
-            db: `mongodb://localhost:27017/${process.env.DB_NAME}`,
+            db: `mongodb+srv://Vinh2611:amingovictus@cluster0.6og83.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
             options: { useUnifiedTopology: true },
             collection: 'logger_error',
             format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), format.json())
         }),
         new transports.MongoDB({
             level: 'warn',
-            db: `mongodb://localhost:27017/${process.env.DB_NAME}`,
+            db:  `mongodb+srv://Vinh2611:amingovictus@cluster0.6og83.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
             options: { useUnifiedTopology: true },
             collection: 'logger_warn',
             format: format.combine(

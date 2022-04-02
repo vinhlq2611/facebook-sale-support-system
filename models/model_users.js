@@ -1,11 +1,17 @@
 var mongoose = require("../config/dbConnect");
 var accountSchema = new mongoose.Schema({
     // table gom cac thuoc tinh sau:
+    fullname:String,
     username: String,
     password: String,
     birthdate: String,
     address: String,
     email:String,
+    type: Number,
+    isActive: {
+        type: Boolean,
+        default: true
+    },
     createAt: {
         type: Number,
         default: Date.now()

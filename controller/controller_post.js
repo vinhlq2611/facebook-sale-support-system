@@ -1,4 +1,4 @@
-const { PostService, UserService, FacebookService } = require('../services')
+const { PostService, UserService, FacebookService, ProductService, OrderService } = require('../services')
 const { logError, logWarn } = require('../utils/index')
 const { uploadFile } = require('../middleware/upload');
 const { Console } = require('winston/lib/winston/transports');
@@ -14,13 +14,17 @@ const PostController = {
             let content = req.body.content;
             let attachments = req.body.attachments;
             let group = req.body.group;
-
-            let product = req.body.product;
+            let products = req.body.products;
             let shipCost = req.body.shipCost ? req.body.shipCost : 3000;
             console.log(req.body)
             // CHECK EMPTY INPUT
-            if (!username || !content || !group.groupId || !product) {
-                return res.json({ data: null, message: "Lack of information" })
+            if (!username || !content || !group.groupId || !products) {
+                return res.json({ data: null, message: "Chưa đủ thông tin" })
+            }
+            let product = await ProductService.find({ _id: { $in: products } })
+            let activePost = await PostService.find({ status: 1 });
+            if (activePost.lenght > 3) {
+                return res.json({ data: null, message: "Đã Đạt Số Lượng Chiến Dịch Tối Đa, Không Thể Tạo THêm!" })
             }
 
             let [UserData] = await UserService.find({ username });
@@ -54,7 +58,7 @@ const PostController = {
     async getPost(req, res) {
         try {
             let condition = req.query;
-            let selectedPostList = await PostService.find(condition)
+            let selectedPostList = await PostService.find({ ...condition, username: req.body.username })
             if (selectedPostList.length == 0) {
                 return res.json({ data: null, message: "Không  tìm thấy bài viết nào" })
             }
@@ -67,7 +71,7 @@ const PostController = {
                     post.attachment[j] = imageData.name.split(splitOn).join("/");
                 }
             }
-            console.log('Post Found Data: ', selectedPostList)
+            // console.log('Post Found Data: ', selectedPostList)
 
             return res.json({ data: selectedPostList, message: "Tìm bài viết thành công" })
         } catch (error) {
@@ -118,6 +122,52 @@ const PostController = {
         } catch (error) {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
+        }
+    },
+    async disable(req, res) {
+        try {
+            let postId = req.body.postId;
+            console.log("PostID: ", postId)
+            if (!postId) {
+                return res.json({ data: null, message: "Không tìm thấy bài viết" })
+            }
+            let user = await UserService.find({ username: req.body.username })
+            if (user.length > 0) {
+                if (user[0].facebook.cookie && user[0].facebook.cookie.status != 1)
+                    return res.json({ data: null, message: "Vui lòng cập nhật lại cookie" })
+                else if (user[0].facebook.cookie) {
+                    let fbData = user[0].facebook
+                    let result = await FacebookService.disableComment(postId, fbData.uid, fbData.dtsg, fbData.cookie.data)
+                    if (result) {
+                        await PostService.updateOne({ fb_id: postId }, { status: -1 })
+                        return res.json({ data: null, message: "Cập nhật bài viết thành công" })
+                    } else {
+                        return res.json({ data: null, message: "Cập nhật bài viết thất bại" })
+                    }
+                }
+            }
+            return res.json({ data: null, message: "Cập nhật thất bại" })
+        } catch (error) {
+            console.log("Delete Post Error", error)
+            return res.json({ data: error, message: "Delete Error" })
+        }
+    },
+    async getPostNum(req, res) {
+        try {
+            let _id = req.query.id;
+            let user = await UserService.find({ _id });
+            if (!user) {
+                return res.json({ data: null, message: "Not have id post" })
+            }
+            let username = user[0].username
+            let result = await PostService.find({ username })
+            if (!result) {
+                return res.json({ data: null, message: "Post not existed !" })
+            }
+            return res.json({ data: result.length, message: "Get Number Post Success" })
+        } catch (error) {
+            logError("Delete Post Error", error)
+            return res.json({ data: error, message: "Get Number Post Error" })
         }
     }
 }
