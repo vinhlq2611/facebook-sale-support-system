@@ -1,11 +1,12 @@
 
-const { UserService, CustomerService, OrderService } = require('../services')
+const { UserService, CustomerService, OrderService, CommentService } = require('../services')
 const { logError, logWarn, genKeyWord } = require('../utils/index')
 
 
 const OrderController = {
     async create(req, res) {
         try {
+            console.log("Order Data: ", req.body)
             let comment_id = req.body.comment_id;
             let shopkeeper = req.body.username;
             let product = req.body.product;
@@ -14,8 +15,8 @@ const OrderController = {
             let phone = req.body.phone;
             let customerId = req.body.customerId;
             let postId = req.body.postId;
-            if (!comment_id || !product || !customerName || !address || !phone || !customerId || !postId) {
-                return res.json({ data: null, message: "Lack of information" })
+            if (!comment_id || !product || product.length < 1 || !customerName || !address || !phone || !customerId || !postId) {
+                return res.json({ data: null, message: "Thiếu Thông Tin" })
             }
             if (!shopkeeper) {
                 return res.json({ data: null, message: "No user authen" })
@@ -25,7 +26,8 @@ const OrderController = {
                 return res.json({ data: null, message: "Order Đã tồn tại" })
             }
             let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId })
-            console.log(result);
+            await CommentService.updateOne({ fb_id: comment_id }, { type: 1 })
+            // console.log(result);
             let order = result._id;
             let customer_exist = await CustomerService.find({ facebook_id: customerId });
             if (customer_exist.length > 0) {
