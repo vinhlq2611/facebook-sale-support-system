@@ -1,4 +1,4 @@
-var mongoose = require('../config/DBConnect');
+var mongoose = require('../config/dbConnect');
 let date = new Date(Date.now);
 var ProductModel = mongoose.model("product", new mongoose.Schema({
     title : String,
