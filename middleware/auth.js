@@ -18,8 +18,7 @@ async function needLogin(req, res, next) {
     } else res.redirect("/test/login");
   } catch (error) {
     console.log("needLogin Error:", error);
-    // res.json({ data: null, message: "Đăng nhập hết hạn" })
-    res.redirect("/test/login");
+    return res.json({ data: null, message: "Đăng nhập hết hạn" })
   }
 }
 async function needAdmin(req, res, next) {
@@ -37,8 +36,7 @@ async function needAdmin(req, res, next) {
     } else res.redirect("/test/login");
   } catch (error) {
     console.log("needLogin Error:", error);
-    // res.json({ data: null, message: "Đăng nhập hết hạn" })
-    res.redirect("/test/login");
+    return res.json({ data: null, message: "Đăng nhập hết hạn" })
   }
 }
 async function needGuest(req, res, next) {
