@@ -15,6 +15,7 @@ const OrderController = {
             let phone = req.body.phone;
             let customerId = req.body.customerId;
             let postId = req.body.postId;
+            let createAt = req.body?.createAt ? req.body?.createAt : Date.now();
             if (!comment_id || !product || product.length < 1 || !customerName || !address || !phone || !customerId || !postId) {
                 return res.json({ data: null, message: "Thiếu Thông Tin" })
             }
@@ -25,7 +26,7 @@ const OrderController = {
             if (isExist.length > 0) {
                 return res.json({ data: null, message: "Order Đã tồn tại" })
             }
-            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId })
+            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId, createAt, updateAt: createAt })
             await CommentService.updateOne({ fb_id: comment_id }, { type: 1 })
             // console.log(result);
             let order = result._id;
@@ -56,6 +57,8 @@ const OrderController = {
     async getOrder(req, res) {//req.body.name 
         try {
             let condition = {};
+            let sortKey = req.query?.sort
+            let sortDirection = req.query?.direction
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
             } else {
@@ -64,7 +67,7 @@ const OrderController = {
             if (req.query.id) {
                 condition._id = req.query.id
             }
-            let result = await OrderService.find(condition)
+            let result = await OrderService.find(condition, { sortKey, sortDirection })
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {

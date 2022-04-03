@@ -88,7 +88,7 @@ async function addComment(postId, comment, parentId, products) {
         doc.data = analyzeComment(comment, products)
         // console.log("Dữ liệu cuối:", doc.data)
         let result = await CommentModel.create(doc)
-        await PostModel.updateOne({ id: postId }, { $push: { commentList: result.id } })
+        await PostModel.updateOne({ _id: postId }, { $push: { commentList: result._id } })
         return
     }
 }
