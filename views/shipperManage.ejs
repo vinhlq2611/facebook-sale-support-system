@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.25.0/axios.min.js"
+      integrity="sha512-/Q6t3CASm04EliI1QyIDAA/nDo9R8FQ/BULoUFyN4n/BDdyIxeH7u++Z+eobdmr11gG5D/6nPFyDlnisDwhpYA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <title>Document</title>
+  </head>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+    .pagination a {
+      color: black;
+      float: left;
+      padding: 8px 16px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    /* Style the active/current link */
+    .pagination a.active {
+      background-color: dodgerblue;
+      color: white;
+    }
+
+    /* Add a grey background color on mouse-over */
+    .pagination a:hover:not(.active) {
+      background-color: #ddd;
+    }
+    .form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+  </style>
+  <body>
+    <input type="text" id="keyword" placeholder="Search.." required/>
+    <button type="'button" onclick="initData()">Tim kiem</button>
+    <a href="/test/find-shipper"> Them Shipper</a><br>
+    <table>
+      <thead>
+        <tr>
+          <th class="name">Nguoi dung</th>
+        <th class="phone">SDT</th>
+        <th class="email">Email</th>
+        <th class="status">Trang thai</th>
+        <th class="action">Tac vu</th>
+      </tr>
+      </thead>
+      <tbody id="shippers"></tbody>
+    </table>
+    <div class="pagination">
+      <a href="#">&laquo;</a>
+      <a href="#">1</a>
+      <a class="active" href="#">2</a>
+      <a href="#">3</a>
+      <a href="#">4</a>
+      <a href="#">5</a>
+      <a href="#">6</a>
+      <a href="#">&raquo;</a>
+    </div>
+    </br>
+    <br />
+    <br />
+    <fieldset>
+      <legend>Thong tin shipper </legend>
+      <label >Ho va ten:</label>
+      <label id="fullname"></label><br>
+      <label>Username:</label>
+      <label id="username"></label><br>
+      <label>Email:</label>
+      <label id="email"></label><br>
+      <label>SDT:</label>
+      <label id="phone"></label><br>
+      <label>Ngay sinh:</label>
+      <label id="birthdate"></label><br>
+      <label >Ngay dang ki:</label>
+      <label id="createAt"></label><br>
+    </fieldset>
+    <script>
+     
+      async function initData() {
+        let keyword = document.getElementById("keyword").value;
+        console.log(keyword);
+        let result = await axios({
+          method: "post",
+          url: "/shipper/get-shipper?keyword="+keyword,
+        });
+        let shipperList = result.data.data;
+        document.getElementById("shippers").innerHTML = '' 
+        for (const shipper of shipperList) {
+
+          document.getElementById("shippers").innerHTML += `
+          <tr>
+            
+          <td class="name">${shipper.username}</td>
+        <td class="phone">${shipper.phone}</td>
+        <td class="email">${shipper.email}</td>
+        <td class="status">${shipper.isActive}</td>
+        <td class="action"><a id="delete" href="javascript:deleteShipper('${shipper._id}')">Xoa</a>
+            <a id="delete" href="javascript:getShipperDetail('${shipper._id}')">Chi tiet</a></td>
+      </tr>`;
+        
+        }
+      }
+      initData()
+      async function getShipperDetail(id) {
+        let result = await axios({
+          method: "post",
+          url: "/shipper/shipper-detail",
+          data:{
+            id:id
+          }
+        });
+        let shipperList = result.data.data;
+        for (const shipper of shipperList) {
+          let timestamp = shipper.createAt;
+          let date = new Date(timestamp) 
+          let string_date=`${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+          document.getElementById("username").innerHTML=shipper.username;
+          document.getElementById("fullname").innerHTML=shipper.fullname;
+          document.getElementById("email").innerHTML=shipper.email;
+          document.getElementById("phone").innerHTML=shipper.phone;
+          document.getElementById("birthdate").innerHTML=shipper.birthdate;
+          document.getElementById("createAt").innerHTML=string_date;
+        }
+        
+    }
+    async function deleteShipper(id) {
+        let result = await axios({
+          method: "post",
+          url: "/shipper/delete-shipper",
+          data:{
+            id:id
+          }
+        });
+        alert(result.data.message);
+        if (result.data.data != null) {
+          window.location.href = "/test/shipper-manage";
+        }
+    }
+    </script>
+    <style>
+      .cookie {
+        max-width: 200px;
+        overflow: hidden;
+      }
+    </style>
+  </body>
+</html>
