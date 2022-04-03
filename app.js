@@ -131,4 +131,10 @@ app.get("/test/customer-manage", needLogin, function (req, res) {
 app.get("/test/order-manage", needLogin, function (req, res) {
   res.render("orderManage");
 });
+app.get("/test/shipper-manage", needLogin, function (req, res) {
+  res.render("shipperManage");
+});
+app.get("/test/find-shipper", needLogin, function (req, res) {
+  res.render("findShipper");
+});
 module.exports = app;
