@@ -12,6 +12,10 @@ module.exports = {
         ACTIVE: 1,
         DEACTIVE: -1
     },
+    CommentType: {
+        NO_ORDER: 0,
+        CREATED_ORDER: 1
+    },
     OrderStatus: {
         CREATED: 0,
         READY: 1,
