@@ -77,5 +77,10 @@ module.exports = [
     route: "/account/admin-change-password",
     middleware: [AuthMiddleware.needAdmin],
     action: UserController.adminChangePassword,
+  }, {
+    method: "post",
+    route: "/account/send-email-password",
+    middleware: [],
+    action: UserController.sendMailNewPassword,
   },
 ];
