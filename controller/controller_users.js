@@ -11,20 +11,27 @@ const UserController = {
       let account = await UserService.find({
         username: username,
         password: password,
-        isActive: true
       });
       console.log(account);
       if (account.length == 1) {
-        let user = account[0];
-        // console.log("token data",{ username: user.username, password: user.password, type: user.type})
-        let token = jwt.sign(
-          { username: user.username, password: user.password, type: user.type },
-          process.env.SECRET_KEY
-        );
-        account[0].token = token
-        res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
-        return res.json({ data: account[0], message: "Login success" });
-      } else {
+        
+          let user = account[0];
+          if(!user.isActive){
+            logWarn("Login fail", { username: username, password: password });
+            return res.json({ data: null, message: "Account is not active" });
+          }else{
+             // console.log("token data",{ username: user.username, password: user.password, type: user.type})
+          let token = jwt.sign(
+            { username: user.username, password: user.password, type: user.type,isActive:user.isActive },
+            process.env.SECRET_KEY
+          );
+          account[0].token = token
+          res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
+          return res.json({ data: account[0], message: "Login success" });
+          }
+         
+            
+      }  else {
         logWarn("Login fail", { username: username, password: password });
         return res.json({ data: null, message: "Account not found" });
       }
@@ -113,6 +120,20 @@ const UserController = {
           birthdate: birthday, type
         });
         return res.json({ data: null, message: "Account Is Existed" });
+      }
+      let email_exist = await UserService.find({ email });
+      // console.log("Account Found: ", account);
+      if (email_exist.length != 0) {
+        logWarn("Account Is Existed", {
+          fullname,
+          username,
+          password,
+          rePassword,
+          email,
+          phone,
+          birthdate: birthday, type
+        });
+        return res.json({ data: null, message: "Email is Existed" });
       }
       //
       let result = await UserService.create({
