@@ -72,8 +72,9 @@ const ProductController = {
     async delete(req, res) {
         try {
             let _id = req.body._id;
+            console.log("Product Id: ", req.body);
             if (!_id) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Not have id of product" })
             }
             let result = await ProductService.find({ _id })
             if (!result) {

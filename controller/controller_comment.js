@@ -23,15 +23,15 @@ const CommentController =
             }
             let scanData = await FacebookService.scanPostComment(selectedPost.group.groupId, selectedPost.fb_id, userFB.uid, userFB.dtsg, userFB.cookie.data)
             if (scanData.length == 0) {
-                return res.json({ data: null, message: "Tìm comment thất bại" });
+                return res.json({ data: null, message: "Cookie Hết Hạn, Vui lòng cập nhật" });
 
             }
             await CommentService.handleScanComment(selectedPost.id, scanData, selectedPost.products)
             // console.log("Scan Comment Response: ", scanData)
-            return res.json({ message: "Tìm comment thành công" });
+            return res.json({ data: true, message: "Tìm comment thành công" });
         } catch (error) {
             console.log("Tìm comment thất bại", error)
-            return res.json({ data: error, message: "Tìm comment Thất bại" })
+            return res.json({ data: null, message: "Tìm comment Thất bại" })
 
         }
     },

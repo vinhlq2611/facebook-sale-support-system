@@ -1,11 +1,12 @@
 
-const { UserService,CustomerService,OrderService } = require('../services')
+const { UserService, CustomerService, OrderService, CommentService } = require('../services')
 const { logError, logWarn, genKeyWord } = require('../utils/index')
 
 
 const OrderController = {
     async create(req, res) {
         try {
+            console.log("Order Data: ", req.body)
             let comment_id = req.body.comment_id;
             let shopkeeper = req.body.username;
             let product = req.body.product;
@@ -14,8 +15,9 @@ const OrderController = {
             let phone = req.body.phone;
             let customerId = req.body.customerId;
             let postId = req.body.postId;
-            if (!comment_id || !product || !customerName || !address || !phone || !customerId || !postId) {
-                return res.json({ data: null, message: "Lack of information" })
+            let createAt = req.body?.createAt ? req.body?.createAt : Date.now();
+            if (!comment_id || !product || product.length < 1 || !customerName || !address || !phone || !customerId || !postId) {
+                return res.json({ data: null, message: "Thiếu Thông Tin" })
             }
             if (!shopkeeper) {
                 return res.json({ data: null, message: "No user authen" })
@@ -24,27 +26,28 @@ const OrderController = {
             if (isExist.length > 0) {
                 return res.json({ data: null, message: "Order Đã tồn tại" })
             }
-            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId })
-            console.log(result);
-            let order=result._id;
-            let customer_exist=await CustomerService.find({ facebook_id:customerId});
-            if( customer_exist.length > 0 ){
-                let address_exist = await CustomerService.find({address:address,facebook_id:customerId});
-                let name_exist = await CustomerService.find({fullname:customerName,facebook_id:customerId})
-                let phone_exist = await CustomerService.find({phone:phone,facebook_id:customerId},)
-                if ( phone_exist.length == 0 ){
-                    let phone_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { phone: phone } })
+            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId, createAt, updateAt: createAt })
+            await CommentService.updateOne({ fb_id: comment_id }, { type: 1 })
+            // console.log(result);
+            let order = result._id;
+            let customer_exist = await CustomerService.find({ facebook_id: customerId });
+            if (customer_exist.length > 0) {
+                let address_exist = await CustomerService.find({ address: address, facebook_id: customerId });
+                let name_exist = await CustomerService.find({ fullname: customerName, facebook_id: customerId })
+                let phone_exist = await CustomerService.find({ phone: phone, facebook_id: customerId },)
+                if (phone_exist.length == 0) {
+                    let phone_update = await CustomerService.updateOne({ facebook_id: customerId }, { $push: { phone: phone } })
                 }
-                if ( name_exist.length == 0 ){
-                    let name_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { name: customerName } })
+                if (name_exist.length == 0) {
+                    let name_update = await CustomerService.updateOne({ facebook_id: customerId }, { $push: { name: customerName } })
                 }
-                if ( address_exist.length == 0 ){
-                    let address_update=await CustomerService.updateOne({facebook_id:customerId},{ $push: { address: address  } })
+                if (address_exist.length == 0) {
+                    let address_update = await CustomerService.updateOne({ facebook_id: customerId }, { $push: { address: address } })
                 }
-            }else{
-                let customer = await CustomerService.create({fullname:customerName,phone,address,order,facebook_id:customerId});
+            } else {
+                let customer = await CustomerService.create({ fullname: customerName, phone, address, order, facebook_id: customerId });
             }
-            
+
             return res.json({ data: result, message: "Create Order success" })
         } catch (error) {
             console.log("Create Order Error", error)
@@ -54,6 +57,8 @@ const OrderController = {
     async getOrder(req, res) {//req.body.name 
         try {
             let condition = {};
+            let sortKey = req.query?.sort
+            let sortDirection = req.query?.direction
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
             } else {
@@ -62,7 +67,7 @@ const OrderController = {
             if (req.query.id) {
                 condition._id = req.query.id
             }
-            let result = await OrderService.find(condition)
+            let result = await OrderService.find(condition, { sortKey, sortDirection })
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {
@@ -88,9 +93,10 @@ const OrderController = {
             }
             if (!_id) {
                 return res.json({ data: null, message: "Not have id Product" })
-            } else if (!title && !price && !keywords) {
-                return res.json({ data: null, message: "Not have information" })
             }
+            //  else if (!title && !price && !keywords) {
+            //     return res.json({ data: null, message: "Not have information" })
+            // }
             let result = await OrderService.find({ _id })
             if (!result) {
                 return res.json({ data: null, message: "Product not existed !" })
@@ -100,7 +106,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Update  Success" })
         } catch (error) {
-            logError("Edit Post Error", error)
+            console.log("Edit Post Error", error)
             return res.json({ data: error, message: "Update Error" })
         }
     },
@@ -125,33 +131,28 @@ const OrderController = {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
         }
-    }, 
+    },
     async changeStatus(req, res) {
         try {
+            let validStatus = ['created', 'ready', 'shipping', 'done', 'cancel']
             let _id = req.query.id;
+            let status = req.query.status;
+            if (!validStatus.includes(status)) {
+                return res.json({ data: null, message: "Invalid status" })
+            }
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
                 return res.json({ data: null, message: "No user authen" })
             }
             if (!_id) {
                 return res.json({ data: null, message: "Not have id Product" })
-            } 
-            let result = await OrderService.find({_id})
-            
+            }
+            let result = await OrderService.find({ _id })
+
             if (!result) {
                 return res.json({ data: null, message: "Order not existed !" })
             } else {
-                let updateAt = Date.now();            
-                let status = result[0].status
-                console.log('status begin',status)
-                if (status === 'created') {
-                    status = 'cancel'
-                } else if (status === 'cancel') {
-                    status = 'done'
-                } else {
-                    status = 'created'
-                }
-                console.log('status end',status)
+                let updateAt = Date.now();
                 result = await OrderService.updateOne({ _id }, { status, updateAt })
             }
             return res.json({ data: result, message: "Update  Success" })

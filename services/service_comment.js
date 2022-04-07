@@ -1,4 +1,4 @@
-const { CommentModel } = require('../models')// {key}=> Ông chỉ lấy đúng cái key ra thôi => tôi lấy thuộc tính OrderModel của obj Models
+const { CommentModel, PostModel } = require('../models')// {key}=> Ông chỉ lấy đúng cái key ra thôi => tôi lấy thuộc tính OrderModel của obj Models
 // const  OrderModel = require('../models')// key=> Ông lấy cả cái object ra => Tôi lấy obj Models 
 const { logError } = require('../utils')
 
@@ -87,7 +87,8 @@ async function addComment(postId, comment, parentId, products) {
     } else {
         doc.data = analyzeComment(comment, products)
         // console.log("Dữ liệu cuối:", doc.data)
-        await CommentModel.create(doc)
+        let result = await CommentModel.create(doc)
+        await PostModel.updateOne({ _id: postId }, { $push: { commentList: result._id } })
         return
     }
 }

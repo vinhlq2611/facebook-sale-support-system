@@ -3,9 +3,13 @@ const { OrderModel, PostModel } = require('../models')
 // const  OrderModel = require('../models')// key=> Ông lấy cả cái object ra => Tôi lấy obj Models 
 const { logError } = require('../utils')
 
-async function find(condition) {//
+async function find(condition, sortOption) {//
+    let sortFilter = {};
+    sortFilter[sortOption.sortKey] = parseInt(sortOption.sortDirection)
+    console.log(sortFilter)
+
     try {
-        return OrderModel.find(condition)
+        return OrderModel.find(condition).sort(sortFilter)
     } catch (error) {
         logError("Lỗi tại OrderService.Find ", { input: condition, error })
     }
