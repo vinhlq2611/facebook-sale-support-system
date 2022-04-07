@@ -15,7 +15,7 @@ async function needLogin(req, res, next) {
     req.body.type = decodeData.type;
     if (isValid.length == 1) {
       next();
-    } else res.redirect("/test/login");
+    } else res.json({ data: null, message: "Đăng nhập hết hạn" })
   } catch (error) {
     console.log("needLogin Error:", error);
     return res.json({ data: null, message: "Đăng nhập hết hạn" })
@@ -33,7 +33,7 @@ async function needAdmin(req, res, next) {
     req.body.type = decodeData.type;
     if (isValid.length == 1 && decodeData.type == 0) {
       next();
-    } else res.redirect("/test/login");
+    } else res.json({ data: null, message: "Đăng nhập hết hạn" })
   } catch (error) {
     console.log("needLogin Error:", error);
     return res.json({ data: null, message: "Đăng nhập hết hạn" })

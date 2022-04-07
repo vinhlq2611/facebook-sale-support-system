@@ -4,12 +4,9 @@ const { OrderModel, PostModel } = require('../models')
 const { logError } = require('../utils')
 
 async function find(condition, sortOption) {//
-    let sortFilter = {};
-    sortFilter[sortOption.sortKey] = parseInt(sortOption.sortDirection)
-    console.log(sortFilter)
-
+    // let sortFilter = {};
     try {
-        return OrderModel.find(condition).sort(sortFilter)
+        return OrderModel.find(condition)
     } catch (error) {
         logError("Lỗi tại OrderService.Find ", { input: condition, error })
     }

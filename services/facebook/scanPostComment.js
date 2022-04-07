@@ -55,7 +55,7 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         data: data,
         maxRedirects: 0,
     };
-    let response = await axios.request(axiosOption);
+    let response = await axios.request(axiosOption).catch(err => { console.log("Scan Post Comment Service Fail: ", err); return null });
     try {
         // HANDLE STRING RESPONSE
         try {
@@ -138,4 +138,5 @@ function getPostOrder(postData) {
     }
     return orderList
 }
+// scanPostComment()
 module.exports = { scanPostComment }

@@ -1,6 +1,6 @@
 
 const { UserService, CustomerService, OrderService, CommentService } = require('../services')
-const { logError, logWarn, genKeyWord } = require('../utils/index')
+const {  logWarn, genKeyWord } = require('../utils/index')
 
 
 const OrderController = {
@@ -75,7 +75,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Get Order Success" })
         } catch (error) {
-            logError("Get Order Error", error)
+            console.log("Get Order Error", error)
             return res.json({ data: error, message: "Get Order Error" })
         }
     },
@@ -128,7 +128,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Delete  Success" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.log("Delete Post Error", error)
             return res.json({ data: error, message: "Delete Error" })
         }
     },
@@ -157,7 +157,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Update  Success" })
         } catch (error) {
-            logError("Edit Post Error", error)
+            console.log("Edit Post Error", error)
             return res.json({ data: error, message: "Update Error" })
         }
     },
@@ -184,7 +184,7 @@ const OrderController = {
             }
             return res.json({ data: totalMoney, message: "Get Total Earn Success" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.log("Delete Post Error", error)
             return res.json({ data: error, message: "Get Total Earn Error" })
         }
     }

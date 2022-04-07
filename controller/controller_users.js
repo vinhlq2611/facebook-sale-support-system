@@ -230,7 +230,7 @@ const UserController = {
     let [user] = await UserService.find({ username });
     let fbData = user.facebook
     if (fbData.cookie?.status == 1) {
-      let groupList = await FacebookService.getGroupList(fbData.token)
+      let groupList = await FacebookService.getGroupList(fbData.token, fbData.cookie.data)
       // console.log("Facebook Group = ", groupList);
       return res.json({ data: groupList, message: 'Lấy Group Facebook Thành Công' })
     } else {
