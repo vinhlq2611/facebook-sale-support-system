@@ -46,6 +46,8 @@ const CookieController = {
         return res.json({ data: null, message: "Cookie sai" });
       }
       let new_uid=facebookData.data.uid;
+      uid = uid.trim();
+      new_uid = new_uid.trim();
       if(uid != new_uid) {
         return res.json({ data: null, message: "Uid moi khong trung uid cu" });
       }

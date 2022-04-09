@@ -25,13 +25,13 @@ const CustomerController = {
       let data;
       let customerData = null;
       if (keyword == null || keyword == "") {
-        data = await CustomerService.aggregate([        
+        data = await CustomerService.aggregate([
           {
             $lookup: {
               from: "orders",
               localField: "facebook_id",
               foreignField: "customerId",
-              pipeline:[{"$match":{"shopkeeper":shopkeeper}},],
+              pipeline: [{ "$match": { "shopkeeper": shopkeeper } },],
               as: "order_detail",
             },
           },
@@ -79,26 +79,26 @@ const CustomerController = {
       let data = req.body.data;
       let shopkeeper = req.body.username;
       let orderType = req.body.orderType;// 1 - Order by customerId >< 2 - Order by OrderID
-      let result=null;
-      let output=[];
-      console.log("getOrder Body: ",req.body
+      let result = null;
+      let output = [];
+      console.log("getOrder Body: ", req.body
       );
-      if(orderType==1){
-        result = await OrderService.find({ customerId: data,shopkeeper: shopkeeper});
-      }else if (orderType==2){
+      if (orderType == 1) {
+        result = await OrderService.find({ customerId: data, shopkeeper: shopkeeper });
+      } else if (orderType == 2) {
         console.log("in condition" + data);
-        result = await OrderService.find({ _id: data});
+        result = await OrderService.find({ _id: data });
       }
       if (result.length == 0) {
         return res.json({ data: null, message: "Order not existed !" });
       }
       for (let i = 0; i < result.length; i++) {
-          const order = result[i];
-          result[i].total = getOrderTotal(order);
-          output.push({
-            total: getOrderTotal(order),
-            ...order._doc
-          })
+        const order = result[i];
+        result[i].total = getOrderTotal(order);
+        output.push({
+          total: getOrderTotal(order),
+          ...order._doc
+        })
       }
       return res.json({ data: output, message: "Get Order Success" });
     } catch (error) {
