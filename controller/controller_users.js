@@ -71,7 +71,7 @@ const UserController = {
         //   type,
         //   fullname,
         // });
-        return res.json({ data: null, message: "Thông tin không hợp lệ" });
+        return res.json({ data: null, message: "Vui lòng điền đầy đủ thông tin" });
       } else if (password.length < 6) {
         logWarn("Password must be at least 6 characters", {
           fullname,
@@ -499,7 +499,7 @@ const UserController = {
       let username = req.body.username;
       let user = await UserService.find({ username });
       if (user[0]==null) {
-        return res.json({ message: "Incorrect username" });
+        return res.json({ message: "Sai tên người dùng" });
       }
       let _id = user[0]._id;
       let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -534,13 +534,13 @@ const UserController = {
       // send mail with defined transport object
       await transporter.sendMail(mailOptions, function (error, data) {
         if (error) {
-          return res.json({error : error, message: "Sent email Error" });
+          return res.json({error : error, message: "Lỗi gửi emai" });
         } else {
-          return res.json({ message: "Sent email Success" });
+          return res.json({ message: "Gửi email thành công" });
         }
       });
     } catch (error) {
-      return res.json({ data: error, message: "Controller User Error" });
+      return res.json({ data: error, message: "Lỗi quên mật khẩu" });
     }
   }
 };
