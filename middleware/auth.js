@@ -10,10 +10,12 @@ async function needLogin(req, res, next) {
     let isValid = await UserModel.find({
       username: decodeData.username,
       password: decodeData.password,
+      // isActive: true,
     });
     req.body.username = decodeData.username;
     req.body.type = decodeData.type;
-    if (isValid.length == 1) {
+    // req.body.isActive = decodeData.isActive;
+    if (isValid.length == 1 ) {
       next();
     } else res.redirect("/test/login");
   } catch (error) {
@@ -28,9 +30,11 @@ async function needAdmin(req, res, next) {
     let isValid = await UserModel.find({
       username: decodeData.username,
       password: decodeData.password,
+      // isActive: true,
     });
     req.body.username = decodeData.username;
     req.body.type = decodeData.type;
+    // req.body.isActive = decodeData.isActive;
     if (isValid.length == 1 && decodeData.type == 0) {
       next();
     } else res.redirect("/test/login");

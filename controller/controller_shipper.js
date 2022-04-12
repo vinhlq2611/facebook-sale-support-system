@@ -14,10 +14,10 @@ const ShipperController = {
                 result = await UserService.find({ "jobs.owner": { $nin: [shopkeeper] }, type: 0, username: { $regex: keyword } })
             }
 
-            return res.json({ data: result, message: "Find Shipper Success" })
+            return res.json({ data: result, message: "Tìm shiper thành công" })
         } catch (error) {
             console.log("Find Shipper Error:", error)
-            return res.json({ data: null, message: "Find Shipper Error" });
+            return res.json({ data: null, message: "Lỗi tìm shipper" });
         }
     },
     async addShipper(req, res) {
@@ -51,10 +51,10 @@ const ShipperController = {
                 let [job] = shipper.jobs.filter(job => job.owner == shopkeeper)
                 result[i].jobs = job;
             }
-            return res.json({ data: result, message: "Get Shipper Success" })
+            return res.json({ data: result, message: "Lấy shipper thành công" })
         } catch (error) {
             console.log("Get Shipper Error:", error)
-            return res.json({ data: null, message: "Get Shipper Error" });
+            return res.json({ data: null, message: "Lỗi lấy shipper" });
         }
 
     },
@@ -69,12 +69,12 @@ const ShipperController = {
                 for (const order of orderList) {
                     totalSalary += order.shipCost
                 }
-                return res.json({ data: { orderCount: orderList.length, totalSalary }, message: "Get Shipper Detail Success" })
+                return res.json({ data: { orderCount: orderList.length, totalSalary }, message: "Lấy thông tin chi tiết shipper thành công" })
             }
-            return res.json({ data: null, message: "Get Shipper Detail Fail" })
+            return res.json({ data: null, message: "Lấy thông tin chi tiết shipper thất bại" })
         } catch (error) {
             console.error("Get Shipper Detail Error: ", error)
-            return res.json({ data: null, message: "Get Shipper Detail Error" });
+            return res.json({ data: null, message: "Lỗi lấy thông tin chi tiết shipper" });
         }
     },
     async deleteShipper(req, res) {
@@ -87,10 +87,10 @@ const ShipperController = {
             let newShipper = selectedShopkeeper.shippers.filter(shipper => shipper != `${selectedShipper.fullname}---${selectedShipper.username}`)
             let result = await UserService.updateOne({ _id: id }, { jobs: newJobs })
             await UserService.updateOne({ username: shopkeeper }, { shippers: newShipper })
-            return res.json({ data: result, message: "Delete Shipper Success" })
+            return res.json({ data: result, message: "Xóa shipper thành công" })
         } catch (error) {
             console.error("Delete Shipper Error: ", error)
-            return res.json({ data: null, message: "Delete Shipper Error" });
+            return res.json({ data: null, message: "Lỗi xóa shipper" });
         }
     },
 

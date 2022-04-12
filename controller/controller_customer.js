@@ -59,10 +59,10 @@ const CustomerController = {
       //=> data = customer + order của shopkeeper
       /*Array.splice(index,1) = xóa phần tử tại vị trí i trong Array */
 
-      return res.json({ data: data, message: "Get Order Success" });
+      return res.json({ data: data, message: "Lấy đơn hàng thành công" });
     } catch (error) {
       console.log(error);
-      return res.json({ data: error, message: "Get Order Error" });
+      return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" });
     }
   },
 
@@ -90,7 +90,7 @@ const CustomerController = {
         result = await OrderService.find({ _id: data});
       }
       if (result.length == 0) {
-        return res.json({ data: null, message: "Order not existed !" });
+        return res.json({ data: null, message: "Đơn hàng không tồn tại !" });
       }
       for (let i = 0; i < result.length; i++) {
           const order = result[i];
@@ -100,10 +100,10 @@ const CustomerController = {
             ...order._doc
           })
       }
-      return res.json({ data: output, message: "Get Order Success" });
+      return res.json({ data: output, message: "Lấy đơn hàng thành công" });
     } catch (error) {
       console.log("Get Order Error", error);
-      return res.json({ data: error, message: "Get Order Error" });
+      return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" });
     }
   },
 };
