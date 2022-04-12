@@ -1,4 +1,6 @@
+require("dotenv").config();
 const { UserService, FacebookService } = require("../services");
+const nodemailer = require("nodemailer");
 const { logError, logWarn, isVietnamesePhoneNumber } = require("../utils/index");
 const jwt = require("jsonwebtoken");
 const UserController = {
@@ -491,6 +493,56 @@ const UserController = {
       return res.json({ data: error, message: "Lỗi đổi mật khẩu" });
     }
   },
+  async sendMailNewPassword(req, res) {
+    try {
+      let email = req.body.email;
+      let username = req.body.username;
+      let user = await UserService.find({ username });
+      if (user[0]==null) {
+        return res.json({ message: "Incorrect username" });
+      }
+      let _id = user[0]._id;
+      let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      let stringLength = 8;
+      let password = '';
+      for (let i = 0; i < stringLength; i++) {
+        let rnum = Math.floor(Math.random() * chars.length);
+        password += chars.substring(rnum, rnum + 1);
+      }
+      console.log(password)
+      await UserService.updateOne(
+        { _id },
+        { password }
+      );
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL, // generated ethereal user
+          pass: process.env.PASSWORD, // generated ethereal password
+        },
+      });
+      console.log(process.env.EMAIL)
+      console.log(process.env.PASSWORD)
+      let mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: 'Thông báo đổi mật khẩu',
+        text: 'Đây là mật khẩu mới của bạn ' + password
+      }
+      // send mail with defined transport object
+      await transporter.sendMail(mailOptions, function (error, data) {
+        if (error) {
+          return res.json({error : error, message: "Sent email Error" });
+        } else {
+          return res.json({ message: "Sent email Success" });
+        }
+      });
+    } catch (error) {
+      return res.json({ data: error, message: "Controller User Error" });
+    }
+  }
 };
 
 module.exports = UserController;
