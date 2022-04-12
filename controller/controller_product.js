@@ -10,18 +10,18 @@ const ProductController = {
             let price = req.body.price;
             let username = req.body.username;
             if (!title || !price) {
-                return res.json({ data: null, message: "Lack of information" })
+                return res.json({ data: null, message: "Chưa đủ thông tin" })
             }
             if (!username) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
 
             let keyword = genKeyWord(title);
             let result = await ProductService.create({ title, price, keyword, username })
-            return res.json({ data: result, message: "Create Product success" })
+            return res.json({ data: result, message: "Tạo sản phẩm thành công" })
         } catch (error) {
             logError("Create Product Error", error)
-            return res.json({ data: null, message: "Create Product Error" })
+            return res.json({ data: null, message: "Lỗi tạo sản phẩm" })
         }
     },//FE truyền dữ liệu -> BE nhận dữ liệu -> BE xử lý dữ liệu -> BE trả dữ liệu
     async getProduct(req, res) {//req.body.name 
@@ -37,12 +37,12 @@ const ProductController = {
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Sản phẩm không tồn tại!" })
             }
-            return res.json({ data: result, message: "Get Product Success" })
+            return res.json({ data: result, message: "Lấy sản phẩm thành công" })
         } catch (error) {
             logError("Get Product Error", error)
-            return res.json({ data: error, message: "Get Product Error" })
+            return res.json({ data: error, message: "Lỗi lấy sản phẩm" })
         }
     },
     async edit(req, res) {
@@ -52,21 +52,21 @@ const ProductController = {
             let price = req.body.price;
             let keyword = req.body.keyword;
             if (!_id) {
-                return res.json({ data: null, message: "Not have id Product" })
+                return res.json({ data: null, message: "Không có id sản phẩm" })
             } else if (!title && !price && !keywords) {
-                return res.json({ data: null, message: "Not have information" })
+                return res.json({ data: null, message: "Chưa đủ thông tin" })
             }
             let result = await ProductService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Sản phẩm không tồn tại !" })
             } else {
                 let updateAt = Date.now()
                 result = await ProductService.updateOne({ _id }, { title, price, keyword, updateAt })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             logError("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async delete(req, res) {
@@ -74,18 +74,18 @@ const ProductController = {
             let _id = req.body._id;
             console.log("Product Id: ", req.body);
             if (!_id) {
-                return res.json({ data: null, message: "Not have id of product" })
+                return res.json({ data: null, message: "Không có id sản phẩm" })
             }
             let result = await ProductService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Sản phẩm không tồn tại!" })
             } else {
                 result = await ProductService.deleteOne({ _id })
             }
-            return res.json({ data: result, message: "Delete  Success" })
+            return res.json({ data: result, message: "Xóa sản phẩm thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Delete Error" })
+            return res.json({ data: error, message: "Lỗi xóa sản phẩm" })
         }
     },
     async getProductNum(req, res) {
@@ -93,17 +93,17 @@ const ProductController = {
             let _id = req.query.id;
             let user = await UserService.find({ _id });
             if (!user) {
-                return res.json({ data: null, message: "Not have id user" })
+                return res.json({ data: null, message: "Không có id người dùng" })
             }
             let username = user[0].username
             let result = await ProductService.find({ username })
             if (!result) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Sản phẩm không tồn tại!" })
             }
-            return res.json({ data: result.length, message: "Get Number Product Success" })
+            return res.json({ data: result.length, message: "Lấy số sản phẩm thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Get Number Product Error" })
+            return res.json({ data: error, message: "Lỗi lấy số sản phẩm" })
         }
     }
 }

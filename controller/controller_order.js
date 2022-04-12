@@ -20,11 +20,11 @@ const OrderController = {
                 return res.json({ data: null, message: "Thiếu Thông Tin" })
             }
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             let isExist = await OrderService.find({ comment_id: comment_id })
             if (isExist.length > 0) {
-                return res.json({ data: null, message: "Order Đã tồn tại" })
+                return res.json({ data: null, message: "Đơn hàng Đã tồn tại" })
             }
             let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId, createAt, updateAt: createAt })
             await CommentService.updateOne({ fb_id: comment_id }, { type: 1 })
@@ -48,7 +48,7 @@ const OrderController = {
                 let customer = await CustomerService.create({ fullname: customerName, phone, address, order, facebook_id: customerId });
             }
 
-            return res.json({ data: result, message: "Create Order success" })
+            return res.json({ data: result, message: "Tạo đơn hàng thành công" })
         } catch (error) {
             console.log("Create Order Error", error)
             return res.json({ data: null, message: "Create Order Error" })
@@ -62,7 +62,7 @@ const OrderController = {
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
             } else {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (req.query.id) {
                 condition._id = req.query.id
@@ -71,12 +71,12 @@ const OrderController = {
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {
-                return res.json({ data: null, message: "Order not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
             }
-            return res.json({ data: result, message: "Get Order Success" })
+            return res.json({ data: result, message: "Lấy đơn hàng thành công" })
         } catch (error) {
             logError("Get Order Error", error)
-            return res.json({ data: error, message: "Get Order Error" })
+            return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" })
         }
     },
     async edit(req, res) {
@@ -89,25 +89,25 @@ const OrderController = {
             let shipper = req.body.shipper;
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id Product" })
+                return res.json({ data: null, message: "Chưa có id sản phẩm" })
             }
             //  else if (!title && !price && !keywords) {
             //     return res.json({ data: null, message: "Not have information" })
             // }
             let result = await OrderService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
             } else {
                 let updateAt = Date.now()
                 result = await OrderService.updateOne({ _id }, { product, customerName, address, phone, shipper, updateAt })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             console.log("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async delete(req, res) {
@@ -115,21 +115,21 @@ const OrderController = {
             let _id = req.body._id;
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Chưa có id bài đăng" })
             }
             let result = await OrderService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             } else {
                 result = await OrderService.deleteOne({ _id })
             }
-            return res.json({ data: result, message: "Delete  Success" })
+            return res.json({ data: result, message: "Xóa thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Delete Error" })
+            return res.json({ data: error, message: "Lỗi xóa bài đăng" })
         }
     },
     async changeStatus(req, res) {
@@ -138,27 +138,27 @@ const OrderController = {
             let _id = req.query.id;
             let status = req.query.status;
             if (!validStatus.includes(status)) {
-                return res.json({ data: null, message: "Invalid status" })
+                return res.json({ data: null, message: "Trạng thái không hợp lệ." })
             }
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id Product" })
+                return res.json({ data: null, message: "Chưa có id sản phẩm" })
             }
             let result = await OrderService.find({ _id })
 
             if (!result) {
-                return res.json({ data: null, message: "Order not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại!" })
             } else {
                 let updateAt = Date.now();
                 result = await OrderService.updateOne({ _id }, { status, updateAt })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             logError("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async getTotalEarn(req, res) {
@@ -167,12 +167,12 @@ const OrderController = {
             let user = await UserService.find({ _id });
 
             if (!user) {
-                return res.json({ data: null, message: "Not have id user" })
+                return res.json({ data: null, message: "Không có id người dùng" })
             }
             let shopkeeper = user[0].username
             let result = await OrderService.find({ shopkeeper })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             }
             let totalMoney = 0;
             if (result.length != 0) {
@@ -182,10 +182,10 @@ const OrderController = {
                     }
                 }
             }
-            return res.json({ data: totalMoney, message: "Get Total Earn Success" })
+            return res.json({ data: totalMoney, message: "Tính toán tổng tiền thu được thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Get Total Earn Error" })
+            return res.json({ data: error, message: "Lỗi tính toán tổng tiền thu được" })
         }
     }
 }

@@ -45,14 +45,14 @@ const PostController = {
                         fb_url: UploadData.data.url
                     })
                 // await PostService.updateOne({ _id: createdPost.id }, {})
-                return res.json({ data: createdPost, message: "Create post success" })
+                return res.json({ data: createdPost, message: "Tạo bài đăng thành công" })
             }
             else return res.json({
                 data: null, message: "Tạo Post Thất Bại"
             })
         } catch (error) {
             console.log("Create Post Error", error)
-            return res.json({ data: null, message: "Create Post Error" })
+            return res.json({ data: null, message: "Lỗi tạo bài đăng" })
         }
     },
     async getPost(req, res) {
@@ -76,7 +76,7 @@ const PostController = {
             return res.json({ data: selectedPostList, message: "Tìm bài viết thành công" })
         } catch (error) {
             logError("Get Post Error", error)
-            return res.json({ data: error, message: "Get Post Error" })
+            return res.json({ data: error, message: "Lỗi nhận bài đăng" })
         }
     },
     async edit(req, res) {
@@ -88,40 +88,40 @@ const PostController = {
             let status = req.body.status;
             let order = req.body.order;
             if (!id) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Không có id bài đăng" })
             } else if (!fb_id && !content && !attachment && !status && !order) {
-                return res.json({ data: null, message: "Not have information" })
+                return res.json({ data: null, message: "Bài đăng chưa đủ thông tin " })
 
 
             }
             let result = await PostService.find({ id })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             } else {
                 result = await PostService.updateOne({ id }, { fb_id, content, attachment, status, order })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             logError("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async delete(req, res) {
         try {
             let id = req.body.id;
             if (!id) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Không có id bài đăng" })
             }
             let result = await PostService.find({ id })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             } else {
                 result = await PostService.delete({ id })
             }
-            return res.json({ data: result, message: "Delete  Success" })
+            return res.json({ data: result, message: "Xóa thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Delete Error" })
+            return res.json({ data: error, message: "Lỗi xóa bài đăng" })
         }
     },
     async disable(req, res) {
@@ -149,7 +149,7 @@ const PostController = {
             return res.json({ data: null, message: "Cập nhật thất bại" })
         } catch (error) {
             console.log("Delete Post Error", error)
-            return res.json({ data: error, message: "Delete Error" })
+            return res.json({ data: error, message: "Lỗi xóa bài đăng" })
         }
     },
     async getPostNum(req, res) {
@@ -157,17 +157,17 @@ const PostController = {
             let _id = req.query.id;
             let user = await UserService.find({ _id });
             if (!user) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Không có id bài đăng" })
             }
             let username = user[0].username
             let result = await PostService.find({ username })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại!" })
             }
-            return res.json({ data: result.length, message: "Get Number Post Success" })
+            return res.json({ data: result.length, message: "Lấy số bài đăng thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Get Number Post Error" })
+            return res.json({ data: error, message: "Lỗi lấy số bài đăng" })
         }
     }
 }
