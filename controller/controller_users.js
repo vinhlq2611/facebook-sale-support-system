@@ -16,24 +16,24 @@ const UserController = {
       });
       console.log(account);
       if (account.length == 1) {
-        
-          let user = account[0];
-          if(!user.isActive){
-            logWarn("Login fail", { username: username, password: password });
-            return res.json({ data: null, message: "Tài khoản đã ngừng hoạt động" });
-          }else{
-             // console.log("token data",{ username: user.username, password: user.password, type: user.type})
+
+        let user = account[0];
+        if (!user.isActive) {
+          logWarn("Login fail", { username: username, password: password });
+          return res.json({ data: null, message: "Tài khoản đã ngừng hoạt động" });
+        } else {
+          // console.log("token data",{ username: user.username, password: user.password, type: user.type})
           let token = jwt.sign(
-            { username: user.username, password: user.password, type: user.type,isActive:user.isActive },
+            { username: user.username, password: user.password, type: user.type, isActive: user.isActive },
             process.env.SECRET_KEY
           );
           account[0].token = token
           res.cookie("token", token, { maxAge: 90000000, httpOnly: true });
           return res.json({ data: account[0], message: "Đăng nhập thành công" });
-          }
-         
-            
-      }  else {
+        }
+
+
+      } else {
         logWarn("Login fail", { username: username, password: password });
         return res.json({ data: null, message: "Tài khoản hoặc mật khẩu không đúng" });
       }
@@ -163,7 +163,6 @@ const UserController = {
   },
   async getUserByUsername(req, res) {
     try {
-      consosle.log("Hello")
       let username = req.body.username;
       let data = await UserService.find({ username: username });
       let user = data[0];
@@ -254,7 +253,7 @@ const UserController = {
     let [user] = await UserService.find({ username });
     let fbData = user.facebook
     if (fbData.cookie?.status == 1) {
-      let groupList = await FacebookService.getGroupList(fbData.token)
+      let groupList = await FacebookService.getGroupList(fbData.cookie.data, fbData.token)
       // console.log("Facebook Group = ", groupList);
       return res.json({ data: groupList, message: 'Lấy Group Facebook Thành Công' })
     } else {
@@ -356,7 +355,7 @@ const UserController = {
       }
       if (result[0].isActive == true) {
         let isActive = false
-        UserService.updateOne(condition, { isActive ,password:"-----"})
+        UserService.updateOne(condition, { isActive, password: "-----" })
       } else {
         let isActive = true
         UserService.updateOne(condition, { isActive })
@@ -498,7 +497,7 @@ const UserController = {
       let email = req.body.email;
       let username = req.body.username;
       let user = await UserService.find({ username });
-      if (user[0]==null) {
+      if (user[0] == null) {
         return res.json({ message: "Sai tên người dùng" });
       }
       let _id = user[0]._id;
@@ -534,7 +533,7 @@ const UserController = {
       // send mail with defined transport object
       await transporter.sendMail(mailOptions, function (error, data) {
         if (error) {
-          return res.json({error : error, message: "Lỗi gửi emai" });
+          return res.json({ error: error, message: "Lỗi gửi emai" });
         } else {
           return res.json({ message: "Gửi email thành công" });
         }

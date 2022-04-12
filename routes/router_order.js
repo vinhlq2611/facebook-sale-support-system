@@ -15,6 +15,18 @@ module.exports = [
     middleware: [AuthMiddleware.needLogin],
     action: OrderController.getOrder
   }, {
+    method: 'get',
+    route: '/order/get-order-detail',
+    controller: OrderController,
+    middleware: [AuthMiddleware.needLogin],
+    action: OrderController.getOrderDetail
+  }, {
+    method: 'post',
+    route: '/order/get-shipper-order',
+    controller: OrderController,
+    middleware: [AuthMiddleware.needLogin],
+    action: OrderController.getShipperOrder
+  }, {
     method: 'post',
     route: '/order/edit',
     controller: OrderController,
@@ -26,6 +38,12 @@ module.exports = [
     controller: OrderController,
     middleware: [AuthMiddleware.needLogin],
     action: OrderController.changeStatus
+  }, {
+    method: 'post',
+    route: '/order/shipper-change-status',
+    controller: OrderController,
+    middleware: [AuthMiddleware.needLogin],
+    action: OrderController.shipperChangeStatus
   }, {
     method: 'delete',
     route: '/order/delete',

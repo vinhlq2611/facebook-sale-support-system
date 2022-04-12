@@ -57,8 +57,6 @@ const OrderController = {
     async getOrder(req, res) {//req.body.name 
         try {
             let condition = {};
-            let sortKey = req.query?.sort
-            let sortDirection = req.query?.direction
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
             } else {
@@ -67,7 +65,7 @@ const OrderController = {
             if (req.query.id) {
                 condition._id = req.query.id
             }
-            let result = await OrderService.find(condition, { sortKey, sortDirection })
+            let result = await OrderService.find(condition)
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {
@@ -77,6 +75,37 @@ const OrderController = {
         } catch (error) {
             logError("Get Order Error", error)
             return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" })
+        }
+    },
+    async getOrderDetail(req, res) {//req.body.name 
+        try {
+            let condition = {};
+            condition._id = req.query.id
+            let result = await OrderService.find(condition)
+            console.log('Condition: ', req.body)
+            // console.log('result' + util.inspect(result ,false, null, true))
+            if (result.length == 0) {
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
+            }
+            return res.json({ data: result[0], message: "Lấy đơn hàng thành công" })
+        } catch (error) {
+            logError("Get Order Error", error)
+            return res.json({ data: null, message: "Xảy ra lỗi lấy đơn hàng" })
+        }
+    },
+    async getShipperOrder(req, res) {
+        try {
+            let shopkeepers = req.body.shopkeepers;
+            let shipper = req.body.username;
+            let order = await OrderService.find({
+                username: { $in: shopkeepers },
+                shipper: { $in: [shipper, ""] },
+                status: { $in: ['ready', 'shipping', 'done', 'cancel'] }
+            })
+            return res.json({ data: order, message: "Đã Tìm thấy order" })
+        } catch (error) {
+            console.log("Tìm order của shipper thất bại: ", error)
+            return res.json({ data: null, message: "Tìm order của shipper thất bại" })
         }
     },
     async edit(req, res) {
@@ -130,6 +159,30 @@ const OrderController = {
         } catch (error) {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi xóa bài đăng" })
+        }
+    },
+    async shipperChangeStatus(req, res) {
+        try {
+            let validStatus = ['created', 'ready', 'shipping', 'done', 'cancel']
+            let shipper = req.body.shipper;
+            let status = req.body.status;
+            let _id = req.body.orderId;
+            if (!validStatus.includes(status)) {
+                return res.json({ data: null, message: "Trạng thái không hợp lệ." })
+            }
+            let [selectedOrder] = await OrderService.find({ _id });
+            console.log(selectedOrder)
+
+            if (selectedOrder.shipper != "" && selectedOrder.shipper != shipper) {
+                return res.json({ data: null, message: "Đơn hàng thuộc về người khác" })
+            }
+            else {
+                let result = await OrderService.updateOne({ _id }, { shipper, status })
+                return res.json({ data: result, message: "Cập nhật thành công" })
+            }
+        } catch (error) {
+            console.log("Cập nhật đơn hàng thất bại: ", error)
+            return res.json({ data: null, message: "Cập nhật đơn hàng thất bại" })
         }
     },
     async changeStatus(req, res) {
