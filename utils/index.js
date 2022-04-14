@@ -71,8 +71,6 @@ function genKeyWord(productName) {
     //Remove Vietnamese expression
     keywords.forEach(key => {
         let keyTemp = key;
-        console.log("key",key);
-        console.log("keyTemp",keyTemp);
         keyTemp = keyTemp.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
         keyTemp = keyTemp.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
         keyTemp = keyTemp.replace(/ì|í|ị|ỉ|ĩ/g, "i");
@@ -87,8 +85,9 @@ function genKeyWord(productName) {
         keyTemp = keyTemp.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
         keyTemp = keyTemp.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
         keyTemp = keyTemp.replace(/Đ/g, "D");
-        console.log(keyTemp);
-        keywords.push(keyTemp);
+        if(key !== keyTemp){
+            keywords.push(keyTemp);
+        }
     });
     console.log(keywords);
     return keywords;
