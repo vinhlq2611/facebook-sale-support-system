@@ -58,6 +58,11 @@ module.exports = [
     middleware: [AuthMiddleware.needAdmin],
     action: UserController.getAllUser,
   }, {
+    method: "get",
+    route: "/account/user-detail",
+    middleware: [AuthMiddleware.needAdmin],
+    action: UserController.getUserDetail,
+  }, {
     method: "put",
     route: "/account/changeStatus",
     middleware: [AuthMiddleware.needAdmin],

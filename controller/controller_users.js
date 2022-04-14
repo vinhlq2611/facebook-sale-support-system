@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { UserService, FacebookService } = require("../services");
+const { UserService, FacebookService, OrderService, PostService, ProductService } = require("../services");
 const nodemailer = require("nodemailer");
 const { logError, logWarn, isVietnamesePhoneNumber } = require("../utils/index");
 const jwt = require("jsonwebtoken");
@@ -179,7 +179,7 @@ const UserController = {
       let phone = req.body.phone;
       let birthdate = req.body.birthdate;
       let replySyntaxs = req.body.replySyntaxs;
-      console.log(username, email, phone, birthdate, fullname);
+      console.log(req.body);
       // CHECK EMPTY INPUT  ""
       if (!username || !email || !phone || !birthdate || !replySyntaxs || !fullname) {
         logWarn("Vui lòng điền đầy đủ thông tin", {
@@ -327,9 +327,6 @@ const UserController = {
   async getAllUser(req, res) {
     try {
       let condition = {};
-      // if (req.body.username) {
-      //     condition.username = req.body.username
-      // }
       if (req.query.id) {
         condition._id = req.query.id
       }
@@ -340,6 +337,36 @@ const UserController = {
       return res.json({ data: result, message: "Lấy thông tin người dùng thành công" })
     } catch (error) {
       logError("Get Product Error", error)
+      return res.json({ data: error, message: "Lấy thông tin người dùng thất bại" })
+    }
+  },
+  async getUserDetail(req, res) {
+    try {
+      let id = req.query.id
+      let response = {}
+      if (!id) {
+        return res.json({ data: null, message: "Thiếu thông tin" })
+      }
+      let [user] = await UserService.find({ _id: id })
+      if (!user) {
+        return res.json({ data: null, message: "Người dùng không tồn tại !" })
+      }
+      response = user
+      if (user.type == 1) {
+        let order = await OrderService.find({ shopkeeper: user.username })
+        let post = await PostService.find({ username: user.username })
+        let product = await ProductService.find({ username: user.username })
+        response.order = order
+        response.post = post
+        response.product = product
+      }
+      if (user.type == 0) {
+        let order = await OrderService.find({ shipper: user.username })
+        response.order = order
+      }
+      return res.json({ data: response, message: "Lấy thông tin thành công" })
+    } catch (error) {
+      console.log("Lấy thông tin người dùng thất bại", error)
       return res.json({ data: error, message: "Lấy thông tin người dùng thất bại" })
     }
   },
