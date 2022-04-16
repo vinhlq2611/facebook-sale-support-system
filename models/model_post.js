@@ -1,4 +1,4 @@
-var mongoose = require('../config/dbConnect');
+var mongoose = require('../config/DBConnect');
 let date = new Date(Date.now);
 var PostModel = mongoose.model("post", new mongoose.Schema({
     username: String,
