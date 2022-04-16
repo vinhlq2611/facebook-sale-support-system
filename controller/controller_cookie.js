@@ -20,7 +20,7 @@ const CookieController = {
       }
       let checkuid=await CookieService.find({uid:facebookData.data.uid});
       if(checkuid.length != 0) {
-        return res.json({ data: null, message: "Cookie da ton tai" });
+        return res.json({ data: null, message: "Cookie đã tồn tại" });
       }
       let result = await CookieService.create({
         data: cookie,
@@ -47,14 +47,14 @@ const CookieController = {
       }
       let new_uid=facebookData.data.uid;
       if(uid != new_uid) {
-        return res.json({ data: null, message: "Uid moi khong trung uid cu" });
+        return res.json({ data: null, message: "Uid mới không trùng khớp uid cũ" });
       }
       let result = await CookieService.updateOne({
         uid: facebookData.data.uid,},
       {data: cookie,
         token: "----",
         dtsg: facebookData.data.dtsg,});
-      return res.json({ data: result, message: "Sua cookie thành công" });
+      return res.json({ data: result, message: "Sửa cookie thành công" });
     } catch (error) {
       console.error(error);
     }
@@ -93,7 +93,7 @@ const CookieController = {
     try {
       let uid=req.body.uid;
       let data = await CookieService.deleteOne({uid:uid});
-      return res.json({ data: result, message: "Xoa cookie thành công" });
+      return res.json({ data: result, message: "Xóa cookie thành công" });
     } catch (error) {
       return res.json(null);
     }

@@ -15,17 +15,18 @@ const OrderController = {
             let phone = req.body.phone;
             let customerId = req.body.customerId;
             let postId = req.body.postId;
+            let createAt = req.body?.createAt ? req.body?.createAt : Date.now();
             if (!comment_id || !product || product.length < 1 || !customerName || !address || !phone || !customerId || !postId) {
                 return res.json({ data: null, message: "Thiếu Thông Tin" })
             }
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             let isExist = await OrderService.find({ comment_id: comment_id })
             if (isExist.length > 0) {
-                return res.json({ data: null, message: "Order Đã tồn tại" })
+                return res.json({ data: null, message: "Đơn hàng Đã tồn tại" })
             }
-            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId })
+            let result = await OrderService.create({ comment_id, shopkeeper, product, customerName, address, phone, customerId, postId, createAt, updateAt: createAt })
             await CommentService.updateOne({ fb_id: comment_id }, { type: 1 })
             // console.log(result);
             let order = result._id;
@@ -47,7 +48,7 @@ const OrderController = {
                 let customer = await CustomerService.create({ fullname: customerName, phone, address, order, facebook_id: customerId });
             }
 
-            return res.json({ data: result, message: "Create Order success" })
+            return res.json({ data: result, message: "Tạo đơn hàng thành công" })
         } catch (error) {
             console.log("Create Order Error", error)
             return res.json({ data: null, message: "Create Order Error" })
@@ -59,7 +60,7 @@ const OrderController = {
             if (req.body.username) {
                 condition.shopkeeper = req.body.username
             } else {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (req.query.id) {
                 condition._id = req.query.id
@@ -68,12 +69,43 @@ const OrderController = {
             console.log('Condition: ', req.body)
             // console.log('result' + util.inspect(result ,false, null, true))
             if (result.length == 0) {
-                return res.json({ data: null, message: "Order not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
             }
-            return res.json({ data: result, message: "Get Order Success" })
+            return res.json({ data: result, message: "Lấy đơn hàng thành công" })
         } catch (error) {
             logError("Get Order Error", error)
-            return res.json({ data: error, message: "Get Order Error" })
+            return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" })
+        }
+    },
+    async getOrderDetail(req, res) {//req.body.name 
+        try {
+            let condition = {};
+            condition._id = req.query.id
+            let result = await OrderService.find(condition)
+            console.log('Condition: ', req.body)
+            // console.log('result' + util.inspect(result ,false, null, true))
+            if (result.length == 0) {
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
+            }
+            return res.json({ data: result[0], message: "Lấy đơn hàng thành công" })
+        } catch (error) {
+            logError("Get Order Error", error)
+            return res.json({ data: null, message: "Xảy ra lỗi lấy đơn hàng" })
+        }
+    },
+    async getShipperOrder(req, res) {
+        try {
+            let shopkeepers = req.body.shopkeepers;
+            let shipper = req.body.username;
+            let order = await OrderService.find({
+                username: { $in: shopkeepers },
+                shipper: { $in: [shipper, ""] },
+                status: { $in: ['ready', 'shipping', 'done', 'cancel'] }
+            })
+            return res.json({ data: order, message: "Đã Tìm thấy order" })
+        } catch (error) {
+            console.log("Tìm order của shipper thất bại: ", error)
+            return res.json({ data: null, message: "Tìm order của shipper thất bại" })
         }
     },
     async edit(req, res) {
@@ -86,25 +118,25 @@ const OrderController = {
             let shipper = req.body.shipper;
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id Product" })
+                return res.json({ data: null, message: "Chưa có id sản phẩm" })
             }
             //  else if (!title && !price && !keywords) {
             //     return res.json({ data: null, message: "Not have information" })
             // }
             let result = await OrderService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Product not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại !" })
             } else {
                 let updateAt = Date.now()
                 result = await OrderService.updateOne({ _id }, { product, customerName, address, phone, shipper, updateAt })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             console.log("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async delete(req, res) {
@@ -112,21 +144,45 @@ const OrderController = {
             let _id = req.body._id;
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id post" })
+                return res.json({ data: null, message: "Chưa có id bài đăng" })
             }
             let result = await OrderService.find({ _id })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             } else {
                 result = await OrderService.deleteOne({ _id })
             }
-            return res.json({ data: result, message: "Delete  Success" })
+            return res.json({ data: result, message: "Xóa thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Delete Error" })
+            return res.json({ data: error, message: "Lỗi xóa bài đăng" })
+        }
+    },
+    async shipperChangeStatus(req, res) {
+        try {
+            let validStatus = ['created', 'ready', 'shipping', 'done', 'cancel']
+            let shipper = req.body.shipper;
+            let status = req.body.status;
+            let _id = req.body.orderId;
+            if (!validStatus.includes(status)) {
+                return res.json({ data: null, message: "Trạng thái không hợp lệ." })
+            }
+            let [selectedOrder] = await OrderService.find({ _id });
+            console.log(selectedOrder)
+
+            if (selectedOrder.shipper != "" && selectedOrder.shipper != shipper) {
+                return res.json({ data: null, message: "Đơn hàng thuộc về người khác" })
+            }
+            else {
+                let result = await OrderService.updateOne({ _id }, { shipper, status })
+                return res.json({ data: result, message: "Cập nhật thành công" })
+            }
+        } catch (error) {
+            console.log("Cập nhật đơn hàng thất bại: ", error)
+            return res.json({ data: null, message: "Cập nhật đơn hàng thất bại" })
         }
     },
     async changeStatus(req, res) {
@@ -135,27 +191,27 @@ const OrderController = {
             let _id = req.query.id;
             let status = req.query.status;
             if (!validStatus.includes(status)) {
-                return res.json({ data: null, message: "Invalid status" })
+                return res.json({ data: null, message: "Trạng thái không hợp lệ." })
             }
             let shopkeeper = req.body.username;
             if (!shopkeeper) {
-                return res.json({ data: null, message: "No user authen" })
+                return res.json({ data: null, message: "Chưa xác thực người dùng" })
             }
             if (!_id) {
-                return res.json({ data: null, message: "Not have id Product" })
+                return res.json({ data: null, message: "Chưa có id sản phẩm" })
             }
             let result = await OrderService.find({ _id })
 
             if (!result) {
-                return res.json({ data: null, message: "Order not existed !" })
+                return res.json({ data: null, message: "Đơn hàng không tồn tại!" })
             } else {
                 let updateAt = Date.now();
                 result = await OrderService.updateOne({ _id }, { status, updateAt })
             }
-            return res.json({ data: result, message: "Update  Success" })
+            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
             logError("Edit Post Error", error)
-            return res.json({ data: error, message: "Update Error" })
+            return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
     async getTotalEarn(req, res) {
@@ -164,12 +220,12 @@ const OrderController = {
             let user = await UserService.find({ _id });
 
             if (!user) {
-                return res.json({ data: null, message: "Not have id user" })
+                return res.json({ data: null, message: "Không có id người dùng" })
             }
             let shopkeeper = user[0].username
             let result = await OrderService.find({ shopkeeper })
             if (!result) {
-                return res.json({ data: null, message: "Post not existed !" })
+                return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             }
             let totalMoney = 0;
             if (result.length != 0) {
@@ -179,10 +235,10 @@ const OrderController = {
                     }
                 }
             }
-            return res.json({ data: totalMoney, message: "Get Total Earn Success" })
+            return res.json({ data: totalMoney, message: "Tính toán tổng tiền thu được thành công" })
         } catch (error) {
             logError("Delete Post Error", error)
-            return res.json({ data: error, message: "Get Total Earn Error" })
+            return res.json({ data: error, message: "Lỗi tính toán tổng tiền thu được" })
         }
     }
 }

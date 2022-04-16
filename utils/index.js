@@ -67,6 +67,29 @@ function genKeyWord(productName) {
     if (keywords.indexOf(keyword.replace(" ", '')) == -1) {
         keywords.push(keyword.replace(" ", ''));
     }
+
+    //Remove Vietnamese expression
+    keywords.forEach(key => {
+        let keyTemp = key;
+        keyTemp = keyTemp.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        keyTemp = keyTemp.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        keyTemp = keyTemp.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        keyTemp = keyTemp.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        keyTemp = keyTemp.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        keyTemp = keyTemp.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        keyTemp = keyTemp.replace(/đ/g, "d");
+        keyTemp = keyTemp.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+        keyTemp = keyTemp.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+        keyTemp = keyTemp.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+        keyTemp = keyTemp.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+        keyTemp = keyTemp.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+        keyTemp = keyTemp.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+        keyTemp = keyTemp.replace(/Đ/g, "D");
+        if(key !== keyTemp){
+            keywords.push(keyTemp);
+        }
+    });
+    console.log(keywords);
     return keywords;
 }
 

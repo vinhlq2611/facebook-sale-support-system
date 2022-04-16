@@ -23,7 +23,7 @@ const CommentController =
             }
             let scanData = await FacebookService.scanPostComment(selectedPost.group.groupId, selectedPost.fb_id, userFB.uid, userFB.dtsg, userFB.cookie.data)
             if (scanData.length == 0) {
-                return res.json({ data: null, message: "Cookie Hết Hạn, Vui lòng cập nhật" });
+                return res.json({ data: null, message: "Chưa có comment nào" });
 
             }
             await CommentService.handleScanComment(selectedPost.id, scanData, selectedPost.products)

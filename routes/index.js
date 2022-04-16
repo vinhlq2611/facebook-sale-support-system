@@ -6,5 +6,6 @@ const CommentRouter = require("./router_comment");
 const OrdertRouter =  require("./router_order");
 const CookieRouter = require("./router_cookie");
 const CustomerRouter = require("./router_customer")
-const mergeRouter = [...UserRouter, ...PostRouter, ...ProductRouter, ...CommentRouter, ...OrdertRouter,...CookieRouter,...CustomerRouter];
+const ShipperRouter = require("./router_shipper")
+const mergeRouter = [...UserRouter, ...PostRouter, ...ProductRouter, ...CommentRouter, ...OrdertRouter,...CookieRouter,...CustomerRouter,...ShipperRouter];
 module.exports = mergeRouter;

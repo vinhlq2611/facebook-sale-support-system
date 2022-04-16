@@ -10,16 +10,17 @@ async function needLogin(req, res, next) {
     let isValid = await UserModel.find({
       username: decodeData.username,
       password: decodeData.password,
+      // isActive: true,
     });
     req.body.username = decodeData.username;
     req.body.type = decodeData.type;
+    // req.body.isActive = decodeData.isActive;
     if (isValid.length == 1) {
       next();
-    } else res.redirect("/test/login");
+    } else res.json({ data: null, message: "Đăng nhập hết hạn" })
   } catch (error) {
     console.log("needLogin Error:", error);
-    // res.json({ data: null, message: "Đăng nhập hết hạn" })
-    res.redirect("/test/login");
+    return res.json({ data: null, message: "Đăng nhập hết hạn" })
   }
 }
 async function needAdmin(req, res, next) {
@@ -29,16 +30,16 @@ async function needAdmin(req, res, next) {
     let isValid = await UserModel.find({
       username: decodeData.username,
       password: decodeData.password,
+      // isActive: true,
     });
     req.body.username = decodeData.username;
     req.body.type = decodeData.type;
-    if (isValid.length == 1 && decodeData.type == 0) {
+    if (isValid.length == 1 && decodeData.type == 2) {
       next();
-    } else res.redirect("/test/login");
+    } else res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
   } catch (error) {
     console.log("needLogin Error:", error);
-    // res.json({ data: null, message: "Đăng nhập hết hạn" })
-    res.redirect("/test/login");
+    return res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
   }
 }
 async function needGuest(req, res, next) {
@@ -50,7 +51,7 @@ async function needGuest(req, res, next) {
       password: decodeData.password,
     });
     if (isValid.length > 0) {
-      res.redirect("/test/home");
+      return res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
     } else next();
   } catch (error) {
     next();

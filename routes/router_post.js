@@ -15,7 +15,7 @@ module.exports = [
     middleware: [AuthMiddleware.needLogin],
     action: PostController.getPost
   }, {
-    method: 'put',
+    method: 'post',
     route: '/post/edit',
     controller: PostController,
     middleware: [AuthMiddleware.needLogin],
@@ -34,10 +34,10 @@ module.exports = [
     action: PostController.disable
   },
   {
-  method: 'get',
-  route: '/post/count',
-  controller: PostController,
-  middleware: [AuthMiddleware.needLogin],
-  action: PostController.getPostNum
+    method: 'get',
+    route: '/post/count',
+    controller: PostController,
+    middleware: [AuthMiddleware.needLogin],
+    action: PostController.getPostNum
   }
 ]
