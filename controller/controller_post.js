@@ -81,29 +81,33 @@ const PostController = {
     },
     async edit(req, res) {
         try {
-            let id = req.body.id;
             let fb_id = req.body.fb_id;
             let content = req.body.content;
-            let attachment = req.body.attachment;
-            let status = req.body.status;
-            let order = req.body.order;
-            if (!id) {
-                return res.json({ data: null, message: "Không có id bài đăng" })
-            } else if (!fb_id && !content && !attachment && !status && !order) {
+            let attachments = req.body.attachments;
+            let username = req.body.username;
+            if (!fb_id | !content && !attachments) {
                 return res.json({ data: null, message: "Bài đăng chưa đủ thông tin " })
-
-
             }
-            let result = await PostService.find({ id })
+            let [result] = await PostService.find({ fb_id })
             if (!result) {
                 return res.json({ data: null, message: "Bài đăng không tồn tại !" })
             } else {
-                result = await PostService.updateOne({ id }, { fb_id, content, attachment, status, order })
+                if (result.editCount > 2) {
+                    return res.json({ data: null, message: "Chỉ có thể chính sửa tối đa 2 lần !" })
+                }
+                let [user] = await UserService.find({ username })
+                let fbData = user.facebook
+                let isSuccess = await FacebookService.editPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, attachments, fb_id)
+                if (isSuccess) {
+                    result = await PostService.updateOne({ fb_id }, { content, attachment: attachments, editCount: result.editCount + 1 })
+                    return res.json({ data: result, message: "Cập nhật thành công" })
+                } else {
+                    return res.json({ data: result, message: "Cập nhật thất bại, vui lòng cập nhật cookie facebook" })
+                }
             }
-            return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
-            logError("Edit Post Error", error)
-            return res.json({ data: error, message: "Lỗi cập nhật" })
+            console.log("Edit Post Error", error)
+            return res.json({ data: null, message: "Cập nhật bài viết thất bại" })
         }
     },
     async delete(req, res) {
