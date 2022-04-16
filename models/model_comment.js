@@ -1,5 +1,5 @@
 
-var mongoose = require("../config/dbConnect");
+var mongoose = require("../config/DBConnect");
 var Schema = mongoose.Schema; //Gom cac title vao
 var commentSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     // table gom cac thuoc tinh sau:

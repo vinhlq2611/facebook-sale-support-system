@@ -1,4 +1,4 @@
-var mongoose = require("../config/dbConnect");
+var mongoose = require("../config/DBConnect");
 var cookieSchema = new mongoose.Schema({
   // table gom cac thuoc tinh sau:
   data: String,
