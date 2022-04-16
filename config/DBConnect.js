@@ -1,7 +1,8 @@
 var mongoose = require("mongoose");//Mongoose thuần chưa kết nối db
 require('dotenv').config()
 //kết nối đb
-mongoose.connect(`mongodb+srv://Vinh2611:amingovictus@cluster0.6og83.mongodb.net/Sale_Support_System?retryWrites=true&w=majority`, {
+// console.log(process.env.DB_CONNECTION_STRING_LOCAL + process.env.DB_NAME)
+mongoose.connect(process.env.DB_CONNECTION_STRING_LOCAL + process.env.DB_NAME, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });

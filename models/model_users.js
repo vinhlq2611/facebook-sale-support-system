@@ -1,12 +1,12 @@
 var mongoose = require("../config/DBConnect");
 var accountSchema = new mongoose.Schema({
     // table gom cac thuoc tinh sau:
-    fullname:String,
+    fullname: String,
     username: String,
     password: String,
     birthdate: String,
     address: String,
-    email:String,
+    email: String,
     type: Number,
     isActive: {
         type: Boolean,
@@ -16,32 +16,37 @@ var accountSchema = new mongoose.Schema({
         type: Number,
         default: Date.now()
     },
-    type:{
+    type: {
         type: Number,
         default: 0,
     },
-    phone:{
+    phone: {
         type: String,
         default: '123456789'
     },
-    facebook:{
+    facebook: {
         type: Object,
         default: {}
     },
-    post:{
+    post: {
         type: Array,
     },
-    product:{
+    product: {
         type: Array,
-        
+
     },
-    owner:{
-        type: String,
-        
-    },
-    replySyntaxs:{
+    jobs: {
         type: Array,
-        default: ["cho mình xin địa chỉ","cho mình xin số điện thoại","bạn order gì?","ok"]
+        default: []
+
+    },
+    shippers: {
+        type: Array,
+        default: []
+    },
+    replySyntaxs: {
+        type: Array,
+        default: ["cho mình xin địa chỉ", "cho mình xin số điện thoại", "bạn order gì?", "ok"]
     },
 });
 //Model: tuong tac khi thuc hien lenh

@@ -1,4 +1,4 @@
-var mongoose = require('../config/DBConnect');
+var mongoose = require('../config/dbConnect');
 let date = new Date(Date.now);
 var PostModel = mongoose.model("post", new mongoose.Schema({
     username: String,
@@ -30,14 +30,9 @@ var PostModel = mongoose.model("post", new mongoose.Schema({
         type: Array,
         default: []
     },
-    config: {
-        type: Object,
-        default: {
-            autoComment: 60,
-            autoReply: false,
-            autoCreateOrder: false,
-            scanDuration: 120
-        }
+    editCount: {
+        type: Number,
+        default: 0
     },
     shipCost: {
         type: Number,

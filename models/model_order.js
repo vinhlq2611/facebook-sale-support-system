@@ -4,7 +4,7 @@ var Schema = mongoose.Schema; //Gom cac title vao
 var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     // table gom cac thuoc tinh sau:
     comment_id: String,
-    shopkeeper:String,
+    shopkeeper: String,
     status: {
         type: String,
         default: 'created'
@@ -13,10 +13,8 @@ var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
         type: Array
     },
     shipper: {
-        type: Array,
-        default: {
-            name : 'Un-assign'
-        }
+        type: String,
+        default: ""
     },
     customerName: String,
     address: String,
@@ -29,6 +27,10 @@ var orderSchema = new mongoose.Schema({//F2 sửa nhanh tên biến
     updateAt: {
         type: Number,
         default: Date.now()
+    }, 
+    shipCost: {
+        type: Number,
+        default:3000
     },
     postId: String
 });

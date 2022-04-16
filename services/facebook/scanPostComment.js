@@ -60,7 +60,7 @@ const scanPostComment = async (groupId, postId, uid, fbDtsg, cookie) => {
         // HANDLE STRING RESPONSE
         try {
             if (typeof response.data == "string") {
-                console.log("Handle A String response: ", response.data);
+               // console.log("Handle A String response: ", response.data);
                 response.data = JSON.parse(response.data.split("\n")[0]);
                 console.log("New Response Data: ", response.data.data.feedback);
             }
