@@ -1,7 +1,7 @@
 const logger = require('../config/logger')
 
 function logError(message, data) {
-    logger.error(`>>> ${message} <<< \n${JSON.stringify(data)}`)
+    console.error(`>>> ${message} <<< \n${JSON.stringify(data)}`)
 }
 
 function logWarn(message, data) {
