@@ -167,6 +167,7 @@ const OrderController = {
             let shipper = req.body.shipper;
             let status = req.body.status;
             let _id = req.body.orderId;
+            let updateAt = req.body.updateAt;
             if (!validStatus.includes(status)) {
                 return res.json({ data: null, message: "Trạng thái không hợp lệ." })
             }
@@ -177,7 +178,7 @@ const OrderController = {
                 return res.json({ data: null, message: "Đơn hàng thuộc về người khác" })
             }
             else {
-                let result = await OrderService.updateOne({ _id }, { shipper, status })
+                let result = await OrderService.updateOne({ _id }, { shipper, status, updateAt })
                 return res.json({ data: result, message: "Cập nhật thành công" })
             }
         } catch (error) {
@@ -190,6 +191,7 @@ const OrderController = {
             let validStatus = ['created', 'ready', 'shipping', 'done', 'cancel']
             let _id = req.query.id;
             let status = req.query.status;
+            let updateAt = req.query.updateAt
             if (!validStatus.includes(status)) {
                 return res.json({ data: null, message: "Trạng thái không hợp lệ." })
             }
@@ -205,7 +207,7 @@ const OrderController = {
             if (!result) {
                 return res.json({ data: null, message: "Đơn hàng không tồn tại!" })
             } else {
-                let updateAt = Date.now();
+
                 result = await OrderService.updateOne({ _id }, { status, updateAt })
             }
             return res.json({ data: result, message: "Cập nhật thành công" })
