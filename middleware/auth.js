@@ -34,6 +34,7 @@ async function needAdmin(req, res, next) {
     });
     req.body.username = decodeData.username;
     req.body.type = decodeData.type;
+    console.log(decodeData)
     if (isValid.length == 1 && decodeData.type == 2) {
       next();
     } else res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
