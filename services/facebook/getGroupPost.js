@@ -9,7 +9,7 @@ const getGroupPost = async (token, limit, groupId) => {
         console.log("Post Data: ", postId);
         return postId;
     } catch (error) {
-        logError("Lỗi tại Facebook.getGroupPost ", { input: { token, limit, groupId }, error })
+        console.error("Lỗi tại Facebook.getGroupPost ", { input: { token, limit, groupId }, error })
         return [];
     }
 };

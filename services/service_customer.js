@@ -6,7 +6,7 @@ async function find(condition) {//
     try {
         return CustomerModel.find(condition)
     } catch (error) {
-        logError("Lỗi tại OrderService.Find ", { input: condition, error })
+        console.error("Lỗi tại OrderService.Find ", { input: condition, error })
         return null
     }
 }
@@ -15,7 +15,7 @@ async function create(data) {
     try {
         return CustomerModel.create(data)
     } catch (error) {
-        logError("Lỗi tại OrderService.create ", { input: data, error })
+        console.error("Lỗi tại OrderService.create ", { input: data, error })
         return null
     }
 }
@@ -24,7 +24,7 @@ async function deleteOne(condition) {
     try {
         return CustomerModel.deleteOne(condition)
     } catch (error) {
-        logError("Lỗi tại OrderService.deleteOne ", { input: condition, error })
+        console.error("Lỗi tại OrderService.deleteOne ", { input: condition, error })
         return null
     }
 }
@@ -33,7 +33,7 @@ async function deleteMany(condition) {
     try {
         return CustomerModel.deleteMany(condition)
     } catch (error) {
-        logError("Lỗi tại OrderService.deleteMany ", { input: condition, error })
+        console.error("Lỗi tại OrderService.deleteMany ", { input: condition, error })
         return null
     }
 }
@@ -42,7 +42,7 @@ async function updateOne(condition, newData) {
     try {
         return CustomerModel.updateOne(condition, newData)
     } catch (error) {
-        logError("Lỗi tại OrderService.updateOne ", { input: condition, error })
+        console.error("Lỗi tại OrderService.updateOne ", { input: condition, error })
         return null
     }
 }
@@ -51,7 +51,7 @@ async function updateMany(condition, newData) {
     try {
         return CustomerModel.updateOne(condition, newData)
     } catch (error) {
-        logError("Lỗi tại OrderService.updateMany ", { input: condition, error })
+        console.error("Lỗi tại OrderService.updateMany ", { input: condition, error })
         return null
     }
 }
@@ -59,7 +59,7 @@ async function aggregate(condition){
     try {
         return CustomerModel.aggregate(condition);
     } catch (error) {
-        logError("Lỗi tại CustomerService.updateMany ", { input: condition, error })
+        console.error("Lỗi tại CustomerService.updateMany ", { input: condition, error })
         return null
     }
 }

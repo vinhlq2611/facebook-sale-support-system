@@ -18,7 +18,7 @@ const getGroupList = async (cookie, token) => {
         })
         return groupList
     } catch (error) {
-        logError("Lỗi tại Facebook.listGroup ", { input: { token }, error })
+        console.error("Lỗi tại Facebook.listGroup ", { input: { token }, error })
         console.log("Get Group List Fail: ", token, error.message);
         return [];
     }

@@ -85,7 +85,7 @@ function genKeyWord(productName) {
         keyTemp = keyTemp.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
         keyTemp = keyTemp.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
         keyTemp = keyTemp.replace(/Đ/g, "D");
-        if(key !== keyTemp){
+        if (key !== keyTemp) {
             keywords.push(keyTemp);
         }
     });

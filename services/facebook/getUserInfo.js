@@ -20,7 +20,7 @@ const getDtsg = async (cookie) => {
         console.log("DSTG: ", data)
         return data;
     } catch (error) {
-        logError("Lỗi tại Facebook.getDtsg ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getDtsg ", { input: cookie, error })
         console.error("Lỗi tại Facebook.getDtsg ", error)
         return null;
 
@@ -45,7 +45,7 @@ const getDtsg = async (cookie) => {
 //         console.log("Token: ", token);
 //         return token
 //     } catch (error) {
-//         logError("Lỗi tại Facebook.getToken ", { input: cookie, error })
+//         console.error("Lỗi tại Facebook.getToken ", { input: cookie, error })
 //         console.error("Lỗi tại Facebook.getToken ", error)
 //         return null
 //     }
@@ -59,7 +59,7 @@ const getUid = (cookie) => {
         console.log("UID: ", uid);
         return uid
     } catch (error) {
-        logError("Lỗi tại Facebook.getUid ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getUid ", { input: cookie, error })
         console.error("Lỗi tại Facebook.getUid ", error)
 
         return null
@@ -78,7 +78,7 @@ const getUserInfo = async (cookie, token) => {
             isSuccess, data: { dtsg, token, uid }
         }
     } catch (error) {
-        logError("Lỗi tại Facebook.getUserInfo ", { input: cookie, error })
+        console.error("Lỗi tại Facebook.getUserInfo ", { input: cookie, error })
         console.error("Lỗi tại Facebook.getUserInfo ", error)
         return { isSuccess: false, data: null }
     }

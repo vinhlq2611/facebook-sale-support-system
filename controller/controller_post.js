@@ -75,7 +75,7 @@ const PostController = {
 
             return res.json({ data: selectedPostList, message: "Tìm bài viết thành công" })
         } catch (error) {
-            logError("Get Post Error", error)
+            console.error("Get Post Error", error)
             return res.json({ data: error, message: "Lỗi nhận bài đăng" })
         }
     },
@@ -124,7 +124,7 @@ const PostController = {
             }
             return res.json({ data: result, message: "Xóa thành công" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.error("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi xóa bài đăng" })
         }
     },
@@ -170,7 +170,7 @@ const PostController = {
             }
             return res.json({ data: result.length, message: "Lấy số bài đăng thành công" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.error("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi lấy số bài đăng" })
         }
     }

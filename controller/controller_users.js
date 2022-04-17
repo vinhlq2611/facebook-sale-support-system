@@ -148,7 +148,7 @@ const UserController = {
       });
       return res.json({ data: result, message: "Đăng kí thành công" });
     } catch (error) {
-      logError("Register Error", error);
+      console.error("Register Error", error);
       return res.json({ data: error, message: "Lỗi đăng kí" });
     }
   },
@@ -213,7 +213,7 @@ const UserController = {
       return res.json({ data: result, message: "Cập nhật thành công" });
     } catch (error) {
       // console.error(error);
-      logError("Register Error", error);
+      console.error("Register Error", error);
       return res.json({ data: error, message: "Lỗi cập nhật" });
     }
   },
@@ -339,7 +339,7 @@ const UserController = {
       }
       return res.json({ data: result, message: "Lấy thông tin người dùng thành công" })
     } catch (error) {
-      logError("Get Product Error", error)
+      console.error("Get Product Error", error)
       return res.json({ data: error, message: "Lấy thông tin người dùng thất bại" })
     }
   },
@@ -392,7 +392,7 @@ const UserController = {
       }
       return res.json({ data: result, message: "Thay đổi trạng thái người dùng thành công" })
     } catch (error) {
-      logError("Get Product Error", error)
+      console.error("Get Product Error", error)
       return res.json({ data: error, message: "Lỗi thay đổi trạng thái" })
     }
   },
@@ -409,7 +409,7 @@ const UserController = {
       }
       return res.json({ data: result, message: "Tìm người dùng thành công" })
     } catch (error) {
-      logError("Get Product Error", error)
+      console.error("Get Product Error", error)
       return res.json({ data: error, message: "Lỗi tìm người dùng" })
     }
   },
@@ -453,7 +453,7 @@ const UserController = {
       return res.json({ data: result, message: "Cập nhật thành công" });
     } catch (error) {
       // console.error(error);
-      logError("Register Error", error);
+      console.error("Register Error", error);
       return res.json({ data: error, message: "Lỗi cập nhật" });
     }
   },

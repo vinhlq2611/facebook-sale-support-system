@@ -17,7 +17,7 @@ const AccountController =
                 return res.json({ data: null, message: "Login fail" })
             }
         } catch (error) {
-            logError("Login Error", error)
+            console.error("Login Error", error)
             return res.json({ data: error, message: "Login Error" })
 
         }
@@ -50,7 +50,7 @@ const AccountController =
             let result = await AccountService.create({ username, password, email, phone });
             return res.json({ data: result, message: "Register Success" })
         } catch (error) {
-            logError("Register Error", error)
+            console.error("Register Error", error)
             return res.json({ data: error, message: "Register Error" })
         }
     }

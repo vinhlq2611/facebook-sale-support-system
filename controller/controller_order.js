@@ -74,7 +74,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Lấy đơn hàng thành công" })
         } catch (error) {
-            logError("Get Order Error", error)
+            console.error("Get Order Error", error)
             return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" })
         }
     },
@@ -90,7 +90,7 @@ const OrderController = {
             }
             return res.json({ data: result[0], message: "Lấy đơn hàng thành công" })
         } catch (error) {
-            logError("Get Order Error", error)
+            console.error("Get Order Error", error)
             return res.json({ data: null, message: "Xảy ra lỗi lấy đơn hàng" })
         }
     },
@@ -170,7 +170,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Xóa thành công" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.error("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi xóa bài đăng" })
         }
     },
@@ -225,7 +225,7 @@ const OrderController = {
             }
             return res.json({ data: result, message: "Cập nhật thành công" })
         } catch (error) {
-            logError("Edit Post Error", error)
+            console.error("Edit Post Error", error)
             return res.json({ data: error, message: "Lỗi cập nhật" })
         }
     },
@@ -252,7 +252,7 @@ const OrderController = {
             }
             return res.json({ data: totalMoney, message: "Tính toán tổng tiền thu được thành công" })
         } catch (error) {
-            logError("Delete Post Error", error)
+            console.error("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi tính toán tổng tiền thu được" })
         }
     }
