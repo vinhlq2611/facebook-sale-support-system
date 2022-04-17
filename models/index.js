@@ -7,7 +7,7 @@ const ProductModel = require('./model_product');
 const CommentModel = require('./model_comment');
 const CookieModel = require('./model_cookie');
 const CustomerModel = require('./model_customer')
-
+const JobModel = require('./model_job')
 module.exports = {
     AccountModel,
     OrderModel,
@@ -18,6 +18,7 @@ module.exports = {
     CommentModel,
     CookieModel,
     CustomerModel,
+    JobModel
 }
 
 

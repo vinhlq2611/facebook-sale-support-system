@@ -1,4 +1,5 @@
 
+const { JobModel } = require('../models');
 const { UserService, CustomerService, OrderService, CommentService } = require('../services')
 const { logError, logWarn, genKeyWord } = require('../utils/index')
 
@@ -95,11 +96,23 @@ const OrderController = {
     },
     async getShipperOrder(req, res) {
         try {
-            let shopkeepers = req.body.shopkeepers;
-            let shipper = req.body.username;
+            // let shopkeepers = req.body.shopkeepers;
+            // let shipper = req.body.username;
+            let user = req.body.username;
+            let jobList =await JobModel.find({
+                $or: [
+                    { 'shopkeeper.username': user },
+                    { 'shipper.username': user },
+                ]
+            })
+            let shopkeepers = [], shipper = [];
+            jobList.forEach(job => {
+                shopkeepers.push(job.shopkeeper.username)
+                shipper.push(job.shipper.username)
+            })
             let order = await OrderService.find({
                 username: { $in: shopkeepers },
-                shipper: { $in: [shipper, ""] },
+                shipper: { $in: [...shipper, ""] },
                 status: { $in: ['ready', 'shipping', 'done', 'cancel'] }
             })
             return res.json({ data: order, message: "Đã Tìm thấy order" })
