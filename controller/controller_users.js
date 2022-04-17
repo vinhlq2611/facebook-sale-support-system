@@ -165,10 +165,13 @@ const UserController = {
     try {
       let username = req.body.username;
       let data = await UserService.find({ username: username });
+      if (data.length == 0) {
+        return res.json({ data: null, message: "Không tìm thấy người dùng" });
+      }
       let user = data[0];
-      return res.json({ data: user });
+      return res.json({ data: user, message: "Lấy thông tin thành công" });
     } catch (error) {
-      return res.json(null);
+      return res.json({ data: null, message: "Lấy thông tin thất bại" });
     }
   },
   async updateProfile(req, res) {
