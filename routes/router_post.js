@@ -39,5 +39,12 @@ module.exports = [
     controller: PostController,
     middleware: [AuthMiddleware.needLogin],
     action: PostController.getPostNum
+  },
+  {
+    method: 'get',
+    route: '/post/admin-get-post',
+    controller: PostController,
+    middleware: [AuthMiddleware.needAdmin],
+    action: PostController.adminGetAllPost
   }
 ]
