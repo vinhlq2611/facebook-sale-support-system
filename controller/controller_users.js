@@ -461,12 +461,12 @@ const UserController = {
     try {
       let _id = req.body._id;
       let username = req.body.username;
-      let oldpassword = req.body.oldpassword;
+      // let oldpassword = req.body.oldpassword;
       let password = req.body.newpassword;
       let repass = req.body.repass;
       console.log(username, oldpassword, password, repass);
       // CHECK EMPTY INPUT  ""
-      if (!username || !oldpassword || !password || !repass) {
+      if (!username || !_id || !password || !repass) {
         logWarn("Invalid information", {
           username,
           oldpassword,
@@ -486,27 +486,27 @@ const UserController = {
 
         return res.json({ data: null, message: "Mật khẩu phải có ít nhất 6 kí tự" });
       }
-      if (password == oldpassword) {
-        logWarn("Password must be different from old password", {
-        });
+      // if (password == oldpassword) {
+      //   logWarn("Password must be different from old password", {
+      //   });
 
-        return res.json({ data: null, message: "Mật khẩu mới phải khác mật khẩu cũ" });
-      }
+      //   return res.json({ data: null, message: "Mật khẩu mới phải khác mật khẩu cũ" });
+      // }
       // CHECK PASSWORD & REPASSWORD
       if (password != repass) {
         logWarn("Password not match", {});
         return res.json({ data: null, message: "Chưa trùng mật khẩu" });
       }
-      let account = await UserService.find({ _id, password: oldpassword });
+      let account = await UserService.find({ _id });
       //console.log("Account Found: ", account.length);
       if (account.length == 0) {
-        logWarn("Old password is incorrect", {
+        logWarn("Người dùng không tồn tại", {
           username,
           oldpassword,
           password,
           repass,
         });
-        return res.json({ data: null, message: "Sai mật khẩu cũ" });
+        return res.json({ data: null, message: "Người dùng không tồn tại"});
       }
       let result = await UserService.updateOne(
         { _id },
