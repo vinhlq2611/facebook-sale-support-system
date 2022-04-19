@@ -173,6 +173,17 @@ const PostController = {
             logError("Delete Post Error", error)
             return res.json({ data: error, message: "Lỗi lấy số bài đăng" })
         }
+    },
+    async adminGetAllPost(req, res) {
+        try {
+            let result = await PostService.find();
+            if (!result) {
+                return res.json({ data: null, message: "Không có bài đăng nào" })
+            }
+            return res.json({ data: result, message: "Lấy bài đăng thành công" })
+        } catch (error) {
+            return res.json({ data: error, message: "Lỗi lấy bài đăng" })
+        }
     }
 }
 
