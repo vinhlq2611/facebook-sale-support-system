@@ -1,7 +1,7 @@
 const FormData = require('form-data')
 const requestFile = require('request')
 const axios = require('axios')
-const ModelError = require('../../models/model_error')
+// const ModelError = require('../../models/model_error')
 
 const parseData = async (dataObject) => {
     let data = '';
@@ -15,15 +15,15 @@ const parseData = async (dataObject) => {
     return data
 };
 
-const getImageID = async (dtsg, uid, cookie, imageUrl) => {
+const uploadImage = async (dtsg, uid, groupId, cookie, imageUrl) => {
     const queryStringUrlImage = await parseData({
         av: uid,
-        profile_id: uid,
-        target_id: uid,
+        profile_id: groupId,
+        target_id: groupId,
         __user: uid,
         __a: 1,
         fb_dtsg: dtsg,
-        source: 19,
+        source: 10,
     })
     let dataImage = new FormData();
     dataImage.append('file', requestFile(imageUrl))
@@ -45,7 +45,7 @@ const getImageID = async (dtsg, uid, cookie, imageUrl) => {
     };
     const getImageUrl = `https://www.facebook.com/ajax/ufi/upload/?${queryStringUrlImage}`;
 
-    let comment = await axios.request({
+    let response = await axios.request({
         url: getImageUrl,
         method: 'post',
         headers: headers,
@@ -54,23 +54,33 @@ const getImageID = async (dtsg, uid, cookie, imageUrl) => {
         referrerPolicy: 'strict-origin-when-cross-origin',
     });
     try {
-        commentcomment = JSON.parse(comment.data.replace('for (;;);', ''));
-        return comment.payload.fbid;
+        data = JSON.parse(response.data.replace('for (;;);', ''));
+        return data.payload.fbid;
     } catch (error) {
-        ModelError.create({
-            code: "UPLOAD_IMAGE_FAIL",
-            message: error.message,
-            stack: error.stack,
-            input: { dtsg, uid, cookie, imageUrl },
-            output: comment.data
-        })
+        console.log(error)
+        console.log(response.data)
+        // ModelError.create({
+        //     code: "UPLOAD_IMAGE_FAIL",
+        //     message: error.message,
+        //     stack: error.stack,
+        //     input: { dtsg, uid, cookie, imageUrl },
+        //     output: comment.data
+        // })
+
         return null
     }
 }
 
-(async () => {
-    const test = await getImageID()
-    console.log(test)
+// (async () => {
+//     const postId = await getImageID(
+//         "AQHmAYxpR4IFja4:42:1650167204",
+//         "100004337133436",
+//         "877660292889767",
+//         "sb=xkcxYlupEOw5l_8n-7i09J_2; oo=v1; m_pixel_ratio=1; usida=eyJ2ZXIiOjEsImlkIjoiQXJhYnBydXVrcTd5aiIsInRpbWUiOjE2NDk5Mjk1MzB9; wd=1536x722; datr=fI1bYpICd6tzLlqUgOj1SwT-; c_user=100004337133436; dpr=1; xs=42%3ABWbDeyvjzEQ_ww%3A2%3A1650167204%3A-1%3A6382%3A%3AAcVj0oqQhC3eDoEkBrJwekIvRge_oYMtuikTGBr2Dvc; presence=C%7B%22t3%22%3A%5B%7B%22i%22%3A%22u.100271182674491%22%7D%2C%7B%22i%22%3A%22u.100003908182982%22%7D%2C%7B%22i%22%3A%22u.100007270537619%22%7D%2C%7B%22i%22%3A%22u.100004603997082%22%7D%2C%7B%22i%22%3A%22u.100009911523867%22%7D%2C%7B%22i%22%3A%22g.4516967591697103%22%7D%5D%2C%22utc3%22%3A1650460715332%2C%22lm3%22%3A%22u.100006061596896%22%2C%22v%22%3A1%7D; fr=0MrcbHS5EgIGMpjzX.AWUMGE24ZmjWZtyYMRebbY6__S0.BiYAbc.5K.AAA.0.0.BiYAgs.AWUdPGV0I38",
+//         "https://api-3sf.amaitechnology.com/images/165046054580982b64deba17ba8fa7424462bd75fadfc.jpg"
+//     )
+//     console.log(test)
 
-})()
+// })()
 
+module.exports = { uploadImage }
