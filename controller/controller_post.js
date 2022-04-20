@@ -5,17 +5,19 @@ const { Console } = require('winston/lib/winston/transports');
 const utils = require('nodemon/lib/utils');
 const { AttachmentModel } = require('../models')
 const util = require('util')
-const path = require('path')
+const path = require('path');
+const { post } = require('request');
 
 const PostController = {
     async create(req, res) {
         try {
             let username = req.body.username;
             let content = req.body.content;
-            let attachments = req.body.attachments;
+            let attachments = req.body.attachments || [];
             let group = req.body.group;
             let products = req.body.products;
             let shipCost = req.body.shipCost ? req.body.shipCost : 3000;
+            let photoList = [];
             console.log(req.body)
             // CHECK EMPTY INPUT
             if (!username || !content || !group.groupId || !products) {
@@ -26,11 +28,19 @@ const PostController = {
             if (activePost.lenght > 3) {
                 return res.json({ data: null, message: "Đã Đạt Số Lượng Chiến Dịch Tối Đa, Không Thể Tạo THêm!" })
             }
-
             let [UserData] = await UserService.find({ username });
-            let fbData = await UserData.facebook
-            console.log("User Facebook Data: ", fbData)
-            let UploadData = await FacebookService.uploadPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, group.groupId)
+            let fbData = UserData.facebook
+            let task = [];
+            if (attachments.length > 0) {
+                for (let url of attachments) {
+                    task.push(FacebookService.uploadImage(fbData.dtsg, fbData.uid, group.groupId, fbData.cookie.data, url).then(data => {
+                        if (data) photoList.push(data)
+                    }))
+                }
+            }
+            await Promise.all(task);
+            // console.log("User Facebook Data: ", fbData)
+            let UploadData = await FacebookService.uploadPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, group.groupId, photoList)
             if (UploadData.data != null) {
                 console.log("Facebook Post Upload Response: ", { UploadData })
                 let createdPost = await PostService.create(
@@ -62,15 +72,15 @@ const PostController = {
             if (selectedPostList.length == 0) {
                 return res.json({ data: null, message: "Không  tìm thấy bài viết nào" })
             }
-            for (let i = 0; i < selectedPostList.length; i++) {
-                let post = selectedPostList[i];
-                for (let j = 0; j < post.attachment.length; j++) {
-                    let image = post.attachment[j];
-                    let imageData = await AttachmentModel.findOne({ _id: image })
-                    let splitOn = String.fromCharCode(0134);
-                    post.attachment[j] = imageData.name.split(splitOn).join("/");
-                }
-            }
+            // for (let i = 0; i < selectedPostList.length; i++) {
+            //     let post = selectedPostList[i];
+            //     for (let j = 0; j < post.attachment.length; j++) {
+            //         let image = post.attachment[j];
+            //         let imageData = await AttachmentModel.findOne({ _id: image })
+            //         // let splitOn = String.fromCharCode(0134);
+            //         post.attachment[j] = imageData.name//.split(splitOn).join("/");
+            //     }
+            // }
             // console.log('Post Found Data: ', selectedPostList)
 
             return res.json({ data: selectedPostList, message: "Tìm bài viết thành công" })

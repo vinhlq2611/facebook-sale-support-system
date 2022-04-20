@@ -46,7 +46,7 @@ app.post("/uploadfile", upload.array("images"), async (req, res) => {
       };
       let response = await AttachmentModel.create(finalImg);
       // uploadImage(img, imgData)
-      result.push(response.id);
+      result.push(response.name);
     }
     res.json({ data: result, message: "Uploaded file successfully" });
   } catch (error) {
