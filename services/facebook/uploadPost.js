@@ -106,7 +106,7 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
             code: "UPLOAD_POST_FAIL",
             message: error.message,
             stack: error.stack,
-            input: { dtsg, uid, content, groupId, cookie },
+            input: { dtsg, uid, content, groupId, cookie, dataObject },
             output: response.data
         })
         console.log("Upload Post Error Input: ", dtsg, uid, content, groupId)
