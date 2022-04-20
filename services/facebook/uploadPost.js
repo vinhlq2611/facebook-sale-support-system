@@ -20,14 +20,11 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
                 "composer_entry_point": "inline_composer",
                 "composer_source_surface": "group",
                 "composer_type": "group",
-                "logging": {
-                    "composer_session_id": `882f304f-${randomPrefix()}-${randomPrefix()}-${randomPrefix()}-39905ee99e9b`
-                },
                 "source": "WWW",
                 "attachments": [],
                 "message": {
                     "ranges": [],
-                    "text": content,
+                    "text": content
                 },
                 "with_tags_ids": [],
                 "inline_activities": [],
@@ -51,22 +48,25 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
             "feedbackSource": 0,
             "focusCommentID": null,
             "gridMediaWidth": null,
+            "groupID": null,
             "scale": 1,
             "privacySelectorRenderLocation": "COMET_STREAM",
             "renderLocation": "group",
             "useDefaultActor": false,
+            "inviteShortLinkKey": null,
             "isFeed": false,
             "isFundraiser": false,
             "isFunFactPost": false,
             "isGroup": true,
+            "isEvent": false,
             "isTimeline": false,
             "isSocialLearning": false,
             "isPageNewsFeed": false,
             "isProfileReviews": false,
-            "prefetchRecentMediaPhotos": false,
+            "isWorkSharedDraft": false,
             "UFI2CommentsProvider_commentsKey": "CometGroupDiscussionRootSuccessQuery",
-            "useCometPhotoViewerPlaceholderFrag": false,
-            "hashtag": null
+            "hashtag": null,
+            "canUserManageOffers": false
         }
     }
     const data = await parseData(dataObject);
