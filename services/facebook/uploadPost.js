@@ -24,7 +24,7 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
                 "attachments": [],
                 "message": {
                     "ranges": [],
-                    "text": content
+                    "text": "đăng postman 2 :v \n"
                 },
                 "with_tags_ids": [],
                 "inline_activities": [],
@@ -34,10 +34,10 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
                     null
                 ],
                 "audience": {
-                    "to_id": groupId
+                    "to_id": `${groupId}`
                 },
-                "actor_id": uid,
-                "client_mutation_id": "2"
+                "actor_id": `${uid}`,
+                "client_mutation_id": "5"
             },
             "displayCommentsFeedbackContext": null,
             "displayCommentsContextEnableComment": null,
