@@ -113,7 +113,7 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
         console.log("Cookie: \n", cookie)
         console.log("-------------------------------------------------------")
         console.log("Upload Post Error Response: ", response.data)
-        console.log("Upload Post Error: ", e)
+        console.log("Upload Post Error: ", error)
         return {
             error: true,
             data: null
