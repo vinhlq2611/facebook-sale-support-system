@@ -144,7 +144,7 @@ const PostController = {
                     let result = await FacebookService.disableComment(postId, fbData.uid, fbData.dtsg, fbData.cookie.data)
                     if (result) {
                         await PostService.updateOne({ fb_id: postId }, { status: -1 })
-                        return res.json({ data: null, message: "Cập nhật bài viết thành công" })
+                        return res.json({ data: true, message: "Cập nhật bài viết thành công" })
                     } else {
                         return res.json({ data: null, message: "Cập nhật bài viết thất bại" })
                     }

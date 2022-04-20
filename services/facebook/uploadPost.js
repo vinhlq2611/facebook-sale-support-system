@@ -3,8 +3,10 @@ const fs = require('fs')
 const axios = require('axios')
 const path = require('path')
 const { logError, parseData, btoa, atob } = require('../../utils')
+const ModelError = require('../../models/model_error')
 const postConfig = '{"input":{"composer_entry_point":"inline_composer","composer_source_surface":"group","composer_type":"group","logging":{"composer_session_id":"882f304f-eedb-4a4a-9628-39905ee99e9b"},"source":"WWW","attachments":[],"message":{"ranges":[],"text":"kkk"},"with_tags_ids":[],"inline_activities":[],"explicit_place_id":"0","text_format_preset_id":"0","tracking":[null],"audience":{"to_id":"817850779114525"},"actor_id":"100058261795026","client_mutation_id":"2"},"displayCommentsFeedbackContext":null,"displayCommentsContextEnableComment":null,"displayCommentsContextIsAdPreview":null,"displayCommentsContextIsAggregatedShare":null,"displayCommentsContextIsStorySet":null,"feedLocation":"GROUP","feedbackSource":0,"focusCommentID":null,"gridMediaWidth":null,"scale":1,"privacySelectorRenderLocation":"COMET_STREAM","renderLocation":"group","useDefaultActor":false,"isFeed":false,"isFundraiser":false,"isFunFactPost":false,"isGroup":true,"isTimeline":false,"isSocialLearning":false,"isPageNewsFeed":false,"isProfileReviews":false,"prefetchRecentMediaPhotos":false,"UFI2CommentsProvider_commentsKey":"CometGroupDiscussionRootSuccessQuery","useCometPhotoViewerPlaceholderFrag":false,"hashtag":null}';
 const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
+    const randomPrefix = () => Math.floor(Math.random() * 8999 + 1000) + ''
     const dataObject = {
         'av': uid,
         '__user': uid,
@@ -19,7 +21,7 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
                 "composer_source_surface": "group",
                 "composer_type": "group",
                 "logging": {
-                    "composer_session_id": "882f304f-eedb-4a4a-9628-39905ee99e9b"
+                    "composer_session_id": `882f304f-${randomPrefix()}-${randomPrefix()}-${randomPrefix()}-39905ee99e9b`
                 },
                 "source": "WWW",
                 "attachments": [],
@@ -99,7 +101,14 @@ const uploadPost = async (dtsg, uid, cookie, content, groupId) => {
                 url: url
             }
         }
-    } catch (e) {
+    } catch (error) {
+        ModelError.create({
+            code: "UPLOAD_POST_FAIL",
+            message: error.message,
+            stack: error.stack,
+            input: { dtsg, uid, content, groupId, cookie },
+            output: response.data
+        })
         console.log("Upload Post Error Input: ", dtsg, uid, content, groupId)
         console.log("Cookie: \n", cookie)
         console.log("-------------------------------------------------------")
