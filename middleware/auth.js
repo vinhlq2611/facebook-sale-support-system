@@ -11,7 +11,7 @@ async function needLogin(req, res, next) {
     // console.log("Xác minh danh tính:", decodeData);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: encode(round, decodeData.password),
+      password: decodeData.password,
       // isActive: true,
     });
     req.body.username = decodeData.username;
@@ -31,7 +31,7 @@ async function needAdmin(req, res, next) {
     let decodeData = jwt.verify(token, process.env.SECRET_KEY);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: encode(round, decodeData.password),
+      password: decodeData.password,
       // isActive: true,
     });
     req.body.username = decodeData.username;
@@ -51,7 +51,7 @@ async function needGuest(req, res, next) {
     let decodeData = jwt.verify(token, process.env.SECRET_KEY);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: encode(round, decodeData.password),
+      password: decodeData.password,
     });
     if (isValid.length > 0) {
       return res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
