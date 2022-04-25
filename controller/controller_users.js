@@ -542,7 +542,7 @@ const UserController = {
       console.log(password)
       await UserService.updateOne(
         { _id },
-        { password }
+        { password: encode(round, password)}
       );
       let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
