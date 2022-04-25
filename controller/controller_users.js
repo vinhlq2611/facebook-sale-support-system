@@ -316,7 +316,7 @@ const UserController = {
       }
       let result = await UserService.updateOne(
         { username: username },
-        { username, password }
+        { username, password:encode(round, password)}
       );
 
       return res.json({
