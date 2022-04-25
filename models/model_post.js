@@ -8,6 +8,10 @@ var PostModel = mongoose.model("post", new mongoose.Schema({
     attachment: {
         type: Array,
         default: [],
+    },  
+    fb_attachment: {
+        type: Array,
+        default: [],
     },
     group: Object,
     status: {

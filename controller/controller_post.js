@@ -38,6 +38,7 @@ const PostController = {
                     }))
                 }
             }
+            await PostService.updateOne({})
             await Promise.all(task);
             // console.log("User Facebook Data: ", fbData)
             let UploadData = await FacebookService.uploadPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, group.groupId, photoList)
@@ -49,6 +50,7 @@ const PostController = {
                         content,
                         attachment: attachments.length > 0 ? attachments : [],
                         group,
+                        fb_attachment: photoList.length > 0 ? photoList : [],
                         products: product,
                         shipCost,
                         fb_id: UploadData.data.postId,
@@ -107,7 +109,7 @@ const PostController = {
                 }
                 let [user] = await UserService.find({ username })
                 let fbData = user.facebook
-                let isSuccess = await FacebookService.editPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, attachments, fb_id)
+                let isSuccess = await FacebookService.editPost(fbData.dtsg, fbData.uid, fbData.cookie.data, content, result.fb_attachment, fb_id)
                 if (isSuccess) {
                     result = await PostService.updateOne({ fb_id }, { content, attachment: attachments, editCount: result.editCount + 1 })
                     return res.json({ data: result, message: "Cập nhật thành công" })

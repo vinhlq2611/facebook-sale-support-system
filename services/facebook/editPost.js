@@ -8,8 +8,17 @@ const { parseData, btoa, atob } = require('../../utils')
 const randomPrefix = () => Math.floor(Math.random() * 8999 + 1000) + ''
 
 
-const editPost = async (dtsg, uid, cookie, content, attachments, postId) => {
+const editPost = async (dtsg, uid, cookie, content, photoList, postId) => {
     const story_id = btoa(`S:_I${uid}:VK:${postId}`)
+    let attachments = [];
+
+    for (const id of photoList) {
+        attachments.push({
+            "photo": {
+                "id": id
+            }
+        })
+    }
     const dataObject = {
         'av': uid,
         '__user': uid,
@@ -89,7 +98,7 @@ const editPost = async (dtsg, uid, cookie, content, attachments, postId) => {
             return true
         else return false
     } catch (e) {
-        console.log("Edit Post Error Input: ", dtsg, uid, content)
+        console.log("Edit Post Error Input: ", dtsg, uid,'\n' ,content,'\n',attachments)
         console.log("Cookie: \n", cookie)
         console.log("-------------------------------------------------------")
         console.log("Upload Post Error Response: ", response.data)
