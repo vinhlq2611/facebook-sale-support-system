@@ -34,6 +34,21 @@ function atob(data) {
     return Buffer.from(data, 'base64').toString();
 
 }
+
+function encode(round, data) {
+    for (var i = 0; i < round; i++) {
+        data = btoa(data)
+    }
+    return data
+}
+
+function decode(round, data) {
+    for (var i = 0; i < round; i++) {
+        data = atob(data)
+    }
+    return data
+}
+
 function genKeyWord(productName) {
     let nameSplit = productName.trim().split(' ');
     let keywords = [];
@@ -94,5 +109,5 @@ function genKeyWord(productName) {
 }
 
 module.exports = {
-    logError, logWarn, parseData, btoa, atob, genKeyWord, isVietnamesePhoneNumber
+    logError, logWarn, parseData, btoa, atob, genKeyWord, isVietnamesePhoneNumber, encode, decode
 }

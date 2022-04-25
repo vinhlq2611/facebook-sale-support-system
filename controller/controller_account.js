@@ -1,5 +1,6 @@
 const { AccountService } = require('../services')
-const { logError, logWarn } = require('../utils/index')
+const { logError, logWarn, encode, decode } = require('../utils/index')
+const round = parseInt(process.env.ROUND)
 const AccountController =
 {
     async login(req, res) {
@@ -9,7 +10,7 @@ const AccountController =
             let password = req.body.password;
             console.log("Data: ", req.body)
             //Querry ~ find => Model.find({condition}) => Trả về mảng object thỏa mãn
-            let account = await AccountService.find({ username: username, password: password })
+            let account = await AccountService.find({ username: username, password: encode(round, password) })
             if (account.length == 1) {
                 return res.json({ data: account[0], message: "Login success" })
             } else {

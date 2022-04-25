@@ -1,7 +1,8 @@
 require("dotenv").config();
 const { UserService, FacebookService, OrderService, PostService, ProductService } = require("../services");
 const nodemailer = require("nodemailer");
-const { logError, logWarn, isVietnamesePhoneNumber } = require("../utils/index");
+const { logError, logWarn, isVietnamesePhoneNumber, encode } = require("../utils/index");
+const round = parseInt(process.env.ROUND)
 const jwt = require("jsonwebtoken");
 const UserController = {
   async login(req, res) {
@@ -12,7 +13,7 @@ const UserController = {
       // console.log(req.body);
       let account = await UserService.find({
         username: username,
-        password: password,
+        password: encode(round, password),
       });
       console.log(account);
       if (account.length == 1) {
@@ -141,7 +142,7 @@ const UserController = {
       let result = await UserService.create({
         fullname,
         username,
-        password,
+        password: encode(round, password),
         email,
         phone,
         birthdate: birthday, type
@@ -302,7 +303,7 @@ const UserController = {
         logWarn("Password not match", {});
         return res.json({ data: null, message: "Chưa trùng với mật khẩu" });
       }
-      let account = await UserService.find({ username, password: oldpassword });
+      let account = await UserService.find({ username, password: encode(round, oldpassword) });
       //console.log("Account Found: ", account.length);
       if (account.length == 0) {
         logWarn("Old password is incorrect", {
@@ -506,11 +507,11 @@ const UserController = {
           password,
           repass,
         });
-        return res.json({ data: null, message: "Người dùng không tồn tại"});
+        return res.json({ data: null, message: "Người dùng không tồn tại" });
       }
       let result = await UserService.updateOne(
         { _id },
-        { password }
+        { password: encode(round, password) }
       );
 
       return res.json({

@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { UserModel } = require("../models/");
+const { decode, encode } = require("../utils/index")
+const round = parseInt(process.env.ROUND)
 // Check token có tồn tại hay không
 async function needLogin(req, res, next) {
   try {
@@ -9,7 +11,7 @@ async function needLogin(req, res, next) {
     // console.log("Xác minh danh tính:", decodeData);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: decodeData.password,
+      password: encode(round, decodeData.password),
       // isActive: true,
     });
     req.body.username = decodeData.username;
@@ -29,7 +31,7 @@ async function needAdmin(req, res, next) {
     let decodeData = jwt.verify(token, process.env.SECRET_KEY);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: decodeData.password,
+      password: encode(round, decodeData.password),
       // isActive: true,
     });
     req.body.username = decodeData.username;
@@ -49,7 +51,7 @@ async function needGuest(req, res, next) {
     let decodeData = jwt.verify(token, process.env.SECRET_KEY);
     let isValid = await UserModel.find({
       username: decodeData.username,
-      password: decodeData.password,
+      password: encode(round, decodeData.password),
     });
     if (isValid.length > 0) {
       return res.json({ data: null, message: "Bạn Không Đủ Quyền Hạn" })
