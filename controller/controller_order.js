@@ -103,7 +103,8 @@ const OrderController = {
                 $or: [
                     { 'shopkeeper.username': user },
                     { 'shipper.username': user },
-                ]
+                ],
+                status:'accepted'
             })
             let shopkeepers = [], shipper = [];
             jobList.forEach(job => {
