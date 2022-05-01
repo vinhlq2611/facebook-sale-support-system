@@ -87,9 +87,9 @@ const ShipperController = {
             }
             let result = []
             if (user.type == 0) {
-                result = await JobModel.find({ 'shipper.username': username })
+                result = await JobModel.find({ 'shipper.username': username, status: 'accepted' })
             } else {
-                result = await JobModel.find({ 'shopkeeper.username': username })
+                result = await JobModel.find({ 'shopkeeper.username': username, status: 'accepted' })
             }
             return res.json({ data: result, message: "Lấy dữ liệu công việc thành công" });
         } catch (error) {
