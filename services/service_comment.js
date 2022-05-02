@@ -140,7 +140,7 @@ function getAddress(content, endOfProducts, startOfPhone, endOfPhone) {
     try {
         let isAddress = false;
         let addressKey = ['trọ', 'nhà', 'phòng', 'cửa hàng', 'nhà hàng', 'sảnh', 'quán', 'công ty']
-        let domRegex = /([a-h])+([0-9]{3})+[r|l]\b/g
+        let domRegex = /([a-z])+([0-9]{3})+[r|l]\b/g
         let addressStr = content.substring(endOfProducts, startOfPhone)
         for (const key of addressKey) {
             if (addressStr.indexOf(key) > -1 || addressStr.match(domRegex)) {

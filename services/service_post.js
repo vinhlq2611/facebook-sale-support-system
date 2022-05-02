@@ -3,7 +3,7 @@ const { logError } = require('../utils')
 
 async function find(condition) {
     try {
-        return PostModel.find(condition)
+        return PostModel.find(condition).sort({createAt:'desc'})
     } catch (error) {
         console.error("Lỗi tại PostService.Find ", { input: condition, error })
     }
