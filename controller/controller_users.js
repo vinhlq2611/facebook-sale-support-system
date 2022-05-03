@@ -356,6 +356,7 @@ const UserController = {
         return res.json({ data: null, message: "Người dùng không tồn tại !" })
       }
       response = user
+      console.log("Detail User: ", user)
       if (user.type == 1) {
         let order = await OrderService.find({ shopkeeper: user.username })
         let post = await PostService.find({ username: user.username })
