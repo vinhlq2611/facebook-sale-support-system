@@ -31,7 +31,7 @@ const CustomerController = {
               from: "orders",
               localField: "facebook_id",
               foreignField: "customerId",
-              pipeline: req.body.type == 2 ? [] : [{ "$match": { "shopkeeper": shopkeeper } },] ,
+              pipeline: req.body.type == 2 ? [] : [{ "$match": { "shopkeeper": shopkeeper } },],
               as: "order_detail",
             },
           },
@@ -52,14 +52,15 @@ const CustomerController = {
           data[i].totalSpends = getTotalMoney(customer.order_detail);
         }
       } else {
-        data = await CustomerService.find({ facebook_id: { $regex: keyword } });
+        data = await CustomerService.find({ facebook_id: { $regex: keyword } }).lean();
       }
+      let finalResponse = data.filter(customer => customer.order.length > 0)
       //data = customer + tất cả order
       // dùng vòng lặp -> xóa hết tất cả các order không phải của shopkeeper chỉ định
       //=> data = customer + order của shopkeeper
       /*Array.splice(index,1) = xóa phần tử tại vị trí i trong Array */
 
-      return res.json({ data: data, message: "Lấy đơn hàng thành công" });
+      return res.json({ data: finalResponse, message: "Lấy đơn hàng thành công" });
     } catch (error) {
       console.log(error);
       return res.json({ data: error, message: "Xảy ra lỗi lấy đơn hàng" });
