@@ -316,7 +316,7 @@ const UserController = {
       }
       let result = await UserService.updateOne(
         { username: username },
-        { username, password:encode(round, password)}
+        { username, password: encode(round, password) }
       );
 
       return res.json({
@@ -360,6 +360,7 @@ const UserController = {
         let order = await OrderService.find({ shopkeeper: user.username })
         let post = await PostService.find({ username: user.username })
         let product = await ProductService.find({ username: user.username })
+        console.log(`${order.length} - ${post.length} - ${product.length}`)
         response.order = order
         response.post = post
         response.product = product
@@ -542,7 +543,7 @@ const UserController = {
       console.log(password)
       await UserService.updateOne(
         { _id },
-        { password: encode(round, password)}
+        { password: encode(round, password) }
       );
       let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
