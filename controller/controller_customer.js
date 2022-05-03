@@ -55,6 +55,7 @@ const CustomerController = {
         data = await CustomerService.find({ facebook_id: { $regex: keyword } }).lean();
       }
       let finalResponse = data.filter(customer => customer.order.length > 0)
+      console.log(finalResponse)
       //data = customer + tất cả order
       // dùng vòng lặp -> xóa hết tất cả các order không phải của shopkeeper chỉ định
       //=> data = customer + order của shopkeeper
